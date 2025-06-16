@@ -4,6 +4,7 @@ set -e
 
 ME=$(basename "$0")
 
+echo "_{$NGINX_LOCAL_RESOLVERS}_"
 entrypoint_log() {
 	if [ -z "${NGINX_ENTRYPOINT_QUIET_LOGS:-}" ]; then
 		echo "$@"
@@ -19,7 +20,7 @@ auto_template() {
 		entrypoint_log "$ME: ERROR: $template_dir exists, but is not writable"
 		return 0
 	fi
-	find "$template_dir" -follow -type f -print | while read -r template; do
+	find "$template_dir" -follow -type f -name '*.conf' -print | while read -r template; do
 		entrypoint_log "$ME: adding $suffix to $template"
 		mv "$template" "$template$suffix"
 	done

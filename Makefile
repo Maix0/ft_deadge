@@ -6,15 +6,9 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/06/12 22:06:29 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/06/16 15:36:58 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-# Objdir
-SRC_DIR			=	.
-
-MSG=
-NAME=webserv
 
 # Colors
 GREEN     = \033[32m
@@ -55,8 +49,6 @@ prune:
 
 logs:
 	@$(MAKE) --no-print-directory -f ./Docker.mk logs
-
-$(NAME): all
 
 #	Header
 header:

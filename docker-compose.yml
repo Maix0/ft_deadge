@@ -5,7 +5,6 @@ services:
 # service_name:
 #   build: ./service_name
 #   container_name: service_name
-#   image: service_name
 #   restart: always
 #   env_file: 
 #     - ${SECRET_DIR}/service_name.env
@@ -24,8 +23,20 @@ services:
       - transcendance-network
     ports:
       - '8888:443'
-    enviroment:
+    environment:
       - NGINX_DOMAIN=local.maix.me
+      - NGINX_USE_LOCAL_RESOLVER=yes
+
+  icons-service:
+    build: ./src/icons-service/
+    container_name: icons-service
+    restart: always
+    networks:
+      - transcendance-network
+    volumes:
+      - /store
+    environment:
+      - USER_ICONS_STORE=/store
 volumes:
 # service_name-vol:
 #   driver: local

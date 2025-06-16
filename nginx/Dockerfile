@@ -6,7 +6,7 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 16:42:38 by maiboyer          #+#    #+#              #
-#    Updated: 2025/06/12 18:15:38 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/06/16 16:26:48 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,6 @@ RUN mkdir -p /etc/nginx/ &&                             \
 		-keyout /etc/ssl/private/nginx-selfsigned.key   \
 		-out /etc/ssl/certs/nginx-selfsigned.crt        \
 		-subj "/C=FR/OU=student/CN=${NGINX_DOMAIN}"
-
+COPY ./15-local-resolvers.envsh  /docker-entrypoint.d/
 COPY ./17-add-template-prefix.sh /docker-entrypoint.d/
 COPY ./conf /etc/nginx/templates
