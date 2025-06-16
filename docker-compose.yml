@@ -9,6 +9,7 @@ services:
     container_name: utils-builder
     image: utils-builder
     restart: never
+    profiles: ["do-not-run"]
 
 # service_name:
 #   build: ./service_name
@@ -47,7 +48,5 @@ services:
       - images-volume:/store
     environment:
       - USER_ICONS_STORE=/store
-    depends_on:
-      - utils-builder
 volumes:
   images-volume:
