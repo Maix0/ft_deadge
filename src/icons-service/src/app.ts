@@ -6,6 +6,7 @@ import fastifyFormBody from '@fastify/formbody'
 import fastifyMultipart from '@fastify/multipart'
 import { mkdir } from 'node:fs/promises'
 import fp from 'fastify-plugin'
+import MyPlugin from 'utils'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -31,6 +32,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 ): Promise<void> => {
 	// Place here your custom code!
 
+	void fastify.register(MyPlugin, {})
 	void fastify.register(fastifyFormBody, {})
 	void fastify.register(fastifyMultipart, {})
 

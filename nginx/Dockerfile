@@ -6,13 +6,15 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 16:42:38 by maiboyer          #+#    #+#              #
-#    Updated: 2025/06/16 16:26:48 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/06/16 21:21:16 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FROM nginx:stable-alpine
 
-RUN mkdir -p /etc/nginx/ &&                             \
+RUN \
+	mkdir -p /volumes/ &&                               \
+	mkdir -p /etc/nginx/ &&                             \
 	mkdir -p /etc/ssl/certs &&                          \
 	mkdir -p /etc/ssl/private &&                        \
 	apk add openssl &&                                  \

@@ -10,6 +10,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 NGINX_RESOLVERS=$(awk 'BEGIN{ORS=" "} $1=="nameserver" {if ($2 ~ ":") {print "["$2"]"} else {print $2}}' /etc/resolv.conf)
 # remove trailing space
 NGINX_RESOLVERS="${NGINX_RESOLVERS% }"
-echo "_${NGINX_RESOLVERS}_"
 
 export NGINX_RESOLVERS

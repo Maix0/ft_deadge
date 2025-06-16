@@ -1,0 +1,29 @@
+{
+  "type": "module",
+  "name": "utils",
+  "version": "1.0.0",
+  "description": "utils library",
+  "scripts": {
+    "build:ts": "tsc -d",
+    "watch:ts": "tsc -d -w"
+  },
+  "exports": {
+   ".": "./dist/auth.js"
+  },
+  "main": "./dist/auth.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "fastify-plugin": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.1.0",
+    "c8": "^10.1.2",
+    "concurrently": "^9.0.0",
+    "fastify-tsconfig": "^3.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "~5.8.2"
+  }
+}

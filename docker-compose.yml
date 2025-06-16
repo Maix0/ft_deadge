@@ -2,6 +2,14 @@ networks:
   transcendance-network:
     driver: bridge
 services:
+  # this is a special container that will not be used when *running* the code,
+  # but will be used to build the utils library
+  utils-builder:
+    build: ./src/utils/
+    container_name: utils-builder
+    image: utils-builder
+    restart: never
+
 # service_name:
 #   build: ./service_name
 #   container_name: service_name
@@ -23,6 +31,8 @@ services:
       - transcendance-network
     ports:
       - '8888:443'
+    volumes:
+      - images-volume:/volumes/icons
     environment:
       - NGINX_DOMAIN=local.maix.me
       - NGINX_USE_LOCAL_RESOLVER=yes
@@ -34,14 +44,10 @@ services:
     networks:
       - transcendance-network
     volumes:
-      - /store
+      - images-volume:/store
     environment:
       - USER_ICONS_STORE=/store
+    depends_on:
+      - utils-builder
 volumes:
-# service_name-vol:
-#   driver: local
-#   driver_opts:
-#     type: 'none'
-#     o: 'bind'
-#     device: ${DATA_DIR:-/tmp/ft_deadge}/service_name
-#   name: "service_name-vol"
+  images-volume:
