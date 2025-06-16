@@ -6,11 +6,11 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/16 14:57:11 by maiboyer          #+#    #+#              #
-#    Updated: 2025/06/16 23:05:12 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/06/16 23:32:17 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FROM utils-builder AS utils-builder
+FROM localhost/utils-builder AS utils-builder
 FROM node:24-alpine AS builder
 
 # Don't forget to edit the .dockerignore if needed
