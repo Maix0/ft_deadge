@@ -8,17 +8,19 @@
     "watch:ts": "tsc -d -w"
   },
   "exports": {
-   ".": "./dist/auth.js"
+    ".": "./dist/auth.js"
   },
   "main": "./dist/auth.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^11.10.0",
     "fastify": "^5.0.0",
-    "fastify-plugin": "^5.0.0"
+    "fastify-plugin": "^5.0.1"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.1.0",
     "c8": "^10.1.2",
     "concurrently": "^9.0.0",

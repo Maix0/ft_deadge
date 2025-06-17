@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify'
 import { join } from 'node:path'
 import { open } from 'node:fs/promises'
 import fastifyRawBody from 'fastify-raw-body'
+import sharp from 'sharp'
 
 const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	// await fastify.register(authMethod, {});
@@ -14,9 +15,22 @@ const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		}
 		const image_store: string = fastify.getDecorator('image_store')
 		const image_path = join(image_store, userid)
-		let image_file = await open(image_path, "w", 0o666)
-		await image_file.write(request.rawBody as Buffer);
-		await image_file.close()
+		try {
+			let img = sharp(request.rawBody as Buffer);
+			img.resize({
+				height: 512,
+				width: 512,
+				fit: 'fill',
+			})
+			const data = await img.png({ compressionLevel: 6 }).toBuffer()
+			let image_file = await open(image_path, "w", 0o666)
+			await image_file.write(data);
+			await image_file.close()
+		} catch (e: any) {
+			fastify.log.error(`Error: ${e}`);
+			reply.code(400);
+			return { status: "error", message: e.toString() };
+		}
 	})
 }
 

@@ -2,28 +2,6 @@ networks:
   transcendance-network:
     driver: bridge
 services:
-  # this is a special container that will not be used when *running* the code,
-  # but will be used to build the utils library
-  utils-builder:
-    build: ./src/utils/
-    container_name: utils-builder
-    image: utils-builder
-    restart: never
-    profiles: ["do-not-run"]
-
-# service_name:
-#   build: ./service_name
-#   container_name: service_name
-#   restart: always
-#   env_file: 
-#     - ${SECRET_DIR}/service_name.env
-#   networks:
-#     - transcendance-network
-#   volumes:
-#     - service_name-volume:/some_path
-#   depends_on:
-#   ports:
-#     - 'OUTSIDE_PORT:IN_CONTAINER_PORT'
   nginx:
     build: ./nginx
     container_name: nginx
@@ -36,10 +14,11 @@ services:
       - images-volume:/volumes/icons
     environment:
       - NGINX_DOMAIN=local.maix.me
-      - NGINX_USE_LOCAL_RESOLVER=yes
 
   icons-service:
-    build: ./src/icons-service/
+    build:
+      dockerfile: ./src/icons-service/Dockerfile # dockerfile to use
+      context:    .                              # the directory to use as `root` (aka the directory you get with `.`)
     container_name: icons-service
     restart: always
     networks:
@@ -50,3 +29,4 @@ services:
       - USER_ICONS_STORE=/store
 volumes:
   images-volume:
+  sqlite-volume:
