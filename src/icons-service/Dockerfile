@@ -6,15 +6,26 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/16 14:57:11 by maiboyer          #+#    #+#              #
-#    Updated: 2025/06/16 23:32:17 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/06/17 16:31:49 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FROM localhost/utils-builder AS utils-builder
+# PLEASE DO NOT TOUCH THIS :)
+# vvvvvvvvvvvvvvvvvvvvvvvvvv
+
+FROM node:24-alpine as utils-builder
+
+WORKDIR /app
+COPY ./src/utils /app
+RUN set -x && npm install && npm run build:ts && mkdir /out && cp -r package*.json dist/ /out;
+
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^
+# PLEASE DO NOT TOUCH THIS :)
+
 FROM node:24-alpine AS builder
 
 # Don't forget to edit the .dockerignore if needed
-COPY . /src/app
+COPY ./src/icons-service       /src/app
 COPY --from=utils-builder /out /src/utils
 
 WORKDIR /src/app
