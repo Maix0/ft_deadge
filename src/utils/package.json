@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "description": "utils library",
   "scripts": {
-    "build:ts": "tsc -d",
+    "embed": "npm run embed:sql",
+    "embed:sql": "node scripts/embed:sql.js",
+    "build:ts": "npm run embed:sql && tsc -d",
     "watch:ts": "tsc -d -w"
   },
   "exports": {
