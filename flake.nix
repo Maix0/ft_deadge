@@ -21,6 +21,9 @@
             nodejs_24
             pnpm
             typescript
+            
+            # allow building better-sqlite3
+            clang
           ];
           shellHook = ''
             export PODMAN_COMPOSE_WARNING_LOGS="false";
