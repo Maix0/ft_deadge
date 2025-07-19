@@ -63,3 +63,8 @@ test/types/index.js
 
 # compiled app
 dist
+.direnv/
+.envrc
+*.lock
+node_modules/
+*.pdf
