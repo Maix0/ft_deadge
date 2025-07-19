@@ -1,0 +1,5 @@
+.direnv/
+.envrc
+*.lock
+node_modules/
+*.pdf
