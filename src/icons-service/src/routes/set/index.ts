@@ -6,9 +6,15 @@ import sharp from 'sharp'
 
 const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	// await fastify.register(authMethod, {});
+	
+	// here we register plugins that will be active for the current fastify instance (aka everything in this function)
 	await fastify.register(fastifyRawBody, { encoding: false });
+
+	// we register a route handler for: `/<USERID_HERE>`
+	// it sets some configuration options, and set the actual function that will handle the request
 	fastify.post('/:userid', { config: { rawBody: true, encoding: false } }, async function(request, reply) {
-		console.log(request.headers);
+		
+		// this is how we get the `:userid` part of things
 		const userid: string | undefined = (request.params as any)['userid'];
 		if (userid === undefined) {
 			return await reply.code(403);
