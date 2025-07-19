@@ -2,6 +2,12 @@ networks:
   transcendance-network:
     driver: bridge
 services:
+  # 
+  # The "entry point" as in it does all of this:
+  #  - serve files (images, static files, video)
+  #  - redirect request to appropirate service (reverse proxy)
+  #  - be the one that handles TLS/SSL (basically HTTPS)
+  #  - other stuff I don't know yet
   nginx:
     build: ./nginx
     container_name: nginx
@@ -11,22 +17,32 @@ services:
     ports:
       - '8888:443'
     volumes:
+      # if you need to share files with nginx, you do it here.
       - images-volume:/volumes/icons
     environment:
+      # this can stay the same for developpement. This is an alias to `localhost`
       - NGINX_DOMAIN=local.maix.me
 
+  # an example of an micro service. this one basically only does this: 
+  #   - handle uploading of icons
+  #   - write icons to shared volume allowing nginx to serve them (does it better than if we did it in the service)
   icons-service:
+    # build is a bit strange: it has two parts
     build:
-      dockerfile: ./src/icons-service/Dockerfile # dockerfile to use
-      context:    .                              # the directory to use as `root` (aka the directory you get with `.`)
+      # the dockerfile to use
+      dockerfile: ./src/icons-service/Dockerfile
+      # the current working directory. This means `.` in Dockerfile
+      context: .
     container_name: icons-service
     restart: always
     networks:
       - transcendance-network
     volumes:
       - images-volume:/store
+      - sqlite-volume:/database
     environment:
       - USER_ICONS_STORE=/store
+      - DATABASE_DIR=/database
 volumes:
   images-volume:
   sqlite-volume:

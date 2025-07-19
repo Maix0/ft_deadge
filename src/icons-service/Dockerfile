@@ -6,7 +6,7 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/16 14:57:11 by maiboyer          #+#    #+#              #
-#    Updated: 2025/06/17 16:31:49 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/07/19 15:26:15 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ FROM node:24-alpine as utils-builder
 
 WORKDIR /app
 COPY ./src/utils /app
+RUN apk add python3;
 RUN set -x && npm install && npm run build:ts && mkdir /out && cp -r package*.json dist/ /out;
 
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^
