@@ -1,2 +1,0 @@
-declare const _default: "-- this file will make sure that the database is always up to date with the correct schema\n-- when editing this file, make sure to always include stuff like `IF NOT EXISTS` such as to not throw error\n-- NEVER DROP ANYTHING IN THIS FILE\nCREATE TABLE IF NOT EXISTS users (\n  id STRING UNIQUE PRIMARY KEY, -- UUIDv7 as a string\n  name STRING UNIQUE, -- name of the user\n  token STRING UNIQUE, -- the token of the user (aka the cookie)\n);\n\n";
-export default _default;
