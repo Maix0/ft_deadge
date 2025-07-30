@@ -28,7 +28,10 @@ services:
   #   - write icons to shared volume allowing nginx to serve them (does it better than if we did it in the service)
   icons:
     # build is a bit strange: it has two parts
-    build: ./src/icons/
+    build: 
+      context: ./src/
+      args:
+        - SERVICE=icons
     container_name: icons
     restart: always
     networks:

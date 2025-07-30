@@ -1,19 +1,23 @@
 import { FastifyPluginAsync } from 'fastify'
 import { join } from 'node:path'
 import { open } from 'node:fs/promises'
-import fastifyRawBody from 'fastify-raw-body'
 import sharp from 'sharp'
+import { newUUIDv7 } from '@shared/uuid'
+import rawBody from 'raw-body'
 
-const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	// await fastify.register(authMethod, {});
-
 	// here we register plugins that will be active for the current fastify instance (aka everything in this function)
-	await fastify.register(fastifyRawBody, { encoding: false });
 
 	// we register a route handler for: `/<USERID_HERE>`
 	// it sets some configuration options, and set the actual function that will handle the request
-	fastify.post('/:userid', { config: { rawBody: true, encoding: false } }, async function(request, reply) {
 
+	fastify.addContentTypeParser('*', function(request, payload, done) {
+		done()
+	});
+
+	fastify.post('/:userid', async function(request, reply) {
+		let buffer = await rawBody(request.raw);
 		// this is how we get the `:userid` part of things
 		const userid: string | undefined = (request.params as any)['userid'];
 		if (userid === undefined) {
@@ -22,14 +26,11 @@ const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		const image_store: string = fastify.getDecorator('image_store')
 		const image_path = join(image_store, userid)
 
-		//let raw_image_file = await open(image_path + ".raw", "w", 0o666)
-		//await raw_image_file.write(request.rawBody as Buffer);
-		//await raw_image_file.close()
 		try {
-			let img = sharp(request.rawBody as Buffer);
+			let img = sharp(buffer);
 			img.resize({
-				height: 512,
-				width: 512,
+				height: 128,
+				width: 128,
 				fit: 'fill',
 			})
 			const data = await img.png({ compressionLevel: 6 }).toBuffer()
@@ -44,5 +45,5 @@ const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	})
 }
 
-export default example
+export default route
 

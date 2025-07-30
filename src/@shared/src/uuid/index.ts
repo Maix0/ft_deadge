@@ -6,11 +6,10 @@
 //   By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2025/06/20 17:41:01 by maiboyer          #+#    #+#             //
-//   Updated: 2025/07/28 15:42:53 by maiboyer         ###   ########.fr       //
+//   Updated: 2025/07/30 16:08:19 by maiboyer         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-import { Result } from "typescript-result";
 import { uuidv7 } from "uuidv7";
 
 export class InvalidUUID extends Error {
@@ -38,11 +37,11 @@ export function isUUIDv7(value: string): value is UUIDv7 {
 	return uuidv7Regex.test(value);
 }
 
-export function toUUIDv7(value: string): Result<UUIDv7, InvalidUUID> {
-	if (!isUUIDv7(value)) return Result.error(new InvalidUUID());
-
-	return Result.ok(value.toLowerCase() as UUIDv7);
-}
+//export function toUUIDv7(value: string): Result<UUIDv7, InvalidUUID> {
+//	if (!isUUIDv7(value)) return Result.error(new InvalidUUID());
+//
+//	return Result.ok(value.toLowerCase() as UUIDv7);
+//}
 
 export function newUUIDv7(): UUIDv7 {
 	return uuidv7() as UUIDv7;

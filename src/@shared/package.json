@@ -4,12 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "shared utils library",
-  "scripts": {
-    "embed": "npm run embed:sql",
-    "embed:sql": "node scripts/embed:sql.js",
-    "build:ts": "npm run embed:sql && tsc -d",
-    "watch:ts": "tsc -d -w"
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -17,14 +12,10 @@
     "better-sqlite3": "^11.10.0",
     "fastify": "^5.0.0",
     "fastify-plugin": "^5.0.1",
-    "typescript-result": "3.1.1",
     "uuidv7": "^1.0.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.1.0",
-    "c8": "^10.1.2",
-    "concurrently": "^9.0.0",
-    "typescript": "~5.8.2"
+    "@types/node": "^22.1.0"
   }
 }

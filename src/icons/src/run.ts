@@ -4,7 +4,21 @@ import fastify, { FastifyInstance } from "fastify";
 import app from './app.js'
 
 const start = async () => {
-	const f: FastifyInstance = fastify({logger: true});
+	const envToLogger = {
+		development: {
+			transport: {
+				target: 'pino-pretty',
+				options: {
+					translateTime: 'HH:MM:ss Z',
+					ignore: 'pid,hostname',
+				},
+			},
+		},
+		production: true,
+		test: false,
+	}
+
+	const f: FastifyInstance = fastify({ logger: envToLogger.development });
 	try {
 		await f.register(app, {});
 		await f.listen({ port: 80, host: '0.0.0.0' })

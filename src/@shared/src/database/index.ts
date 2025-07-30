@@ -6,16 +6,15 @@
 //   By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2025/07/28 17:36:22 by maiboyer          #+#    #+#             //
-//   Updated: 2025/07/28 17:36:26 by maiboyer         ###   ########.fr       //
+//   Updated: 2025/07/30 21:19:05 by maiboyer         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 import fp from 'fastify-plugin'
 import { FastifyInstance } from 'fastify'
 import sqlite from 'better-sqlite3'
-import { Result } from 'typescript-result'
 
-import initSql from "./init.sql.js"
+import initSql from "./init.sql?raw"
 import { newUUIDv7, UUIDv7 } from '@shared/uuid'
 
 

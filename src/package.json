@@ -3,17 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "./_shared",
+    "./@shared",
     "./icons"
   ],
   "scripts": {
-    "build": "npm run build:ts --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "fclean": "rimraf \"**/dist\"",
     "clean": "rimraf \"**/node_modules\"",
     "install-all": "npm install"
   },
   "devDependencies": {
-    "typescript": "^5.3.0",
     "rimraf": "^5.0.1"
   }
 }

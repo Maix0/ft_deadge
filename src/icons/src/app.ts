@@ -1,22 +1,12 @@
-import * as path from 'node:path'
-import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyPluginAsync } from 'fastify'
-import { fileURLToPath } from 'node:url'
 import fastifyFormBody from '@fastify/formbody'
 import fastifyMultipart from '@fastify/multipart'
 import { mkdir } from 'node:fs/promises'
 import fp from 'fastify-plugin'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
+const routes = import.meta.glob('./routes/**/*.ts', { eager: true });
 
-export type AppOptions = {
-	// Place your custom options for app below here.
-} & Partial<AutoloadPluginOptions>
-
-// Pass --options via CLI arguments in command to enable these options.
-const options: AppOptions = {
-}
 
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
@@ -25,11 +15,17 @@ declare module 'fastify' {
 	}
 }
 
-const app: FastifyPluginAsync<AppOptions> = async (
+const app: FastifyPluginAsync = async (
 	fastify,
 	opts
 ): Promise<void> => {
 	// Place here your custom code!
+	for (const plugin of Object.values(plugins)) {
+		void fastify.register(plugin, {});
+	}
+	for (const route of Object.values(routes)) {
+		void fastify.register(route, {});
+	}
 
 	//void fastify.register(MyPlugin, {})
 	void fastify.register(fastifyFormBody, {})
@@ -43,30 +39,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 		await mkdir(fastify.image_store, { recursive: true })
 	}))
 
-
-
-	// Do not touch the following lines
-
-	// This loads all plugins defined in plugins
-	// those should be support plugins that are reused
-	// through your application
-	// eslint-disable-next-line no-void
-	void fastify.register(AutoLoad, {
-		dir: path.join(__dirname, 'plugins'),
-		options: opts,
-		forceESM: true
-	})
-
-	// This loads all plugins defined in routes
-	// define your routes in one of these
-	// eslint-disable-next-line no-void
-	void fastify.register(AutoLoad, {
-		dir: path.join(__dirname, 'routes'),
-		options: opts,
-		forceESM: true
-	})
-
 }
 
 export default app
-export { app, options }
+export { app }

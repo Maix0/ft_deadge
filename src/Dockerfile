@@ -1,32 +1,29 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Dockerfile                                         :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/07/28 16:33:09 by maiboyer          #+#    #+#              #
-#    Updated: 2025/07/29 13:54:54 by maiboyer         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+FROM node:24-alpine as builder
 
-# this file will be used to build everything at once
-# then all the other Dockerfiles will just copy from this one...
-#
-# it'll always be tagged as `trans_builder`
-# this is VERY UGLY
-# I didn't find really a lot of other ways to do this thought...
-# so yeah have mercy :P
+ARG SERVICE
 
+RUN apk add jq python3 musl-dev gcc g++ make;
 
-# please do not touch this file unless you know what you are doing :)
+WORKDIR /build
+COPY ./@shared/package.json    /build/@shared/package.json
+COPY ./${SERVICE}/package.json /build/service/package.json
+COPY ./tsconfig.base.json      /build/tsconfig.base.json
 
-FROM node:24-alpine
+RUN echo "{\"name\":\"workspace\", \"workspaces\": [\"@shared\", \"${SERVICE}\" ]}"  | jq . >/build/package.json;
+RUN npm install && npm install --prefix=/build/service;
 
-RUN apk add python3;
+COPY ./@shared/    /build/@shared/
+COPY ./${SERVICE}/ /build/service/
 
-COPY ./ /src/
+RUN (cd /build/service && npm run build:prod) \
+	&& jq -s '.[0] * .[1]' /build/@shared/package.json /build/service/package.json >/dist/package.json;
+
+FROM node:24
+
 WORKDIR /src
 
-RUN npm run install-all;
-RUN npm run build;
+COPY --from=builder /dist /src
+
+RUN npm install;
+CMD ["node", "/src/run.cjs"]
+

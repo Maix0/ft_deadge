@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ES2023",
 	"module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node",
 	"newLine": "lf",
 
 	"noFallthroughCasesInSwitch": true,
@@ -16,14 +16,14 @@
     "strict": true,
     
 	"outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "baseUrl": ".",
 	
     "skipLibCheck": true,
     "lib": ["ESNext"],
     "paths": {
-      "@shared/database": ["./@shared/src/database"],
-      "@shared/uuid": ["./@shared/src/uuid"]
+      "@shared/database": ["@shared/src/database"],
+      "@shared/uuid": ["@shared/src/uuid"]
     }
   }
 }
