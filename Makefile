@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/07/28 17:49:54 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/08/02 20:48:04 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -119,5 +119,10 @@ npm@fclean: npm@clean
 npm@build:
 	npm --prefix=./src/ run build
 
+# this convert the .dbml file to an actual sql file that SQLite can handle :)
+sql:
+	@echo "if the command isn't found, contact maieul :)"
+	dbml_sqlite -t -f -w ./src/@shared/src/database/init.sql ./src/@shared/src/database/init.dbml
+
 #	phony
-.PHONY: all clean fclean re header footer npm_install npm_clear
+.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql
