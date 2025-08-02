@@ -1,9 +1,32 @@
--- this file will make sure that the database is always up to date with the correct schema
--- when editing this file, make sure to always include stuff like `IF NOT EXISTS` such as to not throw error
--- NEVER DROP ANYTHING IN THIS FILE
-CREATE TABLE IF NOT EXISTS users (
-  id STRING UNIQUE PRIMARY KEY, -- UUIDv7 as a string
-  name STRING UNIQUE, -- name of the user
-  token STRING UNIQUE, -- the token of the user (aka the cookie)
+CREATE TABLE IF NOT EXISTS user (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
+  password TEXT
 );
-
+CREATE TABLE IF NOT EXISTS auth (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  provider INTEGER NOT NULL,
+  user INTEGER NOT NULL,
+  oauth2_user TEXT NOT NULL UNIQUE,
+  FOREIGN KEY(provider) REFERENCES provider(id),
+  FOREIGN KEY(user) REFERENCES user(id)
+);
+CREATE TABLE IF NOT EXISTS provider (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name TEXT PRIMARY KEY NOT NULL,
+  displayName TEXT NOT NULL,
+  secret TEXT NOT NULL,
+  token_url TEXT NOT NULL,
+  auth_url TEXT NOT NULL,
+  me_url TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS session (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  cookie TEXT PRIMARY KEY NOT NULL UNIQUE,
+  userid INTEGER NOT NULL,
+  createAt TEXT NOT NULL,
+  userAgent TEXT NOT NULL,
+  reason INTEGER,
+  FOREIGN KEY(userid) REFERENCES user(id),
+  FOREIGN KEY(reason) REFERENCES provider(id)
+);
