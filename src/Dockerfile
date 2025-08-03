@@ -1,6 +1,5 @@
-FROM guergeiro/pnpm:22-10-alpine as builder
+FROM guergeiro/pnpm:22-10-slim as builder
 
-RUN apk add jq;
 ARG SERVICE
 
 WORKDIR /build
@@ -15,14 +14,13 @@ RUN pnpm install;
 COPY ./@shared/    /build/@shared/
 COPY ./${SERVICE}/ /build/service/
 
-RUN cd /build/service                                             && \
-	pnpm run build:prod                                           && \
-	jq -s '.[0] * .[1]' /build/*/package.json >/dist/package.json && \
-	cp /build/pnpm-workspace.yaml  /dist/pnpm-workspace.yaml      && \
-	true;
+RUN cd /build/service                                                              && \
+	pnpm run build:prod                                                            && \
+	node /build/@shared/scripts/merge.js /build/*/package.json >/dist/package.json && \
+	cp /build/pnpm-workspace.yaml  /dist/pnpm-workspace.yaml;
 
 
-FROM guergeiro/pnpm:22-10-slim
+FROM guergeiro/pnpm:22-10-alpine
 
 WORKDIR /src
 
