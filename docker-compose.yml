@@ -19,19 +19,20 @@ services:
     volumes:
       # if you need to share files with nginx, you do it here.
       - images-volume:/volumes/icons
+      # - static-volume:/volumes/static
     environment:
       # this can stay the same for developpement. This is an alias to `localhost`
       - NGINX_DOMAIN=local.maix.me
 
-  # an example of an micro service. this one basically only does this: 
-  #   - handle uploading of icons
-  #   - write icons to shared volume allowing nginx to serve them (does it better than if we did it in the service)
+  ###############
+  #    ICONS    #
+  ###############
   icons:
-    # build is a bit strange: it has two parts
-    build: 
+    build:
       context: ./src/
       args:
         - SERVICE=icons
+        #- EXTRA_FILES=icons/extra
     container_name: icons
     restart: always
     networks:
@@ -42,6 +43,9 @@ services:
     environment:
       - USER_ICONS_STORE=/store
       - DATABASE_DIR=/database
+
+
 volumes:
   images-volume:
   sqlite-volume:
+  static-volume:
