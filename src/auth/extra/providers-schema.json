@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "providers": {
+      "required": [],
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "redirect_url": {
+            "type": "string"
+          },
+          "token_url": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "secret_env": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "redirect_url",
+          "token_url",
+          "client_id",
+          "secret_env"
+        ]
+      }
+    }
+  },
+  "required": [
+    "providers"
+  ]
+}

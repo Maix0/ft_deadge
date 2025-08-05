@@ -25,24 +25,12 @@ Table user {
 
 Table auth {
   id integer [PK, not null, increment]
-  provider integer [ref: > provider.id, not null]
+  provider text [not null]
   user integer [ref: > user.id, not null]
   oauth2_user text [not null, unique, Note: '''
     This makes sure that an oauth2 login is the always the same `user`
     Aka can't have two account bound to the same <OAUTH2> account
   ''']
-}
-
-Table provider {
-  id integer [PK, not null, increment]
-  name text [PK, not null]
-  displayName text [not null]
-  secret text [not null]
-  token_url text [not null]
-  auth_url text [not null]
-  me_url text [not null]
-
-  Note: "Oauth2 Providers"
 }
 
 Table session {
@@ -51,7 +39,7 @@ Table session {
   userid integer [ref: > user.id, not null]
   createAt text [not null]
   userAgent text [not null]
-  reason integer [null, ref: > provider.id]
+  reason integer [null]
 
   Note: "Every session for users"
 }

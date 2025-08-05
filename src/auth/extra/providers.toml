@@ -1,0 +1,7 @@
+#:schema ./providers-schema.json
+
+[providers.42]
+token_url = ""    # which url to use
+redirect_url = "" # redirect_url
+client_id = ""    # the client_id for the provider
+secret_env = ""   # env containing the secret for the provider

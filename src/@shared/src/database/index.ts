@@ -1,32 +1,34 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   index.ts                                           :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2025/07/28 17:36:22 by maiboyer          #+#    #+#             //
-//   Updated: 2025/08/03 13:36:25 by maiboyer         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
-
 import fp from 'fastify-plugin'
 import { FastifyInstance } from 'fastify'
 import sqlite from 'better-sqlite3'
 
+// @ts-ignore: this file is included using vite, typescript doesn't know how to include this...
 import initSql from "./init.sql?raw"
-import { newUUIDv7, UUIDv7 } from '@shared/uuid'
 
-
-export class DBUserExists extends Error {
-	public readonly type = 'db-user-exists';
-}
+/**
+ * represent a unique user (by its ID.)
+ * Having this means that the user does exist (aka it hasn't been deleted)
+ */
+export type UserID = number & { readonly __brand: unique symbol };
+/**
+ * The full representation of an user
+ *
+ * @property id [UserID]: The id of the user (unique)
+ * @property name [string]: The username of the user (unique)
+ * @property password [?string]: The password hash of the user (if password is defined)
+ */
+export type DbUser = {
+	readonly id: UserID,
+	readonly name: string,
+	readonly password: string | null,
+};
 
 // Only way to use the database. Everything must be done through this.
 // Prefer to use prepared statement `using this.db.prepare`
 export class Database {
 	private db: sqlite.Database;
 	private st: Map<string, sqlite.Statement> = new Map();
+
 
 	/**
 	 * Create a new instance of the database, and init it to a known state
@@ -66,6 +68,10 @@ export class Database {
 		this.st.set(query, st);
 		return st;
 	}
+
+	public getUser(user: UserID): DbUser {
+
+	};
 }
 
 // When using .decorate you have to specify added properties for Typescript
@@ -79,11 +85,12 @@ export type DatabaseOption = {
 	path: string;
 };
 
-export const uDatabase = fp<DatabaseOption>(async function(
-	_fastify: FastifyInstance,
+export const useDatabase = fp<DatabaseOption>(async function(
+	f: FastifyInstance,
 	_options: DatabaseOption) {
-	console.log("Database has been hooked up to fastify ?!");
+	f.log.info("Database has been hooked up to fastify ?!");
+	f.log.warn("TODO: actually hook up database to fastify...");
 });
 
-export default uDatabase;
+export default useDatabase;
 
