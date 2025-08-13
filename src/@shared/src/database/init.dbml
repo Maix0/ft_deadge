@@ -35,7 +35,7 @@ Table auth {
 
 Table session {
   id integer [PK, not null, increment]
-  cookie text [PK, unique, not null]
+  cookie text [unique, not null]
   userid integer [ref: > user.id, not null]
   createAt text [not null]
   userAgent text [not null]

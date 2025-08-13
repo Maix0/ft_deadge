@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin'
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, FastifyPluginAsync } from 'fastify'
 
 import { Base } from "./mixin/_base";
 import { UserDb } from "./mixin/user";
@@ -18,16 +18,15 @@ declare module 'fastify' {
 	}
 }
 
-export type DatabaseOption = {
-	path: string;
-};
-
-export const useDatabase = fp<DatabaseOption>(async function(
+export const useDatabase = fp<FastifyPluginAsync>(async function(
 	f: FastifyInstance,
-	_options: DatabaseOption) {
-	f.log.info("Database has been hooked up to fastify ?!");
-	f.log.warn("TODO: actually hook up database to fastify...");
-	f.decorate('db', new Database(_options.path));
+	_options: {}) {
+
+	let path = process.env.DATABASE_DIR;
+	if (path === null || path === undefined)
+		throw "env `DATABASE_DIR` not defined";
+	f.log.info(`Opening database with path: ${path}/database.db`)
+	f.decorate('db', new Database(`${path}/database.db`));
 });
 
 export default useDatabase;
