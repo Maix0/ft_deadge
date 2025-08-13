@@ -10,6 +10,7 @@ export type MixinBase<T = {}> = new (...args: any[]) => {
 	db: sqlite.Database,
 } & T;
 
+export type SqliteReturn = object | undefined;
 
 // Only way to use the database. Everything must be done through this.
 // Prefer to use prepared statement `using this.db.prepare`
