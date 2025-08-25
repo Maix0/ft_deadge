@@ -25,16 +25,18 @@
             podman
             podman-compose
             gnumake
-            nodejs_24
+            nodejs_22
             pnpm
             typescript
             dbmlSQLite.packages.${system}.default
-
-            # allow building better-sqlite3
+            sqlite-interactive
             clang
           ];
           shellHook = ''
             export PODMAN_COMPOSE_WARNING_LOGS="false";
+            export DATABASE_DIR="$(realpath .)/db"
+            mkdir -p $DATABASE_DIR
+            export JWT_SECRET="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           '';
         };
       }

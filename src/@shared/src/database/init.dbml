@@ -19,6 +19,7 @@ Table user {
   id integer [PK, not null, increment]
   name text [unique, not null]
   password text [null, Note: "If password is NULL, this means that the user is created through OAUTH2"]
+  otp text [null, Note: "If otp is NULL, then the user didn't configure 2FA"]
 
   Note: "Represent a user"
 }
@@ -31,15 +32,4 @@ Table auth {
     This makes sure that an oauth2 login is the always the same `user`
     Aka can't have two account bound to the same <OAUTH2> account
   ''']
-}
-
-Table session {
-  id integer [PK, not null, increment]
-  cookie text [unique, not null]
-  userid integer [ref: > user.id, not null]
-  createAt text [not null]
-  userAgent text [not null]
-  reason integer [null]
-
-  Note: "Every session for users"
 }

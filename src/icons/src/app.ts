@@ -30,9 +30,10 @@ const app: FastifyPluginAsync = async (
 		void fastify.register(route as any, {});
 	}
 
-	void fastify.register(db.uDatabase as any, {})
+	await fastify.register(db.useDatabase as any, {})
 	void fastify.register(fastifyFormBody, {})
 	void fastify.register(fastifyMultipart, {})
+	console.log(fastify.db.getUser(1));
 
 	// The use of fastify-plugin is required to be able
 	// to export the decorators to the outer scope

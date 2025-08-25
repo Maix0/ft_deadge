@@ -6,3 +6,8 @@ node_modules/
 **/dist/
 pnpm-lock.yaml
 
+# sqlite stuff
+*.db
+*.db-shm
+*.db-wal
+/db/

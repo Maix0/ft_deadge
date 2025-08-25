@@ -23,7 +23,7 @@
     "lib": ["ESNext"],
     "paths": {
       "@shared/database": ["@shared/src/database"],
-      "@shared/uuid": ["@shared/src/uuid"]
+      "@shared/auth": ["@shared/src/auth"]
     }
   }
 }

@@ -1,21 +1,55 @@
-//import sqlite from "better-sqlite3"
-import { MixinBase } from "./_base"
+import type { Database } from "./_base";
 
 // never use this directly
-export const TemplateDb = function <TBase extends MixinBase>(Base: TBase) {
-	return class extends Base {
-		constructor(...args: any[]) {
-			if (args.length != 1 && !(args[0] instanceof String))
-				throw "Invalid arguments to mixing class"
-			super(args[0]);
-		}
-	}
-}
+
+// describe every function in the object
+export interface ITemplateDb extends Database {
+  normalFunction(id: TemplateId): TemplateData | null,
+  asyncFunction(id: TemplateId): Promise<TemplateData | null>,
+};
+
+export const UserImpl: Omit<ITemplateDb, keyof Database> = {
+  /**
+   * whole function description
+   *
+   * @param id the argument description
+   *
+   * @returns what does the function return ?
+   */
+  normalFunction(this: ITemplateDb, id: TemplateId): TemplateData | null {
+    void id;
+    return null;
+  },
+  /**
+   * whole function description
+   *
+   * @param id the argument description
+   *
+   * @returns what does the function return ?
+   */
+  async asyncFunction(this: ITemplateDb, id: TemplateId): Promise<TemplateData | null> {
+    void id;
+    return null;
+  },
+};
 
 export type TemplateId = number & { readonly __brand: unique symbol };
 
-export type TemplateType = {
-	readonly id: TemplateId,
-	readonly field: string,
-	readonly field2: number,
+export type TemplateData = {
+  readonly id: TemplateId;
+  readonly name: string;
+  readonly password?: string;
 };
+
+// this function will be able to be called from everywhere
+export async function freeFloatingExportedFunction(): Promise<boolean> {
+  return false;
+}
+
+// this function will never be able to be called outside of this module
+async function privateFunction(): Promise<string | null> {
+  return null
+}
+
+//silence warnings
+void privateFunction;

@@ -1,7 +1,7 @@
 // this sould only be used by the docker file !
 
 import fastify, { FastifyInstance } from "fastify";
-import app from './app.js'
+import app from "./app"
 
 const start = async () => {
 	const envToLogger = {

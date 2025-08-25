@@ -22,6 +22,7 @@
 		"@fastify/multipart": "^9.0.3",
 		"@fastify/sensible": "^6.0.0",
 		"@fastify/static": "^8.2.0",
+		"@sinclair/typebox": "^0.34.40",
 		"fastify": "^5.0.0",
 		"fastify-cli": "^7.4.0",
 		"fastify-plugin": "^5.0.0",

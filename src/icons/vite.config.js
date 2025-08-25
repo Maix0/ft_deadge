@@ -40,7 +40,7 @@ export default defineConfig({
 			external: externals,
 		},
 		target: 'node22', // or whatever Node version you use
-		sourcemap: true,
-		minify: false, // for easier debugging
+		sourcemap: false,
+		minify: true, // for easier debugging
 	}
 })

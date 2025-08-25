@@ -1,15 +1,13 @@
 import fp from 'fastify-plugin'
 import { FastifyInstance, FastifyPluginAsync } from 'fastify'
 
-import { Base } from "./mixin/_base";
-import { UserDb } from "./mixin/user";
-import { SessionDb } from "./mixin/session";
+import { Database as DbImpl } from "./mixin/_base";
+import { UserImpl, IUserDb } from "./mixin/user";
 
-class Database extends UserDb(SessionDb(Base as any)) {
-	constructor(path: string) {
-		super(path);
-	}
-}
+
+Object.assign(DbImpl.prototype, UserImpl);
+
+export interface Database extends DbImpl, IUserDb { }
 
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
@@ -26,8 +24,10 @@ export const useDatabase = fp<FastifyPluginAsync>(async function(
 	if (path === null || path === undefined)
 		throw "env `DATABASE_DIR` not defined";
 	f.log.info(`Opening database with path: ${path}/database.db`)
-	f.decorate('db', new Database(`${path}/database.db`));
+	let db: Database = new DbImpl(`${path}/database.db`) as Database;
+	f.decorate('db', db);
 });
 
+export * as user from "./mixin/user"
 export default useDatabase;
 

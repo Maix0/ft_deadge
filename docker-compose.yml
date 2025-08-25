@@ -45,6 +45,25 @@ services:
       - DATABASE_DIR=/database
 
 
+  ###############
+  #    AUTH     #
+  ###############
+  auth:
+    build:
+      context: ./src/
+      args:
+        - SERVICE=auth
+        #- EXTRA_FILES=icons/extra
+    container_name: auth 
+    restart: always
+    networks:
+      - transcendance-network
+    volumes:
+      - sqlite-volume:/database
+    environment:
+      - DATABASE_DIR=/database
+
+
 volumes:
   images-volume:
   sqlite-volume:

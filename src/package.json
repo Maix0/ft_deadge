@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "./@shared",
-    "./icons"
+    "./icons",
+    "./auth"
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
