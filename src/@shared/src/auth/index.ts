@@ -2,7 +2,10 @@ import fastifyJwt from "@fastify/jwt";
 import { FastifyPluginAsync } from "fastify";
 import fp from 'fastify-plugin'
 import { user } from "@shared/database"
+import OTP from "otp";
 
+
+export const Otp = OTP;
 export const jwtPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
 	let env = process.env.JWT_SECRET;
 	if (env === undefined || env === null)

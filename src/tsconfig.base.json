@@ -22,8 +22,10 @@
     "skipLibCheck": true,
     "lib": ["ESNext"],
     "paths": {
+      "@shared/auth": ["@shared/src/auth"],
+      "@shared/auth/*": ["@shared/src/auth/*"],
       "@shared/database": ["@shared/src/database"],
-      "@shared/auth": ["@shared/src/auth"]
+      "@shared/database/*": ["@shared/src/database/*"]
     }
   }
 }

@@ -16,6 +16,8 @@
     "fastify": "^5.0.0",
     "fastify-plugin": "^5.0.1",
     "joi": "^18.0.0",
+    "otp": "^1.1.2",
+    "rfc4648": "^1.5.4",
     "uuidv7": "^1.0.2"
   },
   "devDependencies": {
