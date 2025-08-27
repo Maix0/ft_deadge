@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@fastify/jwt": "^9.1.0",
+    "@sinclair/typebox": "^0.34.40",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^11.10.0",
@@ -17,7 +19,6 @@
     "fastify-plugin": "^5.0.1",
     "joi": "^18.0.0",
     "otp": "^1.1.2",
-    "rfc4648": "^1.5.4",
     "uuidv7": "^1.0.2"
   },
   "devDependencies": {
