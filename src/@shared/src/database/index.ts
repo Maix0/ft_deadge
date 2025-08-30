@@ -16,16 +16,21 @@ declare module 'fastify' {
 	}
 }
 
+let dbAdded = false;
+
 export const useDatabase = fp<FastifyPluginAsync>(async function(
 	f: FastifyInstance,
 	_options: {}) {
-
+	if (dbAdded)
+		return;
+	dbAdded = true;
 	let path = process.env.DATABASE_DIR;
 	if (path === null || path === undefined)
 		throw "env `DATABASE_DIR` not defined";
 	f.log.info(`Opening database with path: ${path}/database.db`)
 	let db: Database = new DbImpl(`${path}/database.db`) as Database;
-	f.decorate('db', db);
+	if (!f.hasDecorator("db"))
+		f.decorate('db', db);
 });
 
 export * as user from "./mixin/user"

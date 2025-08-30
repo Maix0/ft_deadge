@@ -2,37 +2,27 @@ import { FastifyPluginAsync } from "fastify";
 
 import { Static, Type } from "@sinclair/typebox";
 import { JwtType, Otp } from "@shared/auth";
+import { typeResponse, makeResponse } from "@shared/utils";
 
-export const OtpReq = Type.Object({
+const OtpReq = Type.Object({
 	token: Type.String({ description: "The token given at the login phase" }),
 	code: Type.String({ description: "The OTP given by the user" }),
 });
 
-export type OtpReq = Static<typeof OtpReq>;
+type OtpReq = Static<typeof OtpReq>;
 
-export const OtpRes = Type.Union([
-	Type.Object({
-		kind: Type.Const("failed"),
-		msg_key: Type.Union([
-			Type.Const("otp.failed.generic"),
-			Type.Const("otp.failed.invalid"),
-			Type.Const("otp.failed.timeout"),
-		]),
-	}),
-	Type.Object({
-		kind: Type.Const("success"),
-		msg_key: Type.Const("otp.success"),
-		token: Type.String({ description: "The JWT token" }),
-	}),
+const OtpRes = Type.Union([
+	typeResponse("failed", ["otp.failed.generic", "otp.failed.invalid", "otp.failed.timeout"]),
+	typeResponse("success", "otp.success", { token: Type.String({ description: "the JWT Token" }) }),
 ]);
 
-export type OtpRes = Static<typeof OtpRes>;
+type OtpRes = Static<typeof OtpRes>;
 
 const OTP_TOKEN_TIMEOUT_SEC = 120;
 
 const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-	fastify.get<{ Body: OtpReq }>(
-		"/whoami",
+	fastify.post<{ Body: OtpReq }>(
+		"/api/auth/otp",
 		{ schema: { body: OtpReq, response: { "2xx": OtpRes } } },
 		async function(req, res) {
 			try {
@@ -43,18 +33,18 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 				// is the jwt a valid `otp` jwt ?
 				if (dJwt.kind != "otp")
 					// no ? fuck off then
-					return { kind: "failed", msg_key: "otp.failed.invalid" };
+					return makeResponse("failed", "otp.failed.invalid");
 				// is it too old ?
 				if (dJwt.createdAt + OTP_TOKEN_TIMEOUT_SEC * 1000 > Date.now())
 					// yes ? fuck off then, redo the password
-					return { kind: "failed", msg_key: "otp.failed.timeout" };
+					return makeResponse("failed", "otp.failed.timeout");
 
 				// get the Otp sercret from the db
 				let otpSecret = this.db.getUserFromName(dJwt.who)?.otp;
 				if (otpSecret === null)
 					// oops, either no user, or user without otpSecret
 					// fuck off
-					return { kind: "failed", msg_key: "otp.failed.invalid" };
+					return makeResponse("failed", "otp.failed.invalid");
 
 				// good lets now verify the token you gave us is the correct one...
 				let otpHandle = new Otp({ secret: otpSecret });
@@ -71,13 +61,9 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 				if (tokens.some((c) => c === code))
 					// they do !
 					// gg you are now logged in !
-					return {
-						kind: "success",
-						msg_key: "otp.success",
-						token: this.signJwt("auth", dJwt.who),
-					};
+					return makeResponse("success", "otp.success", { token: this.signJwt("auth", dJwt.who) });
 			} catch {
-				return { kind: "failed", msg_key: "otp.failed.generic" };
+				return makeResponse("failed", "otp.failed.generic");
 			}
 		},
 	);

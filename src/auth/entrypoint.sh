@@ -4,7 +4,8 @@ set -e
 set -x
 # do anything here
 
-cp -r /extra /files
+mkdir -p /volumes/static/auth/
+cp -r /extra/login_demo.html /volumes/static/auth/index.html
 
 # run the CMD [ ... ] from the dockerfile
 exec "$@"

@@ -18,8 +18,8 @@ services:
       - '8888:443'
     volumes:
       # if you need to share files with nginx, you do it here.
+      - static-volume:/volumes/static
       - images-volume:/volumes/icons
-      # - static-volume:/volumes/static
     environment:
       # this can stay the same for developpement. This is an alias to `localhost`
       - NGINX_DOMAIN=local.maix.me
@@ -38,11 +38,11 @@ services:
     networks:
       - transcendance-network
     volumes:
-      - images-volume:/store
-      - sqlite-volume:/database
+      - images-volume:/volumes/store
+      - sqlite-volume:/volumes/database
     environment:
-      - USER_ICONS_STORE=/store
-      - DATABASE_DIR=/database
+      - USER_ICONS_STORE=/volumes/store
+      - DATABASE_DIR=/volumes/database
 
 
   ###############
@@ -53,15 +53,17 @@ services:
       context: ./src/
       args:
         - SERVICE=auth
-        #- EXTRA_FILES=icons/extra
+        - EXTRA_FILES=auth/extra
     container_name: auth 
     restart: always
     networks:
       - transcendance-network
     volumes:
-      - sqlite-volume:/database
+      - sqlite-volume:/volumes/database
+      - static-volume:/volumes/static
     environment:
-      - DATABASE_DIR=/database
+      - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
+      - DATABASE_DIR=/volumes/database
 
 
 volumes:

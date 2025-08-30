@@ -36,7 +36,6 @@ ARG EXTRA_FILES=empty
 COPY --from=builder /dist /src
 RUN pnpm install --prod --frozen-lockfile;
 COPY ${EXTRA_FILES}       /extra
-RUN echo "${EXTRA_FILES}";
 ENTRYPOINT [ "/src/entrypoint.sh" ]
 
 CMD ["node", "/src/run.cjs"]

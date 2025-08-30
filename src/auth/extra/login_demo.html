@@ -1,0 +1,84 @@
+<html>
+	<head>
+		<title> Demo Page For Login :) </title>
+	</head>
+
+	<body>
+		<h1> Welcome <span id="t-username"> </span> </h1>
+
+		<input id="i-username" type="text" placeholder="Username"> </input>
+		<input id="i-password" type="text" placeholder="Password"> </input>
+		<br />
+		<br />
+
+		<button id="b-login"> Login </button>
+		<br />
+		<button id="b-logout"> Logout </button>
+		<br />
+		<button id="b-signin"> Signin </button>
+		<br />
+		<button id="b-whoami"> Whoami </button>
+
+		<div id="d-response">
+		</div>
+
+		<script>
+			const headers = {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			}
+
+			const tUsername = document.querySelector("#t-username")
+			
+			const iUsername = document.querySelector("#i-username");
+			const iPassword = document.querySelector("#i-password");
+
+			const bLogin =    document.querySelector("#b-login");
+			const bLogout =   document.querySelector("#b-logout");
+			const bSignin =   document.querySelector("#b-signin");
+			const bWhoami =   document.querySelector("#b-whoami");
+			
+			const dResponse = document.querySelector("#d-response");
+
+			bWhoami.addEventListener("click", async () => {
+				let username = "";
+				try {
+					let res = await fetch("/api/auth/whoami");
+					const json = await res.json();
+					if (json?.kind === "success")
+						username = json?.payload?.name;
+					else 
+						username = `<not logged in: ${json.msg}>`
+				} catch {
+						username = `<not logged in: threw>`
+				}
+				tUsername.innerText = username;
+			}, 1000);
+			
+			bLogin.addEventListener("click", async () => {
+				const name = iUsername.value;
+				const password = iPassword.value;
+				
+				let res = await fetch("/api/auth/login", {method: "POST", body: JSON.stringify({name, password}), headers});
+				let j =   await res.json();
+				if (j?.payload?.token)
+					document.cookie = `token=${j?.payload?.token}`;
+				dResponse.innerText = JSON.stringify(j, space=4);
+			})
+			bLogout.addEventListener("click", async () => {
+				let res = await fetch("/api/auth/logout", { method: "POST" });
+				dResponse.innerText = `done - status:${res.status}`;
+			})
+			bSignin.addEventListener("click", async () => {
+				const name = iUsername.value;
+				const password = iPassword.value;
+				
+				let res = await fetch("/api/auth/signin", {method: "POST", body: JSON.stringify({name, password}), headers});
+				let j =   await res.json();
+				if (j?.payload?.token)
+					document.cookie = `token=${j?.payload?.token};`;
+				dResponse.innerText = JSON.stringify(j, space=4);
+			})
+		</script>
+	</body>
+</html>

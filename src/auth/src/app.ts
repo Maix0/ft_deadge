@@ -23,6 +23,10 @@ const app: FastifyPluginAsync = async (
 	fastify,
 	opts
 ): Promise<void> => {
+	await fastify.register(db.useDatabase as any, {})
+	await fastify.register(auth.jwtPlugin as any, {})
+	await fastify.register(auth.authPlugin as any, {})
+	
 	// Place here your custom code!
 	for (const plugin of Object.values(plugins)) {
 		void fastify.register(plugin as any, {});
@@ -31,20 +35,8 @@ const app: FastifyPluginAsync = async (
 		void fastify.register(route as any, {});
 	}
 
-	await fastify.register(db.useDatabase as any, {})
-	await fastify.register(auth.jwtPlugin as any, {})
 	void fastify.register(fastifyFormBody, {})
 	void fastify.register(fastifyMultipart, {})
-	console.log(fastify.db.getUser(0 as any));
-
-	// The use of fastify-plugin is required to be able
-	// to export the decorators to the outer scope
-	void fastify.register(fp(async (fastify) => {
-		const image_store = process.env.USER_ICONS_STORE ?? "/tmp/icons";
-		fastify.decorate('image_store', image_store)
-		await mkdir(fastify.image_store, { recursive: true })
-	}))
-
 }
 
 export default app
