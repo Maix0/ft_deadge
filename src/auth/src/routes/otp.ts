@@ -40,7 +40,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 					return makeResponse("failed", "otp.failed.timeout");
 
 				// get the Otp sercret from the db
-				let otpSecret = this.db.getUserFromName(dJwt.who)?.otp;
+				let otpSecret = this.db.getUserOtpSecret(dJwt.who);
 				if (isNullish(otpSecret))
 					// oops, either no user, or user without otpSecret
 					// fuck off
