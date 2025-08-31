@@ -35,7 +35,7 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 					// no ? fuck off then
 					return makeResponse("failed", "otp.failed.invalid");
 				// is it too old ?
-				if (dJwt.createdAt + OTP_TOKEN_TIMEOUT_SEC * 1000 > Date.now())
+				if (dJwt.createdAt + OTP_TOKEN_TIMEOUT_SEC * 1000 < Date.now())
 					// yes ? fuck off then, redo the password
 					return makeResponse("failed", "otp.failed.timeout");
 
