@@ -31,7 +31,8 @@ declare module "fastify" {
 export const Otp = OTP;
 let jwtAdded = false;
 export const jwtPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
-	if (jwtAdded) jwtAdded = true;
+	if (jwtAdded) return;
+	jwtAdded = true;
 	let env = process.env.JWT_SECRET;
 	if (isNullish(env)) throw "JWT_SECRET is not defined";
 	if (!fastify.hasDecorator("signJwt")) {
