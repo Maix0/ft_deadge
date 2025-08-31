@@ -106,7 +106,6 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 		let otpGen = new Otp();
 		const res: any = this.prepare("UPDATE OR IGNORE user SET otp = @otp WHERE id = @id RETURNING otp")
 			.get({ id, otp: otpGen.secret });
-		console.log(res);
 		if (isNullish(res?.otp)) return undefined;
 		return res?.otp;
 	},
