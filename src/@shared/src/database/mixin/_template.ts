@@ -4,8 +4,8 @@ import type { Database } from "./_base";
 
 // describe every function in the object
 export interface ITemplateDb extends Database {
-  normalFunction(id: TemplateId): TemplateData | null,
-  asyncFunction(id: TemplateId): Promise<TemplateData | null>,
+  normalFunction(id: TemplateId): TemplateData | undefined,
+  asyncFunction(id: TemplateId): Promise<TemplateData | undefined>,
 };
 
 export const UserImpl: Omit<ITemplateDb, keyof Database> = {
@@ -16,9 +16,9 @@ export const UserImpl: Omit<ITemplateDb, keyof Database> = {
    *
    * @returns what does the function return ?
    */
-  normalFunction(this: ITemplateDb, id: TemplateId): TemplateData | null {
+  normalFunction(this: ITemplateDb, id: TemplateId): TemplateData | undefined {
     void id;
-    return null;
+    return undefined;
   },
   /**
    * whole function description
@@ -27,9 +27,9 @@ export const UserImpl: Omit<ITemplateDb, keyof Database> = {
    *
    * @returns what does the function return ?
    */
-  async asyncFunction(this: ITemplateDb, id: TemplateId): Promise<TemplateData | null> {
+  async asyncFunction(this: ITemplateDb, id: TemplateId): Promise<TemplateData | undefined> {
     void id;
-    return null;
+    return undefined;
   },
 };
 
@@ -47,8 +47,8 @@ export async function freeFloatingExportedFunction(): Promise<boolean> {
 }
 
 // this function will never be able to be called outside of this module
-async function privateFunction(): Promise<string | null> {
-  return null
+async function privateFunction(): Promise<string | undefined> {
+  return undefined
 }
 
 //silence warnings

@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify'
 
 import { Database as DbImpl } from "./mixin/_base";
 import { UserImpl, IUserDb } from "./mixin/user";
+import { isNullish } from '@shared/utils';
 
 
 Object.assign(DbImpl.prototype, UserImpl);
@@ -25,7 +26,7 @@ export const useDatabase = fp<FastifyPluginAsync>(async function(
 		return;
 	dbAdded = true;
 	let path = process.env.DATABASE_DIR;
-	if (path === null || path === undefined)
+	if (isNullish(path))
 		throw "env `DATABASE_DIR` not defined";
 	f.log.info(`Opening database with path: ${path}/database.db`)
 	let db: Database = new DbImpl(`${path}/database.db`) as Database;
@@ -33,6 +34,5 @@ export const useDatabase = fp<FastifyPluginAsync>(async function(
 		f.decorate('db', db);
 });
 
-export * as user from "./mixin/user"
 export default useDatabase;
 

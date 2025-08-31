@@ -1,24 +1,25 @@
 import { FastifyPluginAsync } from "fastify";
 
 import { Static, Type } from "@sinclair/typebox";
-import { isNullish, makeResponse, typeResponse } from "@shared/utils"
+import { makeResponse, typeResponse, isNullish } from "@shared/utils"
 
 
 export const WhoAmIRes = Type.Union([
-	typeResponse("success", "whoami.success", { name: Type.String() }),
-	typeResponse("failure", "whoami.failure.generic")
+	typeResponse("success", "disableOtp.success"),
+	typeResponse("failure", "disableOtp.failure.generic")
 ]);
 
 export type WhoAmIRes = Static<typeof WhoAmIRes>;
 
 const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-	fastify.get(
-		"/api/auth/whoami",
+	fastify.put(
+		"/api/auth/disableOtp",
 		{ schema: { response: { "2xx": WhoAmIRes } }, config: { requireAuth: true } },
 		async function(req, _res) {
 			if (isNullish(req.authUser))
-				return makeResponse("success", "whoami.failure.generic")
-			return makeResponse("success", "whoami.success", { name: req.authUser.name })
+				return makeResponse("failure", "disableOtp.failure.generic");
+			this.db.deleteUserOtpSecret(req.authUser.id);
+			return makeResponse("success", "disableOtp.success");
 		},
 	);
 };

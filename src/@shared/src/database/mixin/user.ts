@@ -1,15 +1,19 @@
 import type { Database, SqliteReturn } from "./_base";
+import { Otp } from "@shared/auth";
+import { isNullish } from "@shared/utils";
 import * as bcrypt from "bcrypt";
 
 // never use this directly
 
 export interface IUserDb extends Database {
-	getUser(id: UserId): User | null,
-	getUserFromName(name: string): User | null,
-	getUserFromRawId(id: number): User | null,
-	getUserOtpSecret(id: UserId): string | null,
-	createUser(name: string, password: string | null): Promise<User | null>,
-	setUserPassword(id: UserId, password: string | null): Promise<User | null>,
+	getUser(id: UserId): User | undefined,
+	getUserFromName(name: string): User | undefined,
+	getUserFromRawId(id: number): User | undefined,
+	getUserOtpSecret(id: UserId): string | undefined,
+	createUser(name: string, password: string | undefined): Promise<User | undefined>,
+	setUserPassword(id: UserId, password: string | undefined): Promise<User | undefined>,
+	ensureUserOtpSecret(id: UserId): string | undefined,
+	deleteUserOtpSecret(id: UserId): void,
 };
 
 export const UserImpl: Omit<IUserDb, keyof Database> = {
@@ -18,9 +22,9 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @param id the userid to fetch
 	 *
-	 * @returns The user if it exists, null otherwise
+	 * @returns The user if it exists, undefined otherwise
 	 */
-	getUser(this: IUserDb, id: UserId): User | null {
+	getUser(this: IUserDb, id: UserId): User | undefined {
 		return this.getUserFromRawId(id);
 	},
 
@@ -29,9 +33,9 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @param name the username to fetch
 	 *
-	 * @returns The user if it exists, null otherwise
+	 * @returns The user if it exists, undefined otherwise
 	 */
-	getUserFromName(this: IUserDb, name: string): User | null {
+	getUserFromName(this: IUserDb, name: string): User | undefined {
 		return userFromRow(
 			this.prepare(
 				"SELECT * FROM user WHERE name = @name LIMIT 1",
@@ -44,9 +48,9 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @param id the userid to modify
 	 *
-	 * @returns The user if it exists, null otherwise
+	 * @returns The user if it exists, undefined otherwise
 	 */
-	getUserFromRawId(this: IUserDb, id: number): User | null {
+	getUserFromRawId(this: IUserDb, id: number): User | undefined {
 		return userFromRow(
 			this.prepare("SELECT * FROM user WHERE id = @id LIMIT 1").get({
 				id,
@@ -62,7 +66,7 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @returns The user struct
 	 */
-	async createUser(this: IUserDb, name: string, password: string | null): Promise<User | null> {
+	async createUser(this: IUserDb, name: string, password: string | undefined): Promise<User | undefined> {
 		password = await hashPassword(password);
 		return userFromRow(
 			this.prepare(
@@ -76,11 +80,11 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 * You are required to hash the password before storing it in the database
 	 *
 	 * @param id the userid to modify
-	 * @param password the plaintext password to store (can be null to remove password login)
+	 * @param password the plaintext password to store (can be undefined to remove password login)
 	 *
-	 * @returns The modified user if it exists, null otherwise
+	 * @returns The modified user if it exists, undefined otherwise
 	 */
-	async setUserPassword(this: IUserDb, id: UserId, password: string | null): Promise<User | null> {
+	async setUserPassword(this: IUserDb, id: UserId, password: string | undefined): Promise<User | undefined> {
 		password = await hashPassword(password);
 		return userFromRow(
 			this.prepare(
@@ -89,12 +93,27 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 		);
 	},
 
-	getUserOtpSecret(this: IUserDb, id: UserId): string | null {
+	getUserOtpSecret(this: IUserDb, id: UserId): string | undefined {
 		let otp: any = this.prepare("SELECT otp FROM user WHERE id = @id LIMIT 1").get({ id }) as SqliteReturn;
-		console.log(otp);
-		if (otp?.otp === undefined || otp?.otp === null) return null;
+		if (isNullish(otp?.otp)) return undefined;
 		return otp.otp;
 	},
+
+	ensureUserOtpSecret(this: IUserDb, id: UserId): string | undefined {
+		let otp = this.getUserOtpSecret(id);
+		if (!isNullish(otp))
+			return otp;
+		let otpGen = new Otp();
+		const res: any = this.prepare("UPDATE OR IGNORE user SET otp = @otp WHERE id = @id RETURNING otp")
+			.get({ id, otp: otpGen.secret });
+		console.log(res);
+		if (isNullish(res?.otp)) return undefined;
+		return res?.otp;
+	},
+
+	deleteUserOtpSecret(this: IUserDb, id: UserId): void {
+		this.prepare("UPDATE OR IGNORE user SET otp = NULL WHERE id = @id").run({ id });
+	}
 };
 
 export type UserId = number & { readonly __brand: unique symbol };
@@ -106,39 +125,13 @@ export type User = {
 	readonly otp?: string;
 };
 
-/**
- * Represent different state a "username" might be
- *
- * @enum V_valid The username is valid
- * @enum E_tooShort The username is too short
- * @enum E_tooLong The username is too long
- * @enum E_invalChar the username contains invalid characters (must be alphanumeric)
- *
- */
-export const enum ValidUserNameRet {
-	V_valid = "username.valid",
-	E_tooShort = "username.tooShort",
-	E_tooLong = "username.toLong",
-	E_invalChar = "username.invalChar"
-}
-
-export function validUserName(username: string): ValidUserNameRet {
-	if (username.length < 4)
-		return ValidUserNameRet.E_tooShort;
-	if (username.length > 16)
-		return ValidUserNameRet.E_tooLong;
-	if (!(RegExp("^[0-9a-zA-Z]$").test(username)))
-		return ValidUserNameRet.E_invalChar;
-	return ValidUserNameRet.V_valid;
-}
-
 export async function verifyUserPassword(
 	user: User,
 	password: string,
 ): Promise<boolean> {
 	// The user doesn't have a password, so it can't match.
 	// This is somewhat bad thing to do, since it is a time-attack vector, but I don't care ?
-	if (user.password == null) return false;
+	if (isNullish(user.password)) return false;
 	return await bcrypt.compare(password, user.password);
 }
 
@@ -148,12 +141,12 @@ export async function verifyUserPassword(
  * @param password the plaintext password to hash (if any)\
  * @returns the bcrypt hashed password
  *
- * @note: This function will do nothing if [`null`] is passed (it'll return null directly)
+ * @note: This function will do nothing if [`undefined`] is passed (it'll return undefined directly)
  */
 async function hashPassword(
-	password: string | null,
-): Promise<string | null> {
-	if (password === null) return null;
+	password: string | undefined,
+): Promise<string | undefined> {
+	if (isNullish(password)) return undefined;
 	return await bcrypt.hash(password, 12);
 }
 
@@ -162,13 +155,14 @@ async function hashPassword(
  *
  * @param row The data from sqlite
  *
- * @returns The user if it exists, null otherwise
+ * @returns The user if it exists, undefined otherwise
  */
-function userFromRow(row: any): User | null {
-	if (row == null || row == undefined) return null;
+function userFromRow(row: any): User | undefined {
+	if (isNullish(row)) return undefined;
 	return {
 		id: row.id as UserId,
-		name: row.name || null,
-		password: row.password || null,
+		name: row.name || undefined,
+		password: row.password || undefined,
+		otp: row.otp || undefined,
 	};
 } 

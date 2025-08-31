@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 
 import { Static, Type } from "@sinclair/typebox";
 import { JwtType, Otp } from "@shared/auth";
-import { typeResponse, makeResponse } from "@shared/utils";
+import { typeResponse, makeResponse, isNullish } from "@shared/utils";
 
 const OtpReq = Type.Object({
 	token: Type.String({ description: "The token given at the login phase" }),
@@ -12,7 +12,7 @@ const OtpReq = Type.Object({
 type OtpReq = Static<typeof OtpReq>;
 
 const OtpRes = Type.Union([
-	typeResponse("failed", ["otp.failed.generic", "otp.failed.invalid", "otp.failed.timeout"]),
+	typeResponse("failed", ["otp.failed.generic", "otp.failed.invalid", "otp.failed.timeout", "otp.failed.noSecret"]),
 	typeResponse("success", "otp.success", { token: Type.String({ description: "the JWT Token" }) }),
 ]);
 
@@ -20,11 +20,11 @@ type OtpRes = Static<typeof OtpRes>;
 
 const OTP_TOKEN_TIMEOUT_SEC = 120;
 
-const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	fastify.post<{ Body: OtpReq }>(
 		"/api/auth/otp",
 		{ schema: { body: OtpReq, response: { "2xx": OtpRes } } },
-		async function(req, res) {
+		async function(req, _res) {
 			try {
 				const { token, code } = req.body;
 				// lets try to decode+verify the jwt
@@ -41,10 +41,10 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
 				// get the Otp sercret from the db
 				let otpSecret = this.db.getUserFromName(dJwt.who)?.otp;
-				if (otpSecret === null)
+				if (isNullish(otpSecret))
 					// oops, either no user, or user without otpSecret
 					// fuck off
-					return makeResponse("failed", "otp.failed.invalid");
+					return makeResponse("failed", "otp.failed.noSecret");
 
 				// good lets now verify the token you gave us is the correct one...
 				let otpHandle = new Otp({ secret: otpSecret });
@@ -65,6 +65,7 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 			} catch {
 				return makeResponse("failed", "otp.failed.generic");
 			}
+			return makeResponse("failed", "otp.failed.generic");
 		},
 	);
 };

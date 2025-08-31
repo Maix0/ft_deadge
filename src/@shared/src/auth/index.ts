@@ -6,7 +6,7 @@ import { FastifyPluginAsync, preValidationAsyncHookHandler } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 import { UserId } from "@shared/database/mixin/user";
 import { useDatabase } from "@shared/database";
-import { makeResponse } from "@shared/utils";
+import { isNullish, makeResponse } from "@shared/utils";
 
 const kRouteAuthDone = Symbol("shared-route-auth-done");
 
@@ -33,7 +33,7 @@ let jwtAdded = false;
 export const jwtPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
 	if (jwtAdded) jwtAdded = true;
 	let env = process.env.JWT_SECRET;
-	if (env === undefined || env === null) throw "JWT_SECRET is not defined";
+	if (isNullish(env)) throw "JWT_SECRET is not defined";
 	if (!fastify.hasDecorator("signJwt")) {
 		void fastify.decorate("signJwt", (kind, who) =>
 			fastify.jwt.sign({ kind, who, createdAt: Date.now() }),
@@ -78,7 +78,7 @@ export const authPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
 		) {
 			let f: preValidationAsyncHookHandler = async function(req, res) {
 				try {
-					if (req.cookies.token === undefined)
+					if (isNullish(req.cookies.token))
 						return res
 							.clearCookie("token")
 							.send(
@@ -92,7 +92,7 @@ export const authPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
 								JSON.stringify(makeResponse("notLoggedIn", "auth.invalidKind")),
 							);
 					let user = this.db.getUserFromName(tok.who);
-					if (user === null)
+					if (isNullish(user))
 						return res
 							.clearCookie("token")
 							.send(

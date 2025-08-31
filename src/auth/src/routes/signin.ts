@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from "fastify";
 
 import { Static, Type } from "@sinclair/typebox";
-import { typeResponse, makeResponse } from "@shared/utils";
+import { typeResponse, makeResponse, isNullish } from "@shared/utils";
 
 const USERNAME_CHECK: RegExp = /^[a-zA-Z\_0-9]+$/;
 
@@ -49,10 +49,10 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 				return makeResponse("failed", "signin.failed.password.toolong");
 			// password is good too !
 
-			if (this.db.getUserFromName(name) !== null)
+			if (this.db.getUserFromName(name) !== undefined)
 				return makeResponse("failed", "signin.failed.username.existing");
 			let u = await this.db.createUser(name, password);
-			if (u === null)
+			if (isNullish(u))
 				return makeResponse("failed", "signin.failed.generic");
 
 			// every check has been passed, they are now logged in, using this token to say who they are...

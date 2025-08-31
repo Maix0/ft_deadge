@@ -1,9 +1,8 @@
 import { FastifyPluginAsync } from "fastify";
 
 import { Static, Type } from "@sinclair/typebox";
-import { user as userDb } from "@shared/database";
-import type { } from "@shared/auth";
-import { typeResponse, makeResponse } from "@shared/utils"
+import { typeResponse, makeResponse, isNullish } from "@shared/utils"
+import { verifyUserPassword } from "@shared/database/mixin/user";
 
 export const LoginReq = Type.Object({
 	name: Type.String(),
@@ -21,27 +20,26 @@ export const LoginRes = Type.Union([
 
 export type LoginRes = Static<typeof LoginRes>;
 
-const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	fastify.post<{ Body: LoginReq; Response: LoginRes }>(
 		"/api/auth/login",
 		{ schema: { body: LoginReq, response: { "2xx": LoginRes } }, },
-		async function(req, res) {
+		async function(req, _res) {
 			try {
 				let { name, password } = req.body;
 				let user = this.db.getUserFromName(name);
 
 				// does the user exist
 				// does it have a password setup ?
-				if (user === null || user.password === null)
+				if (isNullish(user?.password))
 					return makeResponse("failed", "login.failed.invalid");
 
 				// does the password he provided match the one we have
-				if (!(await userDb.verifyUserPassword(user, password)))
+				if (!(await verifyUserPassword(user, password)))
 					return makeResponse("failed", "login.failed.invalid");
 
 				// does the user has 2FA up ?
-				if (user.otp !== undefined) {
-					console.log(user);
+				if (!isNullish(user.otp)) {
 					// yes -> we ask them to fill it,
 					// send them somehting to verify that they indeed passed throught the user+password phase
 					return makeResponse("otpRequired", "login.otpRequired", { token: this.signJwt("otp", user.name) });

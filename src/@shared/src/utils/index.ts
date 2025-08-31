@@ -56,3 +56,18 @@ export function typeResponse(kind: string, key: MessageKey | MessageKey[], paylo
 
 	return Type.Object(Ty)
 }
+
+/**
+ * @description returns weither a value is null or undefined
+ *
+ * @example assert_equal(isNullish(null), true);
+ * @example assert_equal(isNullish(undefined), true);
+ * @example assert_equal(isNullish(0), false);
+ * @example assert_equal(isNullish(""), false);
+ * @example assert_equal(isNullish([]), false);
+ * @example assert_equal(isNullish({}), false);
+ * @example assert_equal(isNullish(false), false);
+ */
+export function isNullish<T>(v: T | undefined | null): v is (null | undefined) {
+	return v === null || v === undefined
+}

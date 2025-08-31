@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { open } from 'node:fs/promises'
 import sharp from 'sharp'
 import rawBody from 'raw-body'
+import { isNullish } from '@shared/utils'
 
 const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	// await fastify.register(authMethod, {});
@@ -19,7 +20,7 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		let buffer = await rawBody(request.raw);
 		// this is how we get the `:userid` part of things
 		const userid: string | undefined = (request.params as any)['userid'];
-		if (userid === undefined) {
+		if (isNullish(userid)) {
 			return await reply.code(403);
 		}
 		const image_store: string = fastify.getDecorator('image_store')
