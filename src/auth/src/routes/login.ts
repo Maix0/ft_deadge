@@ -28,7 +28,6 @@ const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		async function(req, res) {
 			try {
 				let { name, password } = req.body;
-				console.log("HELLOO FDP");
 				let user = this.db.getUserFromName(name);
 
 				// does the user exist
