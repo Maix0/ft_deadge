@@ -25,22 +25,27 @@ const externals = collectDeps(
 
 
 export default defineConfig({
-	root: __dirname, // service root
+	root: __dirname,
+	// service root
 	plugins: [tsconfigPaths(), nodeExternals()],
 	build: {
 		ssr: true,
 		outDir: 'dist',
 		emptyOutDir: true,
 		lib: {
-			entry: path.resolve(__dirname, 'src/run.ts'), // adjust main entry
-			formats: ['cjs'], // CommonJS for Node.js
+			entry: path.resolve(__dirname, 'src/run.ts'),
+			// adjust main entry
+			formats: ['cjs'],
+			// CommonJS for Node.js
 			fileName: () => 'index.js',
 		},
 		rollupOptions: {
 			external: externals,
 		},
-		target: 'node22', // or whatever Node version you use
+		target: 'node22',
+		// or whatever Node version you use
 		sourcemap: true,
-		minify: false, // for easier debugging
+		minify: false,
+		// for easier debugging
 	},
 });
