@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/08/02 20:48:04 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/09/28 18:44:10 by rparodi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ BOLD      = \033[1m
 ITALIC    = \033[3m
 UNDERLINE = \033[4m
 
+PROJECT = ft_transcendence
 BASE_PATH=$(shell realpath .)
 ECHO = /usr/bin/env echo
 
@@ -124,5 +125,15 @@ sql:
 	@echo "if the command isn't found, contact maieul :)"
 	dbml_sqlite -t -f -w ./src/@shared/src/database/init.sql ./src/@shared/src/database/init.dbml
 
+tmux:
+	@tmux new-session -d -s $(PROJECT)
+	@tmux send-keys -t $(PROJECT):0 'vim' C-m
+	@tmux split-window -h -t $(PROJECT):0
+	@tmux resize-pane -t $(PROJECT):0.0 -x 70
+	@tmux new-window -t $(PROJECT):1 -n 'lazygit'
+	@tmux send-keys -t $(PROJECT):1 'lazygit' C-m
+	@tmux select-window -t $(PROJECT):0
+	@tmux attach-session -t $(PROJECT)
+
 #	phony
-.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql
+.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux
