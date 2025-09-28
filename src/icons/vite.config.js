@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import nodeExternals from 'rollup-plugin-node-externals'
-import path from 'node:path'
-import fs from 'node:fs'
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import nodeExternals from 'rollup-plugin-node-externals';
+import path from 'node:path';
+import fs from 'node:fs';
 
 function collectDeps(...pkgJsonPaths) {
 	const allDeps = new Set();
@@ -20,7 +20,7 @@ function collectDeps(...pkgJsonPaths) {
 
 const externals = collectDeps(
 	'./package.json',
-	'../@shared/package.json'
+	'../@shared/package.json',
 );
 
 
@@ -42,5 +42,5 @@ export default defineConfig({
 		target: 'node22', // or whatever Node version you use
 		sourcemap: false,
 		minify: true, // for easier debugging
-	}
-})
+	},
+});

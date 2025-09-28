@@ -1,9 +1,9 @@
-import { FastifyPluginAsync } from 'fastify'
-import fastifyFormBody from '@fastify/formbody'
-import fastifyMultipart from '@fastify/multipart'
-import { mkdir } from 'node:fs/promises'
-import fp from 'fastify-plugin'
-import * as db from '@shared/database'
+import { FastifyPluginAsync } from 'fastify';
+import fastifyFormBody from '@fastify/formbody';
+import fastifyMultipart from '@fastify/multipart';
+import { mkdir } from 'node:fs/promises';
+import fp from 'fastify-plugin';
+import * as db from '@shared/database';
 
 // @ts-ignore: import.meta.glob is a vite thing. Typescript doesn't know this...
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
@@ -20,7 +20,7 @@ declare module 'fastify' {
 
 const app: FastifyPluginAsync = async (
 	fastify,
-	opts
+	opts,
 ): Promise<void> => {
 	// Place here your custom code!
 	for (const plugin of Object.values(plugins)) {
@@ -30,20 +30,20 @@ const app: FastifyPluginAsync = async (
 		void fastify.register(route as any, {});
 	}
 
-	await fastify.register(db.useDatabase as any, {})
-	void fastify.register(fastifyFormBody, {})
-	void fastify.register(fastifyMultipart, {})
+	await fastify.register(db.useDatabase as any, {});
+	void fastify.register(fastifyFormBody, {});
+	void fastify.register(fastifyMultipart, {});
 	console.log(fastify.db.getUser(1));
 
 	// The use of fastify-plugin is required to be able
 	// to export the decorators to the outer scope
 	void fastify.register(fp(async (fastify) => {
-		const image_store = process.env.USER_ICONS_STORE ?? "/tmp/icons";
-		fastify.decorate('image_store', image_store)
-		await mkdir(fastify.image_store, { recursive: true })
-	}))
+		const image_store = process.env.USER_ICONS_STORE ?? '/tmp/icons';
+		fastify.decorate('image_store', image_store);
+		await mkdir(fastify.image_store, { recursive: true });
+	}));
 
-}
+};
 
-export default app
-export { app }
+export default app;
+export { app };

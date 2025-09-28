@@ -1,7 +1,7 @@
 // this sould only be used by the docker file !
 
-import fastify, { FastifyInstance } from "fastify";
-import app from "./app"
+import fastify, { FastifyInstance } from 'fastify';
+import app from './app';
 
 const start = async () => {
 	const envToLogger = {
@@ -16,15 +16,16 @@ const start = async () => {
 		},
 		production: true,
 		test: false,
-	}
+	};
 
 	const f: FastifyInstance = fastify({ logger: envToLogger.development });
 	try {
 		await f.register(app, {});
-		await f.listen({ port: 80, host: '0.0.0.0' })
-	} catch (err) {
-		f.log.error(err)
-		process.exit(1)
+		await f.listen({ port: 80, host: '0.0.0.0' });
 	}
-}
-start()
+	catch (err) {
+		f.log.error(err);
+		process.exit(1);
+	}
+};
+start();
