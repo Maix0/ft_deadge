@@ -14,7 +14,12 @@
     "install-all": "npm install"
   },
   "devDependencies": {
-    "rimraf": "^5.0.1"
+    "rimraf": "^5.0.1",
+	"@eslint/js": "^9.36.0",
+	"@typescript-eslint/eslint-plugin": "^8.44.1",
+	"@typescript-eslint/parser": "^8.44.1",
+	"eslint": "^9.36.0",
+	"typescript-eslint": "^8.44.1"
   },
   "dependencies": {
     "bindings": "^1.5.0"
