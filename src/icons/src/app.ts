@@ -37,10 +37,10 @@ const app: FastifyPluginAsync = async (
 
 	// The use of fastify-plugin is required to be able
 	// to export the decorators to the outer scope
-	void fastify.register(fp(async (fastify) => {
+	void fastify.register(fp(async (fastify2) => {
 		const image_store = process.env.USER_ICONS_STORE ?? '/tmp/icons';
-		fastify.decorate('image_store', image_store);
-		await mkdir(fastify.image_store, { recursive: true });
+		fastify2.decorate('image_store', image_store);
+		await mkdir(fastify2.image_store, { recursive: true });
 	}));
 
 };
