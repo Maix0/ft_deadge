@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox';
+import { TObject, TProperties, Type } from '@sinclair/typebox';
 
 /**
  * @description Represent a message key
@@ -12,7 +12,7 @@ import { Type } from '@sinclair/typebox';
  * @example `pong.you.lost`
  */
 export type MessageKey = string;
-export type ResponseBase<T = {}> = {
+export type ResponseBase<T = object> = {
 	kind: string,
 	msg: MessageKey,
 	payload?: T,
@@ -26,7 +26,7 @@ export type ResponseBase<T = {}> = {
  * @example makeResponse("failure", "login.failure.invalid")
  * @example makeResponse("success", "login.success", { token: "supersecrettoken" })
  */
-export function makeResponse<T = {}>(kind: string, key: MessageKey, payload?: T): ResponseBase<T> {
+export function makeResponse<T = object>(kind: string, key: MessageKey, payload?: T): ResponseBase<T> {
 	console.log(`making response {kind: ${JSON.stringify(kind)}; key: ${JSON.stringify(key)}}`);
 	return { kind, msg: key, payload };
 }
@@ -39,7 +39,7 @@ export function makeResponse<T = {}>(kind: string, key: MessageKey, payload?: T)
  * @example typeResponse("otpRequired", "login.otpRequired", { token: Type.String() })
  * @example typeResponse("success", "login.success", { token: Type.String() })
  */
-export function typeResponse(kind: string, key: MessageKey | MessageKey[], payload?: any): any {
+export function typeResponse(kind: string, key: MessageKey | MessageKey[], payload?: TProperties): TObject<TProperties> {
 	let tKey;
 	if (key instanceof Array) {
 		tKey = Type.Union(key.map(l => Type.Const(l)));

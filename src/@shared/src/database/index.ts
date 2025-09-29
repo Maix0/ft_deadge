@@ -21,14 +21,15 @@ let dbAdded = false;
 
 export const useDatabase = fp<FastifyPluginAsync>(async function(
 	f: FastifyInstance,
-	_options: {}) {
-	if (dbAdded) {return;}
+	_options: object) {
+	void _options;
+	if (dbAdded) { return; }
 	dbAdded = true;
 	const path = process.env.DATABASE_DIR;
-	if (isNullish(path)) {throw 'env `DATABASE_DIR` not defined';}
+	if (isNullish(path)) { throw 'env `DATABASE_DIR` not defined'; }
 	f.log.info(`Opening database with path: ${path}/database.db`);
 	const db: Database = new DbImpl(`${path}/database.db`) as Database;
-	if (!f.hasDecorator('db')) {f.decorate('db', db);}
+	if (!f.hasDecorator('db')) { f.decorate('db', db); }
 });
 
 export default useDatabase;

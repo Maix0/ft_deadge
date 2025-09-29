@@ -3,7 +3,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { Static, Type } from '@sinclair/typebox';
 import { typeResponse, makeResponse, isNullish } from '@shared/utils';
 
-const USERNAME_CHECK: RegExp = /^[a-zA-Z\_0-9]+$/;
+const USERNAME_CHECK: RegExp = /^[a-zA-Z_0-9]+$/;
 
 const SignInReq = Type.Object({
 	name: Type.String(),
@@ -28,11 +28,13 @@ const SignInRes = Type.Union([
 
 type SignInRes = Static<typeof SignInRes>;
 
-const route: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
+	void _opts;
 	fastify.post<{ Body: SignInReq }>(
 		'/api/auth/signin',
 		{ schema: { body: SignInReq, response: { '200': SignInRes, '5xx': Type.Object({}) } } },
-		async function(req, res) {
+		async function(req, _res) {
+			void _res;
 			const { name, password } = req.body;
 
 			if (name.length < 4) {return makeResponse('failed', 'signin.failed.username.tooshort');}

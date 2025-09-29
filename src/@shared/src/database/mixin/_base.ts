@@ -1,6 +1,6 @@
 import sqlite from 'better-sqlite3';
 
-// @ts-ignore: this file is included using vite, typescript doesn't know how to include this...
+// @ts-expect-error: this file is included using vite, typescript doesn't know how to include this...
 import initSql from '../init.sql?raw';
 
 export type SqliteReturn = object | undefined;

@@ -21,30 +21,35 @@ type OtpRes = Static<typeof OtpRes>;
 const OTP_TOKEN_TIMEOUT_SEC = 120;
 
 const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
+	void _opts;
 	fastify.post<{ Body: OtpReq }>(
 		'/api/auth/otp',
 		{ schema: { body: OtpReq, response: { '2xx': OtpRes } } },
 		async function(req, _res) {
+			void _res;
 			try {
 				const { token, code } = req.body;
 				// lets try to decode+verify the jwt
 				const dJwt = this.jwt.verify<JwtType>(token);
 
 				// is the jwt a valid `otp` jwt ?
-				if (dJwt.kind != 'otp')
-				// no ? fuck off then
-				{return makeResponse('failed', 'otp.failed.invalid');}
+				if (dJwt.kind != 'otp') {
+					// no ? fuck off then
+					return makeResponse('failed', 'otp.failed.invalid');
+				}
 				// is it too old ?
-				if (dJwt.createdAt + OTP_TOKEN_TIMEOUT_SEC * 1000 < Date.now())
-				// yes ? fuck off then, redo the password
-				{return makeResponse('failed', 'otp.failed.timeout');}
+				if (dJwt.createdAt + OTP_TOKEN_TIMEOUT_SEC * 1000 < Date.now()) {
+					// yes ? fuck off then, redo the password
+					return makeResponse('failed', 'otp.failed.timeout');
+				}
 
 				// get the Otp sercret from the db
 				const user = this.db.getUserFromName(dJwt.who);
-				if (isNullish(user?.otp))
-				// oops, either no user, or user without otpSecret
-				// fuck off
-				{return makeResponse('failed', 'otp.failed.noSecret');}
+				if (isNullish(user?.otp)) {
+					// oops, either no user, or user without otpSecret
+					// fuck off
+					return makeResponse('failed', 'otp.failed.noSecret');
+				}
 
 				// good lets now verify the token you gave us is the correct one...
 				const otpHandle = new Otp({ secret: user.otp });
@@ -58,10 +63,11 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				];
 
 				// checking if any of the array match
-				if (tokens.some((c) => c === code))
-				// they do !
-				// gg you are now logged in !
-				{return makeResponse('success', 'otp.success', { token: this.signJwt('auth', dJwt.who) });}
+				if (tokens.some((c) => c === code)) {
+					// they do !
+					// gg you are now logged in !
+					return makeResponse('success', 'otp.success', { token: this.signJwt('auth', dJwt.who) });
+				}
 			}
 			catch {
 				return makeResponse('failed', 'otp.failed.generic');

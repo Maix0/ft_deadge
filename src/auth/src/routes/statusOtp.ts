@@ -14,10 +14,12 @@ export const StatusOtpRes = Type.Union([
 export type StatusOtpRes = Static<typeof StatusOtpRes>;
 
 const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
+	void _opts;
 	fastify.get(
 		'/api/auth/statusOtp',
 		{ schema: { response: { '2xx': StatusOtpRes } }, config: { requireAuth: true } },
 		async function(req, _res) {
+			void _res;
 			if (isNullish(req.authUser)) {return makeResponse('failure', 'statusOtp.failure.generic');}
 			const otpSecret = this.db.getUserOtpSecret(req.authUser.id);
 			if (isNullish(otpSecret)) {return makeResponse('success', 'statusOtp.success.disabled');}

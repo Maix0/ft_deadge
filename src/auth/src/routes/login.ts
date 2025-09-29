@@ -21,10 +21,12 @@ export const LoginRes = Type.Union([
 export type LoginRes = Static<typeof LoginRes>;
 
 const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
+	void _opts;
 	fastify.post<{ Body: LoginReq; Response: LoginRes }>(
 		'/api/auth/login',
 		{ schema: { body: LoginReq, response: { '2xx': LoginRes } } },
 		async function(req, _res) {
+			void _res;
 			try {
 				const { name, password } = req.body;
 				const user = this.db.getUserFromName(name);

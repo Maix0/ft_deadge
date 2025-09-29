@@ -26,11 +26,16 @@ declare module 'fastify' {
 	export interface FastifyContextConfig {
 		requireAuth?: boolean;
 	}
+	export interface RouteOptions {
+		[kRouteAuthDone]: boolean;
+	}
 }
 
 export const Otp = OTP;
 let jwtAdded = false;
 export const jwtPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
+	void _opts;
+
 	if (jwtAdded) return;
 	jwtAdded = true;
 	const env = process.env.JWT_SECRET;
@@ -65,16 +70,18 @@ export type JwtType = Static<typeof JwtType>;
 
 let authAdded = false;
 export const authPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
+	void _opts;
+
 	if (authAdded) return void console.log('skipping');
 	authAdded = true;
-	await fastify.register(useDatabase as any, {});
-	await fastify.register(jwtPlugin as any, {});
+	await fastify.register(useDatabase as FastifyPluginAsync, {});
+	await fastify.register(jwtPlugin as FastifyPluginAsync, {});
 	await fastify.register(cookie);
-	if (!fastify.hasRequestDecorator('authUser')) {fastify.decorateRequest('authUser', undefined);}
+	if (!fastify.hasRequestDecorator('authUser')) { fastify.decorateRequest('authUser', undefined); }
 	fastify.addHook('onRoute', (routeOpts) => {
 		if (
 			routeOpts.config?.requireAuth &&
-			!(routeOpts as any)[kRouteAuthDone]
+			!routeOpts[kRouteAuthDone]
 		) {
 			const f: preValidationAsyncHookHandler = async function(req, res) {
 				try {
@@ -119,7 +126,7 @@ export const authPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
 				routeOpts.preValidation = [routeOpts.preValidation, f];
 			}
 
-			(routeOpts as any)[kRouteAuthDone] = true;
+			routeOpts[kRouteAuthDone] = true;
 		}
 	});
 });

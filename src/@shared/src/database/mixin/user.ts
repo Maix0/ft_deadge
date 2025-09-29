@@ -94,17 +94,17 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	},
 
 	getUserOtpSecret(this: IUserDb, id: UserId): string | undefined {
-		const otp: any = this.prepare('SELECT otp FROM user WHERE id = @id LIMIT 1').get({ id }) as SqliteReturn;
+		const otp = this.prepare('SELECT otp FROM user WHERE id = @id LIMIT 1').get({ id }) as ({ otp: string } | null | undefined);
 		if (isNullish(otp?.otp)) return undefined;
 		return otp.otp;
 	},
 
 	ensureUserOtpSecret(this: IUserDb, id: UserId): string | undefined {
 		const otp = this.getUserOtpSecret(id);
-		if (!isNullish(otp)) {return otp;}
+		if (!isNullish(otp)) { return otp; }
 		const otpGen = new Otp();
-		const res: any = this.prepare('UPDATE OR IGNORE user SET otp = @otp WHERE id = @id RETURNING otp')
-			.get({ id, otp: otpGen.secret });
+		const res = this.prepare('UPDATE OR IGNORE user SET otp = @otp WHERE id = @id RETURNING otp')
+			.get({ id, otp: otpGen.secret }) as ({ otp: string } | null | undefined);
 		return res?.otp;
 	},
 
@@ -154,12 +154,14 @@ async function hashPassword(
  *
  * @returns The user if it exists, undefined otherwise
  */
-function userFromRow(row: any): User | undefined {
+function userFromRow(row: Partial<User>): User | undefined {
 	if (isNullish(row)) return undefined;
+	if (isNullish(row.id)) return undefined;
+	if (isNullish(row.name)) return undefined;
 	return {
-		id: row.id as UserId,
-		name: row.name || undefined,
-		password: row.password || undefined,
-		otp: row.otp || undefined,
+		id: row.id,
+		name: row.name,
+		password: row.password ?? undefined,
+		otp: row.otp ?? undefined,
 	};
 }

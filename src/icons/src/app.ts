@@ -4,10 +4,11 @@ import fastifyMultipart from '@fastify/multipart';
 import { mkdir } from 'node:fs/promises';
 import fp from 'fastify-plugin';
 import * as db from '@shared/database';
+import { authPlugin, jwtPlugin } from '@shared/auth';
 
-// @ts-except-error: import.meta.glob is a vite thing. Typescript doesn't know this...
+// @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
-// @ts-except-error: import.meta.glob is a vite thing. Typescript doesn't know this...
+// @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const routes = import.meta.glob('./routes/**/*.ts', { eager: true });
 
 
@@ -20,20 +21,23 @@ declare module 'fastify' {
 
 const app: FastifyPluginAsync = async (
 	fastify,
-	opts,
+	_opts,
 ): Promise<void> => {
+	void _opts;
 	// Place here your custom code!
 	for (const plugin of Object.values(plugins)) {
-		void fastify.register(plugin as any, {});
+		void fastify.register(plugin as FastifyPluginAsync, {});
 	}
 	for (const route of Object.values(routes)) {
-		void fastify.register(route as any, {});
+		void fastify.register(route as FastifyPluginAsync, {});
 	}
 
-	await fastify.register(db.useDatabase as any, {});
+	await fastify.register(db.useDatabase as FastifyPluginAsync, {});
+	await fastify.register(authPlugin as FastifyPluginAsync, {});
+	await fastify.register(jwtPlugin as FastifyPluginAsync, {});
+
 	void fastify.register(fastifyFormBody, {});
 	void fastify.register(fastifyMultipart, {});
-	console.log(fastify.db.getUser(1));
 
 	// The use of fastify-plugin is required to be able
 	// to export the decorators to the outer scope
