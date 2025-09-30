@@ -21,7 +21,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
         tmux-setup = pkgs.writeShellScriptBin "tmux-setup" ''
           #!/usr/bin/env sh
-          SESSION="transandance"
+          SESSION="transcendance"
           DIR=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
           if ! tmux has-session -t $SESSION 2>/dev/null; then
             tmux new-session -d -s $SESSION -c "$DIR" -n dev
