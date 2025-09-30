@@ -29,7 +29,7 @@
             tmux split-window -h -p 30 -t $SESSION:0 -c "$DIR"
             tmux send-keys -t $SESSION:0.1 'exec zsh' C-m
             tmux split-window -v -p 30 -t $SESSION:0.1 -c "$DIR"
-            tmux send-keys -t $SESSION:0.2 'watch -n0.5 pnpm --prefix=./src/ eslint .' C-m
+            tmux send-keys -t $SESSION:0.2 'watch -n0.5 npx --prefix=./src/ eslint .' C-m
             tmux new-window -t $SESSION:1 -n git -c "$DIR"
             tmux send-keys -t $SESSION:1 'lazygit' C-m
           fi
