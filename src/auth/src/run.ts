@@ -19,6 +19,10 @@ const start = async () => {
 	};
 
 	const f: FastifyInstance = fastify({ logger: envToLogger.development });
+	process.on('SIGTERM', () => {
+		f.log.info('Requested to shutdown');
+		process.exit(134);
+	});
 	try {
 		await f.register(app, {});
 		await f.listen({ port: 80, host: '0.0.0.0' });

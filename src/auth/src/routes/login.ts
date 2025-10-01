@@ -42,11 +42,11 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				if (!isNullish(user.otp)) {
 					// yes -> we ask them to fill it,
 					// send them somehting to verify that they indeed passed throught the user+password phase
-					return makeResponse('otpRequired', 'login.otpRequired', { token: this.signJwt('otp', user.name) });
+					return makeResponse('otpRequired', 'login.otpRequired', { token: this.signJwt('otp', user.id) });
 				}
 
 				// every check has been passed, they are now logged in, using this token to say who they are...
-				return makeResponse('success', 'login.success', { token: this.signJwt('auth', user.name) });
+				return makeResponse('success', 'login.success', { token: this.signJwt('auth', user.id) });
 			}
 			catch {
 				return makeResponse('failed', 'login.failed.generic');
