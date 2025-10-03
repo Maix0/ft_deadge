@@ -1,4 +1,4 @@
-name: Build & Linter
+name: Linter
 
 on:
   push:
@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build & Typecheck
+  linter:
+    name: Linter
     runs-on: ubuntu-latest
 
     steps:

@@ -50,6 +50,7 @@
             sqlite-interactive
             clang
             tmux-setup
+            act
           ];
           shellHook = ''
             export PODMAN_COMPOSE_WARNING_LOGS="false";

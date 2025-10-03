@@ -1,7 +1,9 @@
 import js from '@eslint/js';
+import { globalIgnores } from 'eslint/config';
 import ts from 'typescript-eslint';
 
 export default [
+	globalIgnores(['*/dist/'], 'dist files'),
 	js.configs.recommended,
 	...ts.configs.recommended,
 	{
