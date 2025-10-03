@@ -3,8 +3,14 @@
   "version": "0.0.0",
   "description": "",
   "main": "",
+  "lint-staged": {
+    "*": [
+      "eslint --fix"
+    ]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:prepare": "husky"
   },
   "keywords": [],
   "author": "",
