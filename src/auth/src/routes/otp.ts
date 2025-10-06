@@ -44,7 +44,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				}
 
 				// get the Otp sercret from the db
-				const user = this.db.getUserFromName(dJwt.who);
+				const user = this.db.getUser(dJwt.who);
 				if (isNullish(user?.otp)) {
 					// oops, either no user, or user without otpSecret
 					// fuck off

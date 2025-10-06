@@ -8,8 +8,9 @@ import * as bcrypt from 'bcrypt';
 export interface IUserDb extends Database {
 	getUser(id: UserId): User | undefined,
 	getUserFromName(name: string): User | undefined,
-	getUserFromRawId(id: number): User | undefined,
+	getUser(id: string): User | undefined,
 	getUserOtpSecret(id: UserId): string | undefined,
+	createUser(name: string, password: string | undefined, guest: boolean): Promise<User | undefined>,
 	createUser(name: string, password: string | undefined): Promise<User | undefined>,
 	setUserPassword(id: UserId, password: string | undefined): Promise<User | undefined>,
 	ensureUserOtpSecret(id: UserId): string | undefined,
@@ -17,17 +18,6 @@ export interface IUserDb extends Database {
 };
 
 export const UserImpl: Omit<IUserDb, keyof Database> = {
-	/**
-	 * Get a user from an [UserId]
-	 *
-	 * @param id the userid to fetch
-	 *
-	 * @returns The user if it exists, undefined otherwise
-	 */
-	getUser(this: IUserDb, id: UserId): User | undefined {
-		return this.getUserFromRawId(id);
-	},
-
 	/**
 	 * Get a user from a username [string]
 	 *
@@ -50,7 +40,7 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @returns The user if it exists, undefined otherwise
 	 */
-	getUserFromRawId(this: IUserDb, id: number): User | undefined {
+	getUser(this: IUserDb, id: string): User | undefined {
 		return userFromRow(
 			this.prepare('SELECT * FROM user WHERE id = @id LIMIT 1').get({
 				id,
@@ -113,7 +103,7 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	},
 };
 
-export type UserId = number & { readonly __brand: unique symbol };
+export type UserId = UUID;
 
 export type User = {
 	readonly id: UserId;

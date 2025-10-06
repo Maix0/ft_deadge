@@ -6,6 +6,7 @@
   "workspaces": [
     "./@shared",
     "./icons",
+    "./user",
     "./auth"
   ],
   "lint-staged": {

@@ -100,7 +100,7 @@ export const authPlugin = fp<FastifyPluginAsync>(async (fastify, _opts) => {
 								JSON.stringify(makeResponse('notLoggedIn', 'auth.invalidKind')),
 							);
 					}
-					const user = this.db.getUserFromName(tok.who);
+					const user = this.db.getUser(tok.who);
 					if (isNullish(user)) {
 						return res
 							.clearCookie('token')
