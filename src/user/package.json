@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"private": false,
-	"name": "auth",
+	"name": "user",
 	"version": "1.0.0",
 	"description": "This project was bootstrapped with Fastify-CLI.",
 	"main": "app.ts",

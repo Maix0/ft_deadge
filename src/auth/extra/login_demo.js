@@ -61,7 +61,7 @@ bOtpDisable.addEventListener('click', async () => {
 bWhoami.addEventListener('click', async () => {
 	let username = '';
 	try {
-		const res = await fetch('/api/auth/whoami');
+		const res = await fetch('/api/user/info/me');
 		const json = await res.json();
 		setResponse(json);
 		if (json?.kind === 'success') {username = json?.payload?.name;}
