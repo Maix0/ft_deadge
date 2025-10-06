@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/09/28 18:44:10 by rparodi          ###   ########.fr        #
+#    Updated: 2025/10/06 16:55:58 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -101,12 +101,17 @@ re:
 tokei:
 	@/bin/sh -c 'tokei'
 
+npm@: npm;
 npm:
 	@$(ECHO) "commands: "
-	@$(ECHO) "\tnpm@install: install all dependencies"
-	@$(ECHO) "\tnpm@fclean:  clean every \`dist\` directory"
-	@$(ECHO) "\tnpm@clean:   clean \`node_modules\` directory"
-	@$(ECHO) "\tnpm@build:   build subprojects"
+	@$(ECHO) "  npm@install: install all dependencies"
+	@$(ECHO) "  npm@fclean:  clean every \`dist\` directory"
+	@$(ECHO) "  npm@clean:   clean \`node_modules\` directory"
+	@$(ECHO) "  npm@build:   build subprojects"
+	@$(ECHO) "  npm@eslint:  run eslint"
+
+npm@eslint:
+	npm --prefix=./src/ run eslint
 
 npm@install:
 	npm --prefix=./src/ run install-all

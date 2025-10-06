@@ -16,18 +16,21 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "distclean": "rimraf -v -g \"*/dist\"",
+    "fclean": "rimraf \"**/dist\"",
+    "clean": "rimraf \"**/node_modules\"",
+    "eslint": "eslint",
     "install-all": "npm install",
     "dev:prepare": "husky"
   },
   "devDependencies": {
     "rimraf": "^5.0.1",
-	"@eslint/js": "^9.36.0",
-	"@typescript-eslint/eslint-plugin": "^8.44.1",
-	"@typescript-eslint/parser": "^8.44.1",
-	"eslint": "^9.36.0",
+    "@eslint/js": "^9.36.0",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "eslint": "^9.36.0",
     "lint-staged": "^16.1.5",
     "husky": "^9.1.7",
-	"typescript-eslint": "^8.44.1"
+    "typescript-eslint": "^8.44.1"
   },
   "dependencies": {
     "bindings": "^1.5.0"
