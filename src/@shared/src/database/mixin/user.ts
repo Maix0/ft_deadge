@@ -2,11 +2,11 @@ import type { Database, SqliteReturn } from './_base';
 import { Otp } from '@shared/auth';
 import { isNullish } from '@shared/utils';
 import * as bcrypt from 'bcrypt';
+import { UUID } from 'uuidv7';
 
 // never use this directly
 
 export interface IUserDb extends Database {
-	getUser(id: UserId): User | undefined,
 	getUserFromName(name: string): User | undefined,
 	getUser(id: string): User | undefined,
 	getUserOtpSecret(id: UserId): string | undefined,
