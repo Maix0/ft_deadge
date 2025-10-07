@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-pnpm --prefix=./src/ lint-staged
+pnpm lint-staged

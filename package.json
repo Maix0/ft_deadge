@@ -1,0 +1,21 @@
+{
+  "name": "trans",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "scripts": {
+    "dev:prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

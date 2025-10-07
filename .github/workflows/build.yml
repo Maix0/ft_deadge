@@ -1,4 +1,4 @@
-name: Linter
+name: Build
 
 on:
   push:
@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  linter:
-    name: Linter
+  build:
+    name: build
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,7 @@ jobs:
       - name: Install dependencies with pnpm
         working-directory: ./src
         run: pnpm install
-      - name: Check linting
+      - name: Build
         working-directory: ./src
-        run: pnpm exec eslint . --max-warnings=0
+        run: pnpm run build
+

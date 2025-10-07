@@ -15,8 +15,7 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "fclean": "rimraf \"**/dist\"",
-    "clean": "rimraf \"**/node_modules\"",
+    "distclean": "rimraf -v -g \"*/dist\"",
     "install-all": "npm install",
     "dev:prepare": "husky"
   },

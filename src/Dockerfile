@@ -1,7 +1,7 @@
-FROM node:22-alpine as pnpm_base
+FROM node:22-alpine AS pnpm_base
 RUN npm install --global pnpm@10.14.0;
 
-FROM pnpm_base as builder
+FROM pnpm_base AS builder
 
 ARG SERVICE
 

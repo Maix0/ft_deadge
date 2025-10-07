@@ -1,0 +1,10 @@
+packages:
+  - ./src/*
+
+nodeLinker: hoisted
+
+onlyBuiltDependencies:
+  - better-sqlite3
+  - esbuild
+  - sharp
+  - bcrypt
