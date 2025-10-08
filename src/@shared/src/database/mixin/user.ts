@@ -2,7 +2,7 @@ import type { Database, SqliteReturn } from './_base';
 import { Otp } from '@shared/auth';
 import { isNullish } from '@shared/utils';
 import * as bcrypt from 'bcrypt';
-import { UUID } from 'uuidv7';
+import { UUID, newUUID } from '@shared/utils/uuid';
 
 // never use this directly
 
@@ -56,12 +56,13 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @returns The user struct
 	 */
-	async createUser(this: IUserDb, name: string, password: string | undefined): Promise<User | undefined> {
+	async createUser(this: IUserDb, name: string, password: string | undefined, guest: boolean = false): Promise<User | undefined> {
 		password = await hashPassword(password);
+		const id = newUUID();
 		return userFromRow(
 			this.prepare(
-				'INSERT OR FAIL INTO user (name, password) VALUES (@name, @password) RETURNING *',
-			).get({ name, password }) as (Partial<User> | undefined),
+				'INSERT OR FAIL INTO user (id, name, password, guest) VALUES (@id, @name, @password, @guest) RETURNING *',
+			).get({ id, name, password, guest: guest ? 1 : 0 }) as (Partial<User> | undefined),
 		);
 	},
 
@@ -110,6 +111,7 @@ export type User = {
 	readonly name: string;
 	readonly password?: string;
 	readonly otp?: string;
+	readonly guest: boolean;
 };
 
 export async function verifyUserPassword(
@@ -148,10 +150,12 @@ function userFromRow(row?: Partial<User>): User | undefined {
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
 	if (isNullish(row.name)) return undefined;
+	if (isNullish(row.guest)) return undefined;
 	return {
 		id: row.id,
 		name: row.name,
 		password: row.password ?? undefined,
 		otp: row.otp ?? undefined,
+		guest: !!(row.guest ?? true),
 	};
 }

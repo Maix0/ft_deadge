@@ -11,6 +11,7 @@ const iOtp = document.querySelector('#i-otp');
 
 const bOtpSend = document.querySelector('#b-otpSend');
 const bLogin = document.querySelector('#b-login');
+const bLoginGuest = document.querySelector('#b-login-guest');
 const bLogout = document.querySelector('#b-logout');
 const bSignin = document.querySelector('#b-signin');
 const bWhoami = document.querySelector('#b-whoami');
@@ -26,6 +27,16 @@ function setResponse(obj) {
 	dResponse.innerText = obj_str;
 }
 let otpToken = null;
+
+bLoginGuest.addEventListener('click', async () => {
+	const res = await fetch('/api/auth/guest', { method: 'POST' });
+	const json = await res.json();
+
+	setResponse(json);
+	if (json.kind === 'success') {
+		if (json?.payload?.token) {document.cookie = `token=${json?.payload?.token}`;}
+	}
+});
 
 bOtpSend.addEventListener('click', async () => {
 	const res = await fetch('/api/auth/otp', { method: 'POST', body: JSON.stringify({ code: iOtp.value, token: otpToken }), headers });

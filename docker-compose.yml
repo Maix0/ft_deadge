@@ -41,6 +41,7 @@ services:
       - images-volume:/volumes/store
       - sqlite-volume:/volumes/database
     environment:
+      - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - USER_ICONS_STORE=/volumes/store
       - DATABASE_DIR=/volumes/database
 

@@ -4,8 +4,8 @@ import { Static, Type } from '@sinclair/typebox';
 import { typeResponse, makeResponse, isNullish } from '@shared/utils';
 
 export const GuestLoginRes = Type.Union([
-	typeResponse('failed', 'login.failed.generic'),
-	typeResponse('success', 'login.success', {
+	typeResponse('failed', ['guestLogin.failed.generic.unknown', 'guestLogin.failed.generic.error']),
+	typeResponse('success', 'guestLogin.success', {
 		token: Type.String({
 			description: 'JWT that represent a logged in user',
 		}),
@@ -38,14 +38,15 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 					true,
 				);
 				if (isNullish(user)) {
-					return makeResponse('failed', 'login.failed.generic');
+					return makeResponse('failed', 'guestLogin.failed.generic.unknown');
 				}
-				return makeResponse('success', 'login.success', {
-					token: this.signJwt('auth', user.id),
+				return makeResponse('success', 'guestLogin.success', {
+					token: this.signJwt('auth', user.id.toString()),
 				});
 			}
-			catch {
-				return makeResponse('failed', 'login.failed.generic');
+			catch (e: unknown) {
+				fastify.log.error(e);
+				return makeResponse('failed', 'guestLogin.failed.generic.error');
 			}
 		},
 	);
