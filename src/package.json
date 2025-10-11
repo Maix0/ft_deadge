@@ -21,7 +21,8 @@
     "clean": "rimraf \"**/node_modules\"",
     "eslint": "eslint",
     "install-all": "npm install",
-    "dev:prepare": "husky"
+    "dev:prepare": "husky",
+	"makerunts": "set -x; for SERVICE in user auth icons; do rm -f \"$SERVICE/src/run.ts\" && cp \"@shared/extra/run.ts.template\" \"$SERVICE/src/run.ts\"; done"
   },
   "devDependencies": {
     "rimraf": "^5.0.1",
