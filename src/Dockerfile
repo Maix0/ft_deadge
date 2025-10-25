@@ -1,30 +1,31 @@
 FROM node:22-alpine AS pnpm_base
-RUN npm install --global pnpm@10.14.0;
+RUN npm install --global pnpm@10 --no-fund -q;
+RUN apk add make python3 gcc clang build-base musl-dev;
 
 FROM pnpm_base AS builder
 
 ARG SERVICE
 
 WORKDIR /build
-COPY @shared/package.json                                /build/@shared/
-COPY ${SERVICE}/package.json                             /build/service/
-COPY tsconfig.base.json pnpm-workspace.yaml package.json /build/
-COPY ${SERVICE}/entrypoint.sh                            /build/
+COPY package.json 										   /build/
+COPY @shared/package.json                                  /build/@shared/
+COPY ${SERVICE}/                                           /build/${SERVICE}
+COPY tsconfig.base.json pnpm-workspace.yaml pnpm-lock.yaml /build/
+COPY ${SERVICE}/entrypoint.sh                              /build/
 
-RUN	pnpm install;
+RUN pnpm install --frozen-lockfile;
 
 COPY @shared/    /build/@shared/
-COPY ${SERVICE}/ /build/service/
+COPY ${SERVICE}/ /build/${SERVICE}/
 
-RUN cd /build/service                                          && \
-	pnpm run build:prod                                        && \
-	mkdir -p /dist/@shared /dist/service                       && \
-	cp /build/pnpm-workspace.yaml   /dist/pnpm-workspace.yaml  && \
-	cp /build/@shared/package.json  /dist/@shared/             && \
-	cp /build/service/package.json  /dist/service/             && \
-	cp /build/package.json          /dist/                     && \
-	cp /build/pnpm-lock.yaml        /dist/                     && \
-	cp /build/entrypoint.sh         /dist/                     && \
+RUN cd /build/${SERVICE}                                          && \
+	pnpm run build:prod                                           && \
+	mkdir -p /dist/@shared             /dist/${SERVICE}           && \
+	cp /build/pnpm-workspace.yaml      /dist/pnpm-workspace.yaml  && \
+	cp /build/pnpm-lock.yaml           /dist/pnpm-lock.yaml       && \
+	cp /build/@shared/package.json     /dist/@shared/             && \
+	cp /build/${SERVICE}/package.json  /dist/${SERVICE}/          && \
+	cp /build/entrypoint.sh            /dist/                     && \
 	chmod +x /dist/entrypoint.sh;
 
 

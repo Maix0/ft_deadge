@@ -4,7 +4,6 @@
 node_modules/
 *.pdf
 **/dist/
-pnpm-lock.yaml
 
 # sqlite stuff
 *.db
