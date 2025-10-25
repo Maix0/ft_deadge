@@ -1,0 +1,21 @@
+"$schema" = "https://maix.me/providers.schema.json"
+
+[providers.provider-openid]
+openid_url = "https://example.com/openid-url-without-.wellknown"
+client_id = "CLIENT_ID"
+client_secret.inline = "INLINED SECRET INSIDE CONFIG FILE"
+scopes = ["any needed scope here", "openid", "email"]
+# this url is to point to the local thingy - ask maieul
+redirect_url = "https://local.maix.me:8888/api/auth/oauth2/provider-openid/callback"
+# from the `info_url` request, which json key we will take an unique provider id (default:email) and an name for the user (default:name)
+user = { unique_id = "email", name = "name" }
+
+[providers.discord]
+auth_url = "https://discord.com/oauth2/authorize"
+token_url = "https://discord.com/api/oauth2/token"
+info_url = "https://discord.com/api/v10/users/@me"
+client_secret.env = "PROVIDER_SECRET_DISCORD" # here the secret is provided in the env var with that name
+client_id = "CLIENT_ID"
+redirect_url = "https://local.maix.me:8888/api/auth/oauth2/discord/callback"
+scopes = ["identify"] # here no email asked :)
+user = { unique_id = "id", name = "username" } # for example discord provides some stuff, like unique_id and username, such that we dont have to ask additional permission to get the email
