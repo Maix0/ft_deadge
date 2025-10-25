@@ -8,7 +8,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	fastify.get<{ Params: { provider?: string } }>(
 		'/api/auth/oauth2/:provider/login',
 		async function(req, res) {
-			if (isNullish(req.params.provider) || !(req.params.provider in this.oauth2)) { return `provider '${req.params.provider ?? 'none'}' doesn't exists`; }
+			if (isNullish(req.params.provider) || !(req.params.provider in this.oauth2)) { return `provider '${req.params.provider ?? 'none'}' doesn't exist`; }
 			const provider = this.oauth2[req.params.provider];
 			const [challenge, verifier] = oauth2.PkceChallenge.new();
 

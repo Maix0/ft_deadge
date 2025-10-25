@@ -18,10 +18,10 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 		'/api/auth/oauth2/:provider/callback',
 		async function(req, res) {
 			const qs = (req.query as { [k: string]: string });
-			if (isNullish(req.params.provider) || !(req.params.provider in this.oauth2)) { return `provider '${req.params.provider ?? 'none'}' doesn't exists`; }
+			if (isNullish(req.params.provider) || !(req.params.provider in this.oauth2)) { return `provider '${req.params.provider ?? 'none'}' doesn't exist`; }
 			const provider = this.oauth2[req.params.provider];
 			if (!('code' in qs)) { return res.code(400).send('no code in querystring...'); }
-			if (!('pkce' in req.cookies) && isNullish(req.cookies.pkce)) { return res.code(400).send('no pkce cookies'); }
+			if (!('pkce' in req.cookies) || isNullish(req.cookies.pkce)) { return res.code(400).send('no pkce cookies'); }
 			const code = new oauth2.AuthorizationCode(qs.code);
 			const pkce = new oauth2.PkceVerifier(req.cookies.pkce!, 'S256');
 			const creq = provider.exchangeCode(code);
