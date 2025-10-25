@@ -4,6 +4,11 @@ import Type, { Static } from '@sinclair/typebox';
 import Value from '@sinclair/typebox/value';
 import { createHash, randomBytes } from 'node:crypto';
 
+// An openid manifest is a standard json object, which all required data to use the service.
+// we only care about 3 fields
+//  - `authorization_endpoint`: where we redirect the user to login with the provider
+//  - `token_endpoint`: once the user is back with us (provider did the login thingy) where we actually get the token to do stuff *as* the user
+//  - `userinfo_endpoint`: where we can get the user information using the token we got before
 const OpenIdManifest = Type.Object(
 	{
 		authorization_endpoint: Type.String(),
@@ -19,6 +24,8 @@ function removePadding(s: string): string {
 	return s.replace(/=+$/, '');
 }
 
+// A CsrfToken stands for `Cross site request forgery`.
+// It is there to protect against stuff like "request replay" (someone just capture your raw request, and send it as is) and other stuff
 export class CsrfToken {
 	private constructor(private readonly secret_: string) { }
 
@@ -34,6 +41,8 @@ export class CsrfToken {
 	}
 }
 
+// A nonce means `Number only used once`
+// it is to also prevent request replay
 export class Nonce {
 	private constructor(private readonly value_: string) { }
 
@@ -49,8 +58,17 @@ export class Nonce {
 	}
 }
 
+// pkce is ther to assure that nobody is trying to be faster than you if they intercept any of the request.
+//
+// the gist of it is:
+// you give the server a string, which they keep
+// you say "I made this string using the function sha256(some secret)"
+// and when you ask them the code, you give them the secret.
+//
+// sha256 is very cheap to compute, but from a sha256 getting the secret is next to impossible
+//
+// that way the provider know you are indeed the same person
 export type PkceMethod = 'S256';
-
 export class PkceVerifier {
 	public readonly secret: string;
 	public readonly method: PkceMethod;
@@ -109,6 +127,8 @@ export class PkceChallenge {
 	}
 }
 
+
+// some rfc stuff, basically this class is here to have a nicer way to make the rfc complient API call
 export class AuthorizationUrl {
 	private scopes_: Set<string>;
 	private pkce_challenge?: PkceChallenge;
@@ -173,6 +193,7 @@ export class AuthorizationUrl {
 	}
 }
 
+// a code that allow us to do stuff "as" the logged in person
 export class AuthorizationCode {
 	public constructor(private readonly code: string) { }
 
@@ -180,6 +201,8 @@ export class AuthorizationCode {
 		return this.code;
 	}
 }
+
+// some rfc stuff, basically this class is here to have a nicer way to make the rfc complient API call
 export class CodeTokenRequest {
 	private pkce_verifier?: PkceVerifier;
 
@@ -235,6 +258,7 @@ export class CodeTokenRequest {
 	}
 }
 
+// a class that represent a provider, and gives us pretty method to do stuff
 export class Oauth2 {
 	public readonly auth_url: URL;
 	public readonly token_url: URL;
