@@ -146,7 +146,7 @@ async function hashPassword(
  *
  * @returns The user if it exists, undefined otherwise
  */
-function userFromRow(row?: Partial<User>): User | undefined {
+export function userFromRow(row?: Partial<User>): User | undefined {
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
 	if (isNullish(row.name)) return undefined;
