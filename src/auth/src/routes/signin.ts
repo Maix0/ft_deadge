@@ -46,8 +46,8 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			if (password.length > 64) {return makeResponse('failed', 'signin.failed.password.toolong');}
 			// password is good too !
 
-			if (this.db.getUserFromName(name) !== undefined) {return makeResponse('failed', 'signin.failed.username.existing');}
-			const u = await this.db.createUser(name, password, false);
+			if (this.db.getUserFromLoginName(name) !== undefined) {return makeResponse('failed', 'signin.failed.username.existing');}
+			const u = await this.db.createUser(name, name, password, false);
 			if (isNullish(u)) {return makeResponse('failed', 'signin.failed.generic');}
 
 			// every check has been passed, they are now logged in, using this token to say who they are...

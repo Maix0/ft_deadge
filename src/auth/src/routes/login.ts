@@ -29,7 +29,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			void _res;
 			try {
 				const { name, password } = req.body;
-				const user = this.db.getUserFromName(name);
+				const user = this.db.getUserFromLoginName(name);
 
 				// does the user exist
 				// does it have a password setup ?

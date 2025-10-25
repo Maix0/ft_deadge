@@ -35,7 +35,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
 
 			const payload = {
-				name: user.name,
+				name: user.display_name,
 				id: user.id,
 				// the !! converts a value from <something> to either `true` or `false`
 				// it uses the same convention from using <something> in a if, meaning that

@@ -31,6 +31,8 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				const noun = getRandomFromList(fastify.words.nouns);
 
 				const user = await this.db.createUser(
+					// no login_name => can't login
+					null,
 					`${adjective} ${noun}`,
 					// no password
 					undefined,

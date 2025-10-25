@@ -50,7 +50,7 @@ export const OauthImpl: Omit<IOauthDb, keyof IUserDb> = {
 
 	async createUserWithProvider(this: IOauthDb, provider: string, unique_id: string, username: string): Promise<User | undefined> {
 		unique_id = `provider:${unique_id}`;
-		const user = await this.createUser(username, undefined, false);
+		const user = await this.createUser(null, username, undefined, false);
 		if (isNullish(user)) { return undefined; }
 		this.prepare('INSERT INTO auth (provider, user, oauth2_user) VALUES (@provider, @user_id, @unique_id)').run({ provider, user_id: user.id, unique_id });
 		return user;

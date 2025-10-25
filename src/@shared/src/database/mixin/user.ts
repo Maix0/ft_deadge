@@ -7,11 +7,11 @@ import { UUID, newUUID } from '@shared/utils/uuid';
 // never use this directly
 
 export interface IUserDb extends Database {
-	getUserFromName(name: string): User | undefined,
+	getUserFromLoginName(name: string): User | undefined,
 	getUser(id: string): User | undefined,
 	getUserOtpSecret(id: UserId): string | undefined,
-	createUser(name: string, password: string | undefined, guest: boolean): Promise<User | undefined>,
-	createUser(name: string, password: string | undefined): Promise<User | undefined>,
+	createUser(login_name: string | null, display_name: string, password: string | undefined, guest: boolean): Promise<User | undefined>,
+	createUser(login_name: string | null, display_name: string, password: string | undefined): Promise<User | undefined>,
 	setUserPassword(id: UserId, password: string | undefined): Promise<User | undefined>,
 	ensureUserOtpSecret(id: UserId): string | undefined,
 	deleteUserOtpSecret(id: UserId): void,
@@ -25,10 +25,10 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @returns The user if it exists, undefined otherwise
 	 */
-	getUserFromName(this: IUserDb, name: string): User | undefined {
+	getUserFromLoginName(this: IUserDb, name: string): User | undefined {
 		return userFromRow(
 			this.prepare(
-				'SELECT * FROM user WHERE name = @name LIMIT 1',
+				'SELECT * FROM user WHERE login_name = @name LIMIT 1',
 			).get({ name }) as (Partial<User> | undefined),
 		);
 	},
@@ -56,13 +56,13 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @returns The user struct
 	 */
-	async createUser(this: IUserDb, name: string, password: string | undefined, guest: boolean = false): Promise<User | undefined> {
+	async createUser(this: IUserDb, login_name: string | null, display_name: string, password: string | undefined, guest: boolean = false): Promise<User | undefined> {
 		password = await hashPassword(password);
 		const id = newUUID();
 		return userFromRow(
 			this.prepare(
-				'INSERT OR FAIL INTO user (id, name, password, guest) VALUES (@id, @name, @password, @guest) RETURNING *',
-			).get({ id, name, password, guest: guest ? 1 : 0 }) as (Partial<User> | undefined),
+				'INSERT OR FAIL INTO user (id, login_name, display_name, password, guest) VALUES (@id, @login_name, @display_name, @password, @guest) RETURNING *',
+			).get({ id, login_name, display_name, password, guest: guest ? 1 : 0 }) as (Partial<User> | undefined),
 		);
 	},
 
@@ -108,7 +108,8 @@ export type UserId = UUID;
 
 export type User = {
 	readonly id: UserId;
-	readonly name: string;
+	readonly login_name?: string;
+	readonly display_name: string;
 	readonly password?: string;
 	readonly otp?: string;
 	readonly guest: boolean;
@@ -149,11 +150,12 @@ async function hashPassword(
 export function userFromRow(row?: Partial<User>): User | undefined {
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
-	if (isNullish(row.name)) return undefined;
+	if (isNullish(row.display_name)) return undefined;
 	if (isNullish(row.guest)) return undefined;
 	return {
 		id: row.id,
-		name: row.name,
+		login_name: row.login_name ?? undefined,
+		display_name: row.display_name,
 		password: row.password ?? undefined,
 		otp: row.otp ?? undefined,
 		guest: !!(row.guest ?? true),

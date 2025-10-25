@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS user (
   id TEXT PRIMARY KEY NOT NULL,
-  name TEXT NOT NULL,
+  login_name TEXT UNIQUE,
+  display_name TEXT NOT NULL,
   password TEXT,
   otp TEXT,
   guest INTEGER NOT NULL DEFAULT 0
