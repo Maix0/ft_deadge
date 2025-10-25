@@ -251,7 +251,7 @@ export class CodeTokenRequest {
 			isNullish(body) ||
 			!('access_token' in body)
 		) {
-			throw `response doesn't have an access body: ${JSON.stringify(body)}`;
+			throw `response doesn't have an access_token field: ${JSON.stringify(body)}`;
 		}
 
 		return body.access_token as string;
@@ -295,7 +295,7 @@ export class Oauth2 {
 			return secret.inline;
 		}
 		else {
-			throw 'invalid provider secret: not either env|inner in secret';
+			throw 'invalid provider secret: not either env|inline in secret';
 		}
 	}
 
@@ -342,7 +342,7 @@ export class Oauth2 {
 				);
 				const j = await req.json();
 				const v = Value.Parse(OpenIdManifest, j);
-				if (!('openid' in provider.scopes)) {
+				if (!provider.scopes.includes('openid')) {
 					provider.scopes.push('openid');
 				}
 
