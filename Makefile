@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/10/06 16:55:58 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/10/29 19:37:40 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ UNDERLINE = \033[4m
 PROJECT = ft_transcendence
 BASE_PATH=$(shell realpath .)
 ECHO = /usr/bin/env echo
+
 
 all:
 	@$(MAKE) --no-print-directory header
@@ -111,19 +112,16 @@ npm:
 	@$(ECHO) "  npm@eslint:  run eslint"
 
 npm@eslint:
-	npm --prefix=./src/ run eslint
+	(cd ./src/ && npx pnpm run eslint)
 
 npm@install:
-	npm --prefix=./src/ run install-all
-
-npm@clean:
-	npm --prefix=./src/ run clean
-
-npm@fclean: npm@clean
-	npm --prefix=./src/ run fclean
+	(cd ./src/ && npx pnpm install)
 
 npm@build:
-	npm --prefix=./src/ run build
+	(cd ./src/ && npx pnpm run build)
+
+npm@update:
+	(cd ./src/ && rm -rf ./src/node_modules/ && npx pnpm update -r --workspace)
 
 # this convert the .dbml file to an actual sql file that SQLite can handle :)
 sql:
