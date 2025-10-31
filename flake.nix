@@ -32,6 +32,8 @@
             tmux send-keys -t $SESSION:0.2 'watch -n0.5 npx --prefix=./src/ eslint .' C-m
             tmux new-window -t $SESSION:1 -n git -c "$DIR"
             tmux send-keys -t $SESSION:1 'lazygit' C-m
+            tmux new-window -t $SESSION:2 -n docker -c "$DIR"
+            tmux send-keys -t $SESSION:2 'lazydocker' C-m
           fi
           tmux select-window -t $SESSION:0
           tmux select-pane -t $SESSION:0.0
@@ -40,17 +42,18 @@
       in {
         devShell = pkgs.mkShellNoCC {
           packages = with pkgs; [
-            podman
-            podman-compose
+            act
+            clang
+            dbmlSQLite.packages.${system}.default
             gnumake
+            lazydocker
             nodejs_22
             pnpm
-            typescript
-            dbmlSQLite.packages.${system}.default
+            podman
+            podman-compose
             sqlite-interactive
-            clang
             tmux-setup
-            act
+            typescript
           ];
           shellHook = ''
             export PODMAN_COMPOSE_WARNING_LOGS="false";
