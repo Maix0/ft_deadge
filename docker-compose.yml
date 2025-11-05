@@ -87,8 +87,25 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
 
+  grafana:
+    container_name: monitoring-grafana
+    image: grafana/grafana
+    build: ./monitoring/grafana/
+    restart: always
+    networks:
+      - transcendance-network
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      # this can stay the same for developpement. This is an alias to `localhost`
+      - NGINX_DOMAIN=local.maix.me
+      - GF_LOG_LEVEL=debug
+
 
 volumes:
   images-volume:
   sqlite-volume:
   static-volume:
+  grafana-data:
