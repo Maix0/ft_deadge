@@ -21,11 +21,11 @@ scrape_configs:
 
     static_configs:
       - targets:
-          - https://nginx
-          - https://nginx/monitoring/ok
-          - https://auth
-          - https://user
-          - https://icons
+          - http://nginx
+          - http://nginx/monitoring/ok
+          - http://auth/monitoring
+          - http://user/monitoring
+          - http://icons/monitoring
 
     relabel_configs:
       - source_labels: [__address__]
