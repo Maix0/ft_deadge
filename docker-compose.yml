@@ -1,8 +1,10 @@
 networks:
   transcendance-network:
     driver: bridge
+  monitoring:
+    driver: bridge
 services:
-  # 
+  #
   # The "entry point" as in it does all of this:
   #  - serve files (images, static files, video)
   #  - redirect request to appropirate service (reverse proxy)
@@ -66,7 +68,8 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
       - PROVIDER_FILE=/extra/providers.toml
-  
+
+
   ###############
   #    USER     #
   ###############
@@ -87,21 +90,72 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
 
+
+
+  ###############
+  # MONITORING  #
+  ###############
+
   grafana:
     container_name: monitoring-grafana
-    image: grafana/grafana
-    build: ./monitoring/grafana/
+    image: grafana/grafana-enterprise
     restart: always
     networks:
       - transcendance-network
+      - monitoring
+    depends_on:
+      - prometheus
     ports:
       - '3000:3000'
     volumes:
+      - ./monitoring/grafana/alerting:/etc/grafana/provisioning/alerting
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/dashboards-config:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
       - grafana-data:/var/lib/grafana
     environment:
       # this can stay the same for developpement. This is an alias to `localhost`
       - NGINX_DOMAIN=local.maix.me
-      - GF_LOG_LEVEL=debug
+      - GF_LOG_LEVEL=warn
+      - GF_SERVER_ROOT_URL=http://local.maix.me:3000
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASS}
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: monitoring-prometheus
+    networks:
+      - transcendance-network
+      - monitoring
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus/
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    networks:
+      - monitoring
+    container_name: monitoring-cadvisor
+    ports:
+      - '8080:8080'
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+  blackbox:
+    image: prom/blackbox-exporter
+    container_name: monitoring-blackbox
+    networks:
+      - monitoring
+    ports:
+      - "9115:9115"
+    command:
+      - '--config.file=/etc/blackbox_exporter/config.yml'
+    volumes:
+      - ./monitoring/blackbox:/etc/blackbox_exporter
 
 
 volumes:
