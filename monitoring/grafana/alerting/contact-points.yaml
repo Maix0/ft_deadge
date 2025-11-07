@@ -1,0 +1,18 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: discord-webhook
+    type: webhook
+    isDefault: true
+    settings:
+      url: ${DISCORD_WEBHOOK_URL}
+      httpMethod: POST
+      maxRetries: 3
+      sendReminder: false
+      disableResolveMessage: false
+      autoResolve: true
+      uploadImage: false
+      customHeaders:
+        - name: Content-Type
+          value: application/json
