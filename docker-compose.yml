@@ -145,18 +145,6 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
 
-  blackbox:
-    image: prom/blackbox-exporter
-    container_name: monitoring-blackbox
-    networks:
-      - monitoring
-    ports:
-      - "9115:9115"
-    command:
-      - '--config.file=/etc/blackbox_exporter/config.yml'
-    volumes:
-      - ./monitoring/blackbox:/etc/blackbox_exporter
-
 
 volumes:
   images-volume:
