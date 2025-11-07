@@ -8,8 +8,31 @@ scrape_configs:
 
   - job_name: 'backend'
     static_configs:
-      - targets: ['local.maix.me:8888']
+      - targets: ['127.0.0.1:8888']
 
   - job_name: 'cadvisor'
     static_configs:
       - targets: ['monitoring-cadvisor:8080']
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+
+    static_configs:
+      - targets:
+          - https://nginx
+          - https://nginx/monitoring/ok
+          - https://auth
+          - https://user
+          - https://icons
+
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      - source_labels: [__param_target]
+        target_label: instance
+
+      - target_label: __address__
+        replacement: monitoring-blackbox:9115
