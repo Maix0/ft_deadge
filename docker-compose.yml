@@ -145,6 +145,14 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
 
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    container_name: monitoring-blackbox
+    networks:
+      - transcendance-network
+    ports:
+      - "9115:9115"
+    restart: unless-stopped
 
 volumes:
   images-volume:
