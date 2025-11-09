@@ -1,36 +1,59 @@
-import { TObject, TProperties, Type } from '@sinclair/typebox';
+import {
+	Parameters,
+	Static,
+	TEnum,
+	TSchema,
+	Type,
+	TProperties,
+	TObject,
+} from 'typebox';
+import { FastifyReply } from 'fastify';
+import fp from 'fastify-plugin';
 
-/**
- * @description Represent a message key
- * Used for translation of text, taken from a prebuilt dictionary
- * Format: `category.sub.desc`
- *
- * @example `login.failure.invalid`
- * @example `login.failure.missingPassword`
- * @example `login.failure.missingUser`
- * @example `signin.success`
- * @example `pong.you.lost`
- */
-export type MessageKey = string;
-export type ResponseBase<T = object> = {
+const kMakeResponseSym = Symbol('make-response-sym');
+declare module 'fastify' {
+	export interface RouteOptions {
+		[kMakeResponseSym]: boolean;
+	}
+}
+export const useMakeResponse = fp(async (fastify, opts) => {
+	void opts;
+
+	fastify.decorateReply('makeResponse', makeResponse);
+});
+
+export type MakeStaticResponse<T extends { [k: string]: TSchema }> = {
+	[k in keyof T]: Static<T[k]>;
+};
+
+declare module 'fastify' {
+	interface FastifyReply {
+		/**
+		 * @description Builds a response from a `kind`, `key` and an arbitrary payload
+		 *
+		 * * USE THIS FUNCTION TO ALLOW GREPING :) *
+		 *
+		 * @example makeResponse("failure", "login.failure.invalid")
+		 * @example makeResponse("success", "login.success", { token: "supersecrettoken" })
+		 */
+		makeResponse<T extends object>(
+			status: Parameters<FastifyReply['code']>[0],
+			kind: string,
+			key: string,
+			payload?: T,
+		): ReturnType<FastifyReply['send']>;
+	}
+}
+
+function makeResponse<T extends object>(
+	this: FastifyReply,
+	status: Parameters<FastifyReply['code']>[0],
 	kind: string,
-	msg: MessageKey,
+	key: string,
 	payload?: T,
+): ReturnType<FastifyReply['send']> {
+	return this.code(status).send({ kind, msg: key, payload });
 }
-
-/**
- * @description Builds a response from a `kind`, `key` and an arbitrary payload
- *
- * * USE THIS FUNCTION TO ALLOW GREPING :) *
- *
- * @example makeResponse("failure", "login.failure.invalid")
- * @example makeResponse("success", "login.success", { token: "supersecrettoken" })
- */
-export function makeResponse<T = object>(kind: string, key: MessageKey, payload?: T): ResponseBase<T> {
-	console.log(`making response {kind: ${JSON.stringify(kind)}; key: ${JSON.stringify(key)}}`);
-	return { kind, msg: key, payload };
-}
-
 
 /**
  * @description Create a typebox Type for a response.
@@ -39,20 +62,60 @@ export function makeResponse<T = object>(kind: string, key: MessageKey, payload?
  * @example typeResponse("otpRequired", "login.otpRequired", { token: Type.String() })
  * @example typeResponse("success", "login.success", { token: Type.String() })
  */
-export function typeResponse(kind: string, key: MessageKey | MessageKey[], payload?: TProperties): TObject<TProperties> {
-	let tKey;
-	if (key instanceof Array) {
-		tKey = Type.Union(key.map(l => Type.Const(l)));
-	}
-	else {
-		tKey = Type.Const(key);
-	}
+export function typeResponse<K extends string, M extends string>(
+	kind: K,
+	key: M,
+): TObject<{
+	kind: TEnum<[K]>;
+	msg: TEnum<M[]>;
+}>;
+export function typeResponse<K extends string, M extends string[]>(
+	kind: K,
+	key: [...M],
+): TObject<{
+	kind: TEnum<K[]>;
+	msg: TEnum<M>;
+}>;
+export function typeResponse<
+	K extends string,
+	M extends string,
+	T extends TProperties,
+>(
+	kind: K,
+	key: M,
+	payload: T,
+): TObject<{
+	kind: TEnum<[K]>;
+	msg: TEnum<M[]>;
+	payload: TObject<T>;
+}>;
+export function typeResponse<
+	K extends string,
+	M extends string[],
+	T extends TProperties,
+>(
+	kind: K,
+	key: [...M],
+	payload: T,
+): TObject<{
+	kind: TEnum<[K]>;
+	msg: TEnum<M>;
+	payload: TObject<T>;
+}>;
+export function typeResponse<K extends string, T extends TProperties>(
+	kind: K,
+	key: unknown,
+	payload?: T,
+): unknown {
+	const tKey = Type.Enum(Array.isArray(key) ? key : [key]);
 
 	const Ty = {
-		kind: Type.Const(kind),
+		kind: Type.Enum([kind]),
 		msg: tKey,
 	};
-	if (payload !== undefined) {Object.assign(Ty, { payload: Type.Object(payload) });}
+	if (payload !== undefined) {
+		Object.assign(Ty, { payload: Type.Object(payload) });
+	}
 
 	return Type.Object(Ty);
 }
@@ -68,6 +131,6 @@ export function typeResponse(kind: string, key: MessageKey | MessageKey[], paylo
  * @example assert_equal(isNullish({}), false);
  * @example assert_equal(isNullish(false), false);
  */
-export function isNullish<T>(v: T | undefined | null): v is (null | undefined) {
+export function isNullish<T>(v: T | undefined | null): v is null | undefined {
 	return v === null || v === undefined;
 }

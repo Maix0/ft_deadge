@@ -1,0 +1,43 @@
+apis:
+  auth:
+    root: ./auth/openapi.json
+  user:
+    root: ./user/openapi.json
+
+rules:
+  info-license: warn
+  info-license-strict: warn
+  no-ambiguous-paths: warn
+  no-duplicated-tag-names: warn
+  no-empty-servers: error
+  no-enum-type-mismatch: error
+  no-example-value-and-externalValue: error
+  no-identical-paths: error
+  no-invalid-media-type-examples: warn
+  no-invalid-parameter-examples: warn
+  no-invalid-schema-examples: warn
+  no-path-trailing-slash: error
+  no-required-schema-properties-undefined: warn
+  no-schema-type-mismatch: error
+  no-server-example.com: warn
+  no-server-trailing-slash: error
+  no-server-variables-empty-enum: error
+  no-unresolved-refs: error
+  no-unused-components: warn
+  no-undefined-server-variable: error
+  operation-2xx-response: warn
+  operation-4xx-response: warn
+  operation-operationId: warn
+  operation-operationId-unique: error
+  operation-operationId-url-safe: error
+  operation-parameters-unique: error
+  operation-summary: error
+  path-declaration-must-exist: error
+  path-not-include-query: error
+  path-parameters-defined: error
+  path-params-defined: error
+  security-defined: error
+  spec-components-invalid-map-name: error
+  struct: error
+  tag-description: warn
+

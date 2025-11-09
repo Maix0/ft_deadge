@@ -1,7 +1,7 @@
 import { isNullish } from '@shared/utils';
 import type { Provider, ProviderSecret, ProviderUserInfo } from './plugins/providers';
-import Type, { Static } from '@sinclair/typebox';
-import Value from '@sinclair/typebox/value';
+import Type, { Static } from 'typebox';
+import Value from 'typebox/value';
 import { createHash, randomBytes } from 'node:crypto';
 
 // An openid manifest is a standard json object, which all required data to use the service.
