@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/10/29 19:37:40 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/11/09 01:22:55 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -123,6 +123,12 @@ npm@build:
 npm@update:
 	(cd ./src/ && rm -rf ./src/node_modules/ && npx pnpm update -r --workspace)
 
+npm@openapi:
+	@(cd ./src/ && npx pnpm run --if-present -r build:openapi)
+	@rm -f ./src/openapi.json
+	@(cd ./src/ && npx pnpm exec redocly join --without-x-tag-groups)
+	@(cd ./src/ && npx pnpm exec openapi-generator-cli generate -t ../openapi-template -g typescript-fetch -i openapi.json  -o ../frontend/src/api/generated);
+
 # this convert the .dbml file to an actual sql file that SQLite can handle :)
 sql:
 	@echo "if the command isn't found, contact maieul :)"
@@ -137,6 +143,11 @@ tmux:
 	@tmux send-keys -t $(PROJECT):1 'lazygit' C-m
 	@tmux select-window -t $(PROJECT):0
 	@tmux attach-session -t $(PROJECT)
+
+fnginx:
+	fnginx &
+	-(cd ./frontend && pnpm exec vite --clearScreen false)
+	wait
 
 #	phony
 .PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux

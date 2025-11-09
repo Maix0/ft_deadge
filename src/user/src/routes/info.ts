@@ -1,26 +1,37 @@
 import { FastifyPluginAsync } from 'fastify';
 
-import { Static, Type } from '@sinclair/typebox';
-import { isNullish, makeResponse, typeResponse } from '@shared/utils';
+import { Static, Type } from 'typebox';
+import { isNullish, MakeStaticResponse, typeResponse } from '@shared/utils';
 
 
-export const UserInfoRes = Type.Union([
-	typeResponse('success', 'userinfo.success', { name: Type.String(), id: Type.String(), guest: Type.Boolean() }),
-	typeResponse('failure', ['userinfo.failure.generic', 'userinfo.failure.unknownUser', 'userinfo.failure.notLoggedIn']),
-]);
+export const UserInfoRes = {
+	'200': typeResponse('success', 'userinfo.success', {
+		name: Type.String(), id: Type.String(), guest: Type.Boolean(),
+	}),
+	'403': typeResponse('failure', 'userinfo.failure.notLoggedIn'),
+	'404': typeResponse('failure', 'userinfo.failure.unknownUser'),
+};
 
-export type UserInfoRes = Static<typeof UserInfoRes>;
+export type UserInfoRes = MakeStaticResponse<typeof UserInfoRes>;
+
+export const UserInfoParams = Type.Object({
+	user: Type.Union([
+		Type.Enum(['me'], { description: 'the current logged in user' }),
+		Type.String({ format: 'uuid', description: 'A user uuid' }),
+	]),
+});
+
+export type UserInfoParams = Static<typeof UserInfoParams>;
 
 const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	void _opts;
-	fastify.get<{ Params: { user: string } }>(
+	fastify.get<{ Params: UserInfoParams }>(
 		'/api/user/info/:user',
-		{ schema: { response: { '2xx': UserInfoRes } }, config: { requireAuth: true } },
-		async function(req, _res) {
-			void _res;
-			if (isNullish(req.authUser)) { return makeResponse('failure', 'userinfo.failure.notLoggedIn'); }
+		{ schema: { params: UserInfoParams, response: UserInfoRes, operationId: 'getUser' }, config: { requireAuth: true } },
+		async function(req, res) {
+			if (isNullish(req.authUser)) { return res.makeResponse(403, 'failure', 'userinfo.failure.notLoggedIn'); }
 			if (isNullish(req.params.user) || req.params.user.length === 0) {
-				return makeResponse('failure', 'userinfo.failure.unknownUser');
+				return res.makeResponse(404, 'failure', 'userinfo.failure.unknownUser');
 			}
 
 			// if the param is the special value `me`, then just get the id from the currently auth'ed user
@@ -30,7 +41,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
 			const user = this.db.getUser(req.params.user);
 			if (isNullish(user)) {
-				return makeResponse('failure', 'userinfo.failure.unknownUser');
+				return res.makeResponse(404, 'failure', 'userinfo.failure.unknownUser');
 			}
 
 
@@ -48,7 +59,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				guest: !!user.guest,
 			};
 
-			return makeResponse('success', 'userinfo.success', payload);
+			return res.makeResponse(200, 'success', 'userinfo.success', payload);
 		},
 	);
 };

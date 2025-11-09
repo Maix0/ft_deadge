@@ -2,18 +2,28 @@ FROM node:22-alpine AS pnpm_base
 RUN npm install --global pnpm@10 --no-fund -q;
 RUN apk add make python3 gcc clang build-base musl-dev;
 
+FROM pnpm_base AS deps
+WORKDIR /build
+ARG SERVICE
+
+COPY package.json  pnpm-workspace.yaml pnpm-lock.yaml /build/
+COPY @shared/package.json                             /build/@shared/
+COPY ${SERVICE}/package.json                          /build/${SERVICE}/
+
+RUN pnpm install --frozen-lockfile;
+
 FROM pnpm_base AS builder
 
 ARG SERVICE
 
 WORKDIR /build
-COPY package.json 										   /build/
+COPY package.json                                          /build/
 COPY @shared/package.json                                  /build/@shared/
 COPY ${SERVICE}/                                           /build/${SERVICE}
 COPY tsconfig.base.json pnpm-workspace.yaml pnpm-lock.yaml /build/
 COPY ${SERVICE}/entrypoint.sh                              /build/
 
-RUN pnpm install --frozen-lockfile;
+COPY --from=deps /build/node_modules /build/node_modules
 
 COPY @shared/    /build/@shared/
 COPY ${SERVICE}/ /build/${SERVICE}/
@@ -34,8 +44,9 @@ FROM pnpm_base
 WORKDIR /src
 
 ARG EXTRA_FILES=empty
-COPY --from=builder /dist /src
-RUN pnpm install --prod --frozen-lockfile;
+COPY --from=builder /dist                /src
+COPY --from=deps    /build/node_modules  /src/node_modules
+
 COPY ${EXTRA_FILES}       /extra
 ENTRYPOINT [ "/src/entrypoint.sh" ]
 

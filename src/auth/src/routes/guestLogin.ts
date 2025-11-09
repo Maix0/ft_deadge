@@ -1,18 +1,18 @@
 import { FastifyPluginAsync } from 'fastify';
 
-import { Static, Type } from '@sinclair/typebox';
-import { typeResponse, makeResponse, isNullish } from '@shared/utils';
+import { Type } from 'typebox';
+import { typeResponse, isNullish, MakeStaticResponse } from '@shared/utils';
 
-export const GuestLoginRes = Type.Union([
-	typeResponse('failed', ['guestLogin.failed.generic.unknown', 'guestLogin.failed.generic.error']),
-	typeResponse('success', 'guestLogin.success', {
+export const GuestLoginRes = {
+	'500': typeResponse('failed', ['guestLogin.failed.generic.unknown', 'guestLogin.failed.generic.error']),
+	'200': typeResponse('success', 'guestLogin.success', {
 		token: Type.String({
 			description: 'JWT that represent a logged in user',
 		}),
 	}),
-]);
+};
 
-export type GuestLoginRes = Static<typeof GuestLoginRes>;
+export type GuestLoginRes = MakeStaticResponse<typeof GuestLoginRes>;
 
 const getRandomFromList = (list: string[]): string => {
 	return list[Math.floor(Math.random() * list.length)];
@@ -20,9 +20,9 @@ const getRandomFromList = (list: string[]): string => {
 
 const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	void _opts;
-	fastify.post(
+	fastify.post<{ Body: null, Reply: GuestLoginRes }>(
 		'/api/auth/guest',
-		{ schema: { response: { '2xx': GuestLoginRes } } },
+		{ schema: { response: GuestLoginRes, operationId: 'guestLogin' } },
 		async function(req, res) {
 			void req;
 			void res;
@@ -40,15 +40,15 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 					true,
 				);
 				if (isNullish(user)) {
-					return makeResponse('failed', 'guestLogin.failed.generic.unknown');
+					return res.makeResponse(500, 'failed', 'guestLogin.failed.generic.unknown');
 				}
-				return makeResponse('success', 'guestLogin.success', {
+				return res.makeResponse(200, 'success', 'guestLogin.success', {
 					token: this.signJwt('auth', user.id.toString()),
 				});
 			}
 			catch (e: unknown) {
 				fastify.log.error(e);
-				return makeResponse('failed', 'guestLogin.failed.generic.error');
+				return res.makeResponse(500, 'failed', 'guestLogin.failed.generic.error');
 			}
 		},
 	);

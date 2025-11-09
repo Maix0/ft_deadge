@@ -26,6 +26,9 @@ const externals = collectDeps(
 
 export default defineConfig({
 	root: __dirname,
+	define: {
+		__SERVICE_NAME: '"user"',
+	},
 	// service root
 	plugins: [tsconfigPaths(), nodeExternals()],
 	build: {
@@ -33,7 +36,7 @@ export default defineConfig({
 		outDir: 'dist',
 		emptyOutDir: true,
 		lib: {
-			entry: path.resolve(__dirname, 'src/run.ts'),
+			entry: path.resolve(__dirname, process.env.VITE_ENTRYPOINT ?? 'src/run.ts'),
 			// adjust main entry
 			formats: ['cjs'],
 			// CommonJS for Node.js

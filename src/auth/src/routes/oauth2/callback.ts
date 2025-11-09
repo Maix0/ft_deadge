@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 
-import { Static, Type } from '@sinclair/typebox';
+import { Static, Type } from 'typebox';
 import { typeResponse, isNullish } from '@shared/utils';
 import * as oauth2 from '../../oauth2';
 
@@ -16,6 +16,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	void _opts;
 	fastify.get<{ Params: { provider?: string } }>(
 		'/api/auth/oauth2/:provider/callback',
+		{ schema: { hide: true } },
 		async function(req, res) {
 			const qs = (req.query as { [k: string]: string });
 			if (isNullish(req.params.provider) || !(req.params.provider in this.oauth2)) { return `provider '${req.params.provider ?? 'none'}' doesn't exist`; }
