@@ -54,6 +54,11 @@
             sqlite-interactive
             tmux-setup
             typescript
+            act
+            openssl
+            nginx
+
+            openjdk # for openapi-generator... its a jar file
           ];
           shellHook = ''
             export PODMAN_COMPOSE_WARNING_LOGS="false";

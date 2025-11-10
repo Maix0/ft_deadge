@@ -2,6 +2,19 @@ networks:
   transcendance-network:
     driver: bridge
 services:
+
+  ###############
+  #    USER     #
+  ###############
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: on-failure:3
+    networks:
+      - transcendance-network
+    volumes:
+      - static-volume:/volumes/static
+
   # 
   # The "entry point" as in it does all of this:
   #  - serve files (images, static files, video)
@@ -86,6 +99,7 @@ services:
     environment:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
+
 
 
 volumes:

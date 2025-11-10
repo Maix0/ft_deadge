@@ -33,10 +33,10 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
 				// does the user exist
 				// does it have a password setup ?
-				if (isNullish(user?.password)) { return res.makeResponse(403, 'failed', 'login.failed.invalid'); }
+				if (isNullish(user?.password)) { return res.makeResponse(400, 'failed', 'login.failed.invalid'); }
 
 				// does the password he provided match the one we have
-				if (!(await verifyUserPassword(user, password))) { return res.makeResponse(403, 'failed', 'login.failed.invalid'); }
+				if (!(await verifyUserPassword(user, password))) { return res.makeResponse(400, 'failed', 'login.failed.invalid'); }
 
 				// does the user has 2FA up ?
 				if (!isNullish(user.otp)) {
