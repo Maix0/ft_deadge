@@ -90,10 +90,10 @@ export const authPlugin = fp<{ onlySchema?: boolean }>(async (fastify, { onlySch
 			let schema: TSchema = authSchema;
 			if ('401' in (routeOpts.schema.response as { [k: string]: TSchema })) {
 				const schema_orig = (routeOpts.schema.response as { [k: string]: TSchema })['401'];
-				if (schema_orig[Typebox.Kind] === 'Union') {
+				if (Type.IsUnion(schema_orig)) {
 					schema = Typebox.Union([...((schema_orig as Typebox.TUnion).anyOf), authSchema]);
 				}
-				else if (schema_orig[Typebox.Kind] === 'Object') {
+				else if (Type.IsObject(schema_orig)) {
 					schema = Typebox.Union([schema_orig, authSchema]);
 				}
 			}
@@ -103,26 +103,26 @@ export const authPlugin = fp<{ onlySchema?: boolean }>(async (fastify, { onlySch
 					try {
 						if (isNullish(req.cookies.token)) {
 							return res
-								.clearCookie('token')
+								.clearCookie('token', { path: '/' })
 								.makeResponse(401, 'notLoggedIn', 'auth.noCookie');
 						}
 						const tok = this.jwt.verify<JwtType>(req.cookies.token);
 						if (tok.kind != 'auth') {
 							return res
-								.clearCookie('token')
+								.clearCookie('token', { path: '/' })
 								.makeResponse(401, 'notLoggedIn', 'auth.invalidKind');
 						}
 						const user = this.db.getUser(tok.who);
 						if (isNullish(user)) {
 							return res
-								.clearCookie('token')
+								.clearCookie('token', { path: '/' })
 								.makeResponse(401, 'notLoggedIn', 'auth.noUser');
 						}
 						req.authUser = { id: user.id, name: tok.who };
 					}
 					catch {
 						return res
-							.clearCookie('token')
+							.clearCookie('token', { path: '/' })
 							.makeResponse(401, 'notLoggedIn', 'auth.invalid');
 					}
 				};
