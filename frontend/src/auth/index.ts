@@ -14,7 +14,7 @@ export function getUser(): Readonly<User> | null {
 }
 
 export function isLogged(): boolean {
-  return currentUser === null;
+  return currentUser !== null;
 }
 
 export function setUser(newUser: User | null) {

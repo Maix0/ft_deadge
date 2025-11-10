@@ -61,7 +61,7 @@ export class RouteHandlerData {
 			if (part.startsWith(':')) {
 				let param_name = part.substring(1) // remove the :
 				// verifiy that the parameter name only contains character, underscores and numbers (not in fist char tho)
-				if (!param_name.match('^[a-zA-Z_][a-zA-Z_0-9]+$'))
+				if (!param_name.match('^[a-zA-Z_][a-zA-Z_0-9]*$'))
 					throw `route parameter ${idx} for url '${url}' contains illegal character`;
 				return { idx, param_name, part: null }
 			}

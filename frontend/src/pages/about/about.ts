@@ -9,4 +9,4 @@ async function route(_url: string, _args: { [k: string]: string }): Promise<stri
 
 
 
-addRoute('/', route)
+addRoute('/about', route)

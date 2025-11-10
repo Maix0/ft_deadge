@@ -20,10 +20,9 @@ function handleLogin(_url: string, _args: RouteHandlerParams): RouteHandlerRetur
 			const fLogin = document.querySelector<HTMLFormElement>('form#login-form');
 			if (fLogin === null)
 				return showError('Error while rendering the page: no form found');
-			showSuccess('got the form !')
 			fLogin.addEventListener('submit', async function(e: SubmitEvent) {
 				e.preventDefault();
-				let form = e.target as (HTMLFormElement | null)
+				let form = e.target as (HTMLFormElement | null);
 				if (form === null)
 					return showError('Failed to send form...');
 				let formData = Object.fromEntries((new FormData(form)).entries());
