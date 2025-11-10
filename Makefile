@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/11/09 01:22:55 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/11/10 01:05:11 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -144,8 +144,12 @@ tmux:
 	@tmux select-window -t $(PROJECT):0
 	@tmux attach-session -t $(PROJECT)
 
-fnginx:
-	fnginx &
+nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key &:
+	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./nginx-dev/nginx-selfsigned.key -out ./nginx-dev/nginx-selfsigned.crt -subj "/C=FR/OU=student/CN=local.maix.me";
+
+fnginx: nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key
+	nginx -p ./nginx-dev -c nginx.conf -e /dev/stderr &
+	-(cd ./frontend && pnpm exec tsc --noEmit --watch --preserveWatchOutput) &
 	-(cd ./frontend && pnpm exec vite --clearScreen false)
 	wait
 
