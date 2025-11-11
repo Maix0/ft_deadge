@@ -1,8 +1,20 @@
+// ************************************************************************** //
+//                                                                            //
+//                                                        :::      ::::::::   //
+//   otp.ts                                             :+:      :+:    :+:   //
+//                                                    +:+ +:+         +:+     //
+//   By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+        //
+//                                                +#+#+#+#+#+   +#+           //
+//   Created: 2025/11/07 16:25:58 by maiboyer          #+#    #+#             //
+//   Updated: 2025/11/09 00:44:33 by maiboyer         ###   ########.fr       //
+//                                                                            //
+// ************************************************************************** //
+
 import { FastifyPluginAsync } from 'fastify';
 
-import { Static, Type } from '@sinclair/typebox';
+import { Static, Type } from 'typebox';
 import { JwtType, Otp } from '@shared/auth';
-import { typeResponse, makeResponse, isNullish } from '@shared/utils';
+import { typeResponse, MakeStaticResponse, isNullish } from '@shared/utils';
 
 const OtpReq = Type.Object({
 	token: Type.String({ description: 'The token given at the login phase' }),
@@ -11,12 +23,15 @@ const OtpReq = Type.Object({
 
 type OtpReq = Static<typeof OtpReq>;
 
-const OtpRes = Type.Union([
-	typeResponse('failed', ['otp.failed.generic', 'otp.failed.invalid', 'otp.failed.timeout', 'otp.failed.noSecret']),
-	typeResponse('success', 'otp.success', { token: Type.String({ description: 'the JWT Token' }) }),
-]);
+const OtpRes = {
+	'500': typeResponse('failed', 'otp.failed.generic'),
+	'400': typeResponse('failed', 'otp.failed.invalid'),
+	'401': typeResponse('failed', 'otp.failed.noSecret'),
+	'408': typeResponse('failed', 'otp.failed.timeout'),
+	'200': typeResponse('success', 'otp.success', { token: Type.String({ description: 'the JWT Token' }) }),
+};
 
-type OtpRes = Static<typeof OtpRes>;
+type OtpRes = MakeStaticResponse<typeof OtpRes>;
 
 const OTP_TOKEN_TIMEOUT_SEC = 120;
 
@@ -24,9 +39,8 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	void _opts;
 	fastify.post<{ Body: OtpReq }>(
 		'/api/auth/otp',
-		{ schema: { body: OtpReq, response: { '2xx': OtpRes } } },
-		async function(req, _res) {
-			void _res;
+		{ schema: { body: OtpReq, response: OtpRes, operationId: 'loginOtp' } },
+		async function(req, res) {
 			try {
 				const { token, code } = req.body;
 				// lets try to decode+verify the jwt
@@ -35,12 +49,12 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				// is the jwt a valid `otp` jwt ?
 				if (dJwt.kind != 'otp') {
 					// no ? fuck off then
-					return makeResponse('failed', 'otp.failed.invalid');
+					return res.makeResponse(400, 'failed', 'otp.failed.invalid');
 				}
 				// is it too old ?
 				if (dJwt.createdAt + OTP_TOKEN_TIMEOUT_SEC * 1000 < Date.now()) {
 					// yes ? fuck off then, redo the password
-					return makeResponse('failed', 'otp.failed.timeout');
+					return res.makeResponse(408, 'failed', 'otp.failed.timeout');
 				}
 
 				// get the Otp sercret from the db
@@ -48,7 +62,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				if (isNullish(user?.otp)) {
 					// oops, either no user, or user without otpSecret
 					// fuck off
-					return makeResponse('failed', 'otp.failed.noSecret');
+					return res.makeResponse(401, 'failed', 'otp.failed.noSecret');
 				}
 
 				// good lets now verify the token you gave us is the correct one...
@@ -66,13 +80,13 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				if (tokens.some((c) => c === code)) {
 					// they do !
 					// gg you are now logged in !
-					return makeResponse('success', 'otp.success', { token: this.signJwt('auth', dJwt.who) });
+					return res.makeResponse(200, 'success', 'otp.success', { token: this.signJwt('auth', dJwt.who) });
 				}
 			}
 			catch {
-				return makeResponse('failed', 'otp.failed.generic');
+				return res.makeResponse(500, 'failed', 'otp.failed.generic');
 			}
-			return makeResponse('failed', 'otp.failed.generic');
+			return res.makeResponse(500, 'failed', 'otp.failed.generic');
 		},
 	);
 };

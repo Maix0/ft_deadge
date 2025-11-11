@@ -1,0 +1,1038 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "9.6.0",
+    "title": "@fastify/swagger"
+  },
+  "servers": [
+    {
+      "url": "https://local.maix.me:8888",
+      "description": "direct from docker"
+    },
+    {
+      "url": "https://local.maix.me:8000",
+      "description": "using fnginx"
+    }
+  ],
+  "tags": [
+    {
+      "name": "openapi_other",
+      "x-displayName": "other"
+    }
+  ],
+  "paths": {
+    "/api/auth/disableOtp": {
+      "put": {
+        "operationId": "disableOtp",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "disableOtp.success"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "notLoggedIn"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "auth.noCookie",
+                        "auth.invalidKind",
+                        "auth.noUser",
+                        "auth.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "disableOtp.failure.generic"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/enableOtp": {
+      "put": {
+        "operationId": "enableOtp",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "enableOtp.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "url"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "The otp url to feed into a 2fa app"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "notLoggedIn"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "auth.noCookie",
+                        "auth.invalidKind",
+                        "auth.noUser",
+                        "auth.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/guest": {
+      "post": {
+        "operationId": "guestLogin",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "guestLogin.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "token"
+                      ],
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "JWT that represent a logged in user"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "guestLogin.failed.generic.unknown",
+                        "guestLogin.failed.generic.error"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "login.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "token"
+                      ],
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "JWT that represent a logged in user"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "otpRequired"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "login.otpRequired"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "token"
+                      ],
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "JWT to send with the OTP to finish login"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "login.failed.generic",
+                        "login.failed.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "logout.success"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/otp": {
+      "post": {
+        "operationId": "loginOtp",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "code"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The token given at the login phase"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "The OTP given by the user"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "otp.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "token"
+                      ],
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "the JWT Token"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "otp.failed.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "otp.failed.noSecret"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "otp.failed.timeout"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "otp.failed.generic"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/signin": {
+      "post": {
+        "operationId": "signin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "signin.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "token"
+                      ],
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "the JWT token"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "signin.failed.username.existing",
+                        "signin.failed.username.toolong",
+                        "signin.failed.username.tooshort",
+                        "signin.failed.username.invalid",
+                        "signin.failed.password.toolong",
+                        "signin.failed.password.tooshort",
+                        "signin.failed.password.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "signin.failed.generic"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/auth/statusOtp": {
+      "get": {
+        "operationId": "statusOtp",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg",
+                        "payload"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "success"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "statusOtp.success.enabled"
+                          ]
+                        },
+                        "payload": {
+                          "type": "object",
+                          "required": [
+                            "url"
+                          ],
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "The otp url to feed into a 2fa app"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "success"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "statusOtp.success.disabled"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "notLoggedIn"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "auth.noCookie",
+                        "auth.invalidKind",
+                        "auth.noUser",
+                        "auth.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "statusOtp.failure.generic"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/user/info/{user}": {
+      "get": {
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "me"
+                  ],
+                  "description": "the current logged in user"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A user uuid"
+                }
+              ]
+            },
+            "in": "path",
+            "name": "user",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "userinfo.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "id",
+                        "guest"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "guest": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "notLoggedIn"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "auth.noCookie",
+                        "auth.invalidKind",
+                        "auth.noUser",
+                        "auth.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "userinfo.failure.notLoggedIn"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "userinfo.failure.unknownUser"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

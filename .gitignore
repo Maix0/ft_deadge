@@ -4,9 +4,13 @@
 node_modules/
 *.pdf
 **/dist/
+*.crt
+*.key
 
 # sqlite stuff
 *.db
 *.db-shm
 *.db-wal
 /db/
+
+package-lock.json

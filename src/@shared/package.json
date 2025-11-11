@@ -11,7 +11,8 @@
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/jwt": "^9.1.0",
-    "@sinclair/typebox": "^0.34.41",
+    "@fastify/swagger": "^9.6.0",
+    "@fastify/swagger-ui": "^5.2.3",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^11.10.0",
@@ -19,10 +20,11 @@
     "fastify-plugin": "^5.1.0",
     "joi": "^18.0.1",
     "otp": "^1.1.2",
+    "typebox": "^1.0.51",
     "uuidv7": "^1.0.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.18.13"
+    "@types/node": "^22.19.0"
   }
 }

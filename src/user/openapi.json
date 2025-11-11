@@ -1,0 +1,178 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "version": "9.6.0",
+        "title": "@fastify/swagger"
+    },
+    "components": {
+        "schemas": {}
+    },
+    "paths": {
+        "/api/user/info/{user}": {
+            "get": {
+                "operationId": "getUser",
+                "parameters": [
+                    {
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "enum": [
+                                        "me"
+                                    ],
+                                    "description": "the current logged in user"
+                                },
+                                {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A user uuid"
+                                }
+                            ]
+                        },
+                        "in": "path",
+                        "name": "user",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg",
+                                        "payload"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "userinfo.success"
+                                            ]
+                                        },
+                                        "payload": {
+                                            "type": "object",
+                                            "required": [
+                                                "name",
+                                                "id",
+                                                "guest"
+                                            ],
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "guest": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "notLoggedIn"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "auth.noCookie",
+                                                "auth.invalidKind",
+                                                "auth.noUser",
+                                                "auth.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "userinfo.failure.notLoggedIn"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "userinfo.failure.unknownUser"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "https://local.maix.me:8888",
+            "description": "direct from docker"
+        },
+        {
+            "url": "https://local.maix.me:8000",
+            "description": "using fnginx"
+        }
+    ]
+}

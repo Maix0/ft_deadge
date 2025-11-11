@@ -1,8 +1,8 @@
 import { isNullish } from '@shared/utils';
 import fp from 'fastify-plugin';
 import { readFile } from 'node:fs/promises';
-import * as T from '@sinclair/typebox';
-import * as V from '@sinclair/typebox/value';
+import * as T from 'typebox';
+import * as V from 'typebox/value';
 import { Oauth2 } from '../oauth2';
 import { parseTOML } from 'confbox';
 

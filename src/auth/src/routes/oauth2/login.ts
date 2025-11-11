@@ -7,6 +7,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	void _opts;
 	fastify.get<{ Params: { provider?: string } }>(
 		'/api/auth/oauth2/:provider/login',
+		{ schema: { hide: true } },
 		async function(req, res) {
 			if (isNullish(req.params.provider) || !(req.params.provider in this.oauth2)) { return `provider '${req.params.provider ?? 'none'}' doesn't exist`; }
 			const provider = this.oauth2[req.params.provider];

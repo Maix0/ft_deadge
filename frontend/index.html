@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Ft Boules</title>
+</head>
+
+<body class="bg-gray-500 font-sans min-h-screen">
+
+	<!-- Header -->
+	<header
+		class="fixed top-0 left-0 right-0 h-14 bg-gray-800 text-white flex items-center justify-between px-4 shadow-md z-50">
+		<button id="menuBtn" class="flip-btn text-lg font-semibold focus:outline-none">
+			<span class="arrow front">&gt;</span>
+			<span class="arrow back">&lt;</span>
+		</button>
+		<div id="header-title" class="text-white text-lf text-semibold ps-4 shadow-md font-mono"></div>
+	  <div class="text-white text-lf ps-4 font-mono"> </div>
+  </header>
+
+	<!-- Sidebar -->
+	<aside id="sidebar"
+		class="fixed top-14 left-0 w-64 h-full bg-gray-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
+		<nav class="flex flex-col p-4 space-y-3">
+			<a href="/" class="hover:bg-gray-700 rounded-md px-3 py-2">🏠 Home</a>
+			<a href="/chat" class="hover:bg-gray-700 rounded-md px-3 py-2">👤 Chat</a>
+			<a href="/contact" class="hover:bg-gray-700 rounded-md px-3 py-2">⚙️ Settings</a>
+			<a href="/404" class="hover:bg-gray-700 rounded-md px-3 py-2">🚪 Logout</a>
+		</nav>
+	</aside>
+
+	<!-- Overlay -->
+	<div id="overlay"
+		class="fixed top-14 left-0 right-0 bottom-0 bg-black bg-opacity-40 opacity-0 pointer-events-none transition-opacity duration-300 z-30">
+	</div>
+
+	<!-- Main content -->
+	<main class="pt-16 px-6 pb-8 w-full h-full container" id="app">
+	</main>
+
+	<!-- Scripts -->
+	<script type="module" src="/src/carousel/"></script>
+	<script type="module" src="/src/pages/"></script>
+	<script type="module" src="/src/routing/"></script>
+	<script type="module" src="/src/toast/"></script>
+	<script type="module" src="/src/auth/"></script>
+</body>
+
+</html>
