@@ -1,0 +1,130 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "version": "9.6.1",
+        "title": "@fastify/swagger"
+    },
+    "components": {
+        "schemas": {}
+    },
+    "paths": {
+        "/api/chat/test": {
+            "get": {
+                "operationId": "chatTest",
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg",
+                                        "payload"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "chat.success"
+                                            ]
+                                        },
+                                        "payload": {
+                                            "type": "object",
+                                            "required": [
+                                                "name",
+                                                "id",
+                                                "guest"
+                                            ],
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "guest": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "https://local.maix.me:8888",
+            "description": "direct from docker"
+        },
+        {
+            "url": "https://local.maix.me:8000",
+            "description": "using fnginx"
+        }
+    ]
+}

@@ -123,11 +123,14 @@ npm@build:
 npm@update:
 	(cd ./src/ && rm -rf ./src/node_modules/ && npx pnpm update -r --workspace)
 
-npm@openapi:
+npm@openapi: openapi.jar
 	@(cd ./src/ && npx pnpm run --if-present -r build:openapi)
 	@rm -f ./src/openapi.json
 	@(cd ./src/ && npx pnpm exec redocly join --without-x-tag-groups)
-	@(cd ./src/ && npx pnpm exec openapi-generator-cli generate -t ../openapi-template -g typescript-fetch -i openapi.json  -o ../frontend/src/api/generated);
+	@(cd ./src/ && java -jar ../openapi.jar generate -t ../openapi-template -g typescript-fetch -i openapi.json  -o ../frontend/src/api/generated);
+
+openapi.jar:
+	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.15.0/openapi-generator-cli-7.15.0.jar -O ./openapi.jar
 
 # this convert the .dbml file to an actual sql file that SQLite can handle :)
 sql:

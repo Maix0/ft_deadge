@@ -11,13 +11,14 @@
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
     "typescript": "~5.9.3",
-    "vite": "^7.1.10",
+    "vite": "^7.2.2",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.16",
+    "@openapitools/openapi-generator-cli": "^2.25.0",
+    "@tailwindcss/vite": "^4.1.17",
     "js-cookie": "^3.0.5",
     "openapi-fetch": "^0.15.0",
-    "tailwindcss": "^4.1.16"
+    "tailwindcss": "^4.1.17"
   }
 }

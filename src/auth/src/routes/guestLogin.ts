@@ -27,6 +27,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			void req;
 			void res;
 			try {
+				console.log('DEBUG ----- guest login backend');
 				const adjective = getRandomFromList(fastify.words.adjectives);
 				const noun = getRandomFromList(fastify.words.nouns);
 

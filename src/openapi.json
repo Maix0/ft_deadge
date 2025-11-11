@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "version": "9.6.0",
+    "version": "9.6.1",
     "title": "@fastify/swagger"
   },
   "servers": [
@@ -160,26 +160,50 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "kind",
-                    "msg"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "enum": [
-                        "notLoggedIn"
-                      ]
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "failure"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "enableOtp.failure.noUser",
+                            "enableOtp.failure.noSecret"
+                          ]
+                        }
+                      }
                     },
-                    "msg": {
-                      "enum": [
-                        "auth.noCookie",
-                        "auth.invalidKind",
-                        "auth.noUser",
-                        "auth.invalid"
-                      ]
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -816,26 +840,52 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "kind",
-                    "msg"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "enum": [
-                        "notLoggedIn"
-                      ]
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
                     },
-                    "msg": {
-                      "enum": [
-                        "auth.noCookie",
-                        "auth.invalidKind",
-                        "auth.noUser",
-                        "auth.invalid"
-                      ]
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -949,26 +999,52 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "kind",
-                    "msg"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "enum": [
-                        "notLoggedIn"
-                      ]
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
                     },
-                    "msg": {
-                      "enum": [
-                        "auth.noCookie",
-                        "auth.invalidKind",
-                        "auth.noUser",
-                        "auth.invalid"
-                      ]
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -1021,6 +1097,117 @@
                       ]
                     }
                   }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/chat/test": {
+      "get": {
+        "operationId": "chatTest",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "chat.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "id",
+                        "guest"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "guest": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }

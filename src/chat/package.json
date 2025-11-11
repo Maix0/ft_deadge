@@ -1,0 +1,43 @@
+{
+	"type": "module",
+	"private": false,
+	"name": "chat",
+	"version": "1.0.0",
+	"description": "This project was bootstrapped with Fastify-CLI.",
+	"main": "app.ts",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"start": "npm run build && node dist/run.js",
+		"build": "vite build",
+		"build:prod": "vite build --outDir=/dist --minify=true --sourcemap=false",
+		"build:openapi": "VITE_ENTRYPOINT=src/openapi.ts vite build && node dist/openapi.cjs >openapi.json"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@fastify/autoload": "^6.3.1",
+		"@fastify/formbody": "^8.0.2",
+		"@fastify/multipart": "^9.3.0",
+		"@fastify/sensible": "^6.0.3",
+		"@fastify/static": "^8.3.0",
+		"@fastify/websocket": "^11.2.0",
+		"@sinclair/typebox": "^0.34.41",
+		"@tailwindcss/vite": "^4.1.17",
+		"esbuild": "^0.24.2",
+		"fastify": "^5.6.2",
+		"fastify-cli": "^7.4.1",
+		"fastify-plugin": "^5.1.0",
+		"jose": "^6.1.1",
+		"sharp": "^0.34.5",
+		"tailwindcss": "^4.1.17"
+	},
+	"devDependencies": {
+		"@types/node": "^22.19.1",
+		"rollup-plugin-node-externals": "^8.1.2",
+		"vite": "^7.2.2",
+		"vite-tsconfig-paths": "^5.1.4"
+	}
+}
