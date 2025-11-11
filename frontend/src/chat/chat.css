@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+.btn-style {
+  @apply
+  w-[100px] 
+  h-[32px] 
+  border-2 border-black 
+  rounded-3xl
+  hover:bg-blue-200
+  text-black 
+  cursor-pointer;
+}
+
+.send-btn-style {
+  @apply 
+  w-[50px] 
+  h-[50px] 
+  border-2 border-black 
+  rounded-3xl
+  hover:bg-blue-200 
+  text-black
+  cursor-pointer;
+}
+
+
+.chatbox-style {
+  @apply
+  w-[600px]
+  h-[150px] /* increase height if needed */
+  p-[10px]
+  border-1 border-black
+  shadow-sm
+  text-left
+  text-gray-800
+  rounded-3xl
+  overflow-y-auto
+  whitespace-pre-line
+  flex
+  flex-col
+  mx-auto;
+}
+
+.chat-window-style {
+  @apply
+  w-[400px]
+  h-[50px]
+  p-[10px]
+  border-1 border-black
+  shadow-sm
+  rounded-3xl
+  text-gray-800;
+}
+
+.displaybox {
+  @apply
+  fixed
+  inset-0
+  flex
+  items-center
+  justify-center
+  bg-gray-100;
+}
+
+.mainboxDisplay {
+  @apply
+  fixed 
+  top-1/2 
+  left-1/2 
+  -translate-x-1/2 
+  -translate-y-1/2 
+  bg-white w-[650px] 
+  p-6 rounded-xl 
+  shadow-2xl 
+  text-center z-50;
+}
+
+p {
+  @apply
+  text-black
+
+
+
+}
+
+.div-test {
+  @apply
+  italic
+
+
+}

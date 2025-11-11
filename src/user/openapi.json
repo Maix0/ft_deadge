@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "version": "9.6.0",
+        "version": "9.6.1",
         "title": "@fastify/swagger"
     },
     "components": {
@@ -85,26 +85,52 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "kind",
-                                        "msg"
-                                    ],
-                                    "properties": {
-                                        "kind": {
-                                            "enum": [
-                                                "notLoggedIn"
-                                            ]
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
                                         },
-                                        "msg": {
-                                            "enum": [
-                                                "auth.noCookie",
-                                                "auth.invalidKind",
-                                                "auth.noUser",
-                                                "auth.invalid"
-                                            ]
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
                                         }
-                                    }
+                                    ]
                                 }
                             }
                         }

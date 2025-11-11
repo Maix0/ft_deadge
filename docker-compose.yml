@@ -80,6 +80,28 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
       - PROVIDER_FILE=/extra/providers.toml
+  
+
+  ###############
+  #    CHAT     #
+  ###############
+  chat:
+    build:
+      context: ./src/
+      args:
+        - SERVICE=chat
+        - EXTRA_FILES=chat/extra
+    container_name: chat 
+    restart: always
+    networks:
+      - transcendance-network
+    volumes:
+      - sqlite-volume:/volumes/database
+      - static-volume:/volumes/static
+    environment:
+      - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
+      - DATABASE_DIR=/volumes/database
+      - PROVIDER_FILE=/extra/providers.toml
 
 
   ###############

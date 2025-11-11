@@ -6,6 +6,7 @@ node_modules/
 **/dist/
 *.crt
 *.key
+openapi.jar
 
 # sqlite stuff
 *.db

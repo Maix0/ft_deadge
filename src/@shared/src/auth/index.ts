@@ -118,7 +118,7 @@ export const authPlugin = fp<{ onlySchema?: boolean }>(async (fastify, { onlySch
 								.clearCookie('token', { path: '/' })
 								.makeResponse(401, 'notLoggedIn', 'auth.noUser');
 						}
-						req.authUser = { id: user.id, name: tok.who };
+						req.authUser = { id: user.id, name: user.display_name };
 					}
 					catch {
 						return res
