@@ -31,15 +31,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				const adjective = getRandomFromList(fastify.words.adjectives);
 				const noun = getRandomFromList(fastify.words.nouns);
 
-				const user = await this.db.createUser(
-					// no login_name => can't login
-					null,
-					`${adjective} ${noun}`,
-					// no password
-					undefined,
-					// is a guest
-					true,
-				);
+				const user = await this.db.createGuestUser(`${adjective} ${noun}`);
 				if (isNullish(user)) {
 					return res.makeResponse(500, 'failed', 'guestLogin.failed.generic.unknown');
 				}
