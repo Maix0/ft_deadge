@@ -18,7 +18,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
 			const [url, _csrf, _nonce] = u.intoUrl();
 			void _csrf; void _nonce;
-			return res.setCookie('pkce', verifier.secret).redirect(url.toString());
+			return res.setCookie('pkce', verifier.secret, { path:'/' }).redirect(url.toString());
 		},
 	);
 };

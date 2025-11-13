@@ -1,18 +1,10 @@
 import { isNullish } from '@shared/utils';
 import fp from 'fastify-plugin';
-import { readFile } from 'node:fs/promises';
+import { access, constants as fsConstants, readFile } from 'node:fs/promises';
 import * as T from 'typebox';
 import * as V from 'typebox/value';
 import { Oauth2 } from '../oauth2';
 import { parseTOML } from 'confbox';
-
-/*
-function isNullish<T>(_v: T): boolean { return true; }
-class Oauth2 {
-	constructor(..._args: any[]) { }
-	static fromProvider(..._args: any[]): Oauth2 { throw 'yes'; }
-}
-*/
 
 const ProviderSecret = T.Union([
 	T.Object({
@@ -21,10 +13,19 @@ const ProviderSecret = T.Union([
 	T.Object({ inline: T.String({ description: 'Secret is inline here' }) }),
 ]);
 
-const ProviderUserInfo = T.Object({
-	unique_id: T.String({ description: 'A unique identifier for this provider', default: 'email' }),
-	name: T.String({ description: 'A name for this provider', default: 'name' }),
-}, { default: { unique_id: 'email', name: 'name' } });
+const ProviderUserInfo = T.Object(
+	{
+		unique_id: T.String({
+			description: 'A unique identifier for this provider',
+			default: 'email',
+		}),
+		name: T.String({
+			description: 'A name for this provider',
+			default: 'name',
+		}),
+	},
+	{ default: { unique_id: 'email', name: 'name' } },
+);
 
 const RawProviderBase = {
 	client_id: T.String(),
@@ -32,6 +33,13 @@ const RawProviderBase = {
 	scopes: T.Array(T.String()),
 	redirect_url: T.String(),
 	user: ProviderUserInfo,
+	display_name: T.String(),
+	color: T.Optional(
+		T.Object({
+			default: T.Optional(T.String()),
+			hover: T.Optional(T.String()),
+		}),
+	),
 };
 
 const ProviderBase = T.Object(RawProviderBase);
@@ -49,6 +57,8 @@ const ProviderMapFile = T.Object({
 	$schema: T.Optional(T.String()),
 });
 
+// console.log(JSON.stringify(ProviderMapFile))
+
 export type ProviderSecret = T.Static<typeof ProviderSecret>;
 export type ProviderUserInfo = T.Static<typeof ProviderUserInfo>;
 export type ProviderBase = T.Static<typeof ProviderBase>;
@@ -58,10 +68,15 @@ export type Provider = T.Static<typeof Provider>;
 export type ProviderMap = T.Static<typeof ProviderMap>;
 
 export type ProviderMapFile = T.Static<typeof ProviderMapFile>;
-
 async function buildProviderMap(): Promise<ProviderMap> {
 	const providerFile = process.env.PROVIDER_FILE;
-	if (isNullish(providerFile)) throw 'PROVIDER_FILE env var not provided';
+	if (isNullish(providerFile)) return {};
+	try {
+		await access(providerFile, fsConstants.F_OK | fsConstants.R_OK);
+	}
+	catch {
+		return {};
+	}
 	const data = await readFile(providerFile, { encoding: 'utf-8' });
 	const dataJson = parseTOML(data);
 	return V.Parse(ProviderMapFile, dataJson).providers;
@@ -73,7 +88,9 @@ declare module 'fastify' {
 		oauth2: { [k: string]: Oauth2 };
 	}
 }
-async function makeAllOauth2(providers: ProviderMap): Promise<{ [k: string]: Oauth2 }> {
+async function makeAllOauth2(
+	providers: ProviderMap,
+): Promise<{ [k: string]: Oauth2 }> {
 	const out: { [k: string]: Oauth2 } = {};
 	for (const [k, v] of Object.entries(providers)) {
 		out[k] = await Oauth2.fromProvider(k, v);

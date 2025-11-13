@@ -30,6 +30,10 @@ models/LoginOtp500Response.ts
 models/LoginOtpRequest.ts
 models/LoginRequest.ts
 models/Logout200Response.ts
+models/ProviderList200Response.ts
+models/ProviderList200ResponsePayload.ts
+models/ProviderList200ResponsePayloadListInner.ts
+models/ProviderList200ResponsePayloadListInnerColors.ts
 models/Signin200Response.ts
 models/Signin200ResponsePayload.ts
 models/Signin400Response.ts

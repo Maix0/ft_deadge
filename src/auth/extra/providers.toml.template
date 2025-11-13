@@ -9,6 +9,7 @@ scopes = ["any needed scope here", "openid", "email"]
 redirect_url = "https://local.maix.me:8888/api/auth/oauth2/provider-openid/callback"
 # from the `info_url` request, which json key we will take an unique provider id (default:email) and an name for the user (default:name)
 user = { unique_id = "email", name = "name" }
+display_name = "OpenID 1"
 
 [providers.discord]
 auth_url = "https://discord.com/oauth2/authorize"
@@ -19,3 +20,4 @@ client_id = "CLIENT_ID"
 redirect_url = "https://local.maix.me:8888/api/auth/oauth2/discord/callback"
 scopes = ["identify"] # here no email asked :)
 user = { unique_id = "id", name = "username" } # for example discord provides some stuff, like unique_id and username, such that we dont have to ask additional permission to get the email
+display_name = "Discord"

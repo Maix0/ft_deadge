@@ -83,15 +83,17 @@ function handleLogin(_url: string, _args: RouteHandlerParams): RouteHandlerRetur
 				let styleSheetElement = document.createElement('style');
 				styleSheetElement.innerText = "";
 				// TODO: fetch all the providers from an API ?
-				const providers: Providers[] = [
+				const providersReq = await client.providerList();
+				const providers = providersReq.payload.list;
+				/*const providers: Providers[] = [
 					{ name: 'discord', display_name: 'Discord', color: { default: 'bg-[#5865F2]', hover: '#FF65F2' } },
 					{ name: 'kanidm', display_name: 'Kanidm', color: { default: 'bg-red-500', hover: 'bg-red-700' } },
 					{ name: 'google', display_name: 'Google' },
-				]
+				]*/
 				let first = true;
 				for (const p of providers) {
 					let b = document.createElement('button');
-					if (first) b.classList.add('last:col-span-2');
+					if (first && providers.length % 2) b.classList.add('last:col-span-2');
 					first = false;
 					b.classList.add(...(
 						'w-full text-white font-medium py-2 rounded-xl transition'
@@ -99,10 +101,10 @@ function handleLogin(_url: string, _args: RouteHandlerParams): RouteHandlerRetur
 					));
 					b.classList.add(`providerButton-${p.name}`)
 
-					const col = { default: p.color?.default ?? "bg-gray-600", hover: p.color?.hover ?? "bg-gray-700" };
+					const col = p.colors;
 
 					for (const k of Object.keys(col)) {
-						let c = (col as { [k: string]: string })[k].trim();
+						let c = (col as any)[k].trim();
 						if (c.startsWith('bg-')) {
 							c = c.replace(/^bg-/, '');
 							const customProp = c.match(/^\((.+)\)$/);
@@ -122,19 +124,17 @@ function handleLogin(_url: string, _args: RouteHandlerParams): RouteHandlerRetur
 								c = `var(--color-${c})`
 
 						}
-						(col as { [k: string]: string })[k] = c;
+						(col as any)[k] = c;
 					}
 
-					styleSheetElement.innerText += `.providerButton-${p.name} { background-color: ${col.default}; }\n`;
+					styleSheetElement.innerText += `.providerButton-${p.name} { background-color: ${col.normal}; }\n`;
 					styleSheetElement.innerText += `.providerButton-${p.name}:hover { background-color: ${col.hover}; }\n`;
 
-					b.dataset.display_name = p.display_name;
+					b.dataset.display_name = p.displayName;
 					b.dataset.name = p.name;
-					if (p.icon_url) b.dataset.icon = p.icon_url;
+					//if (p.icon_url) b.dataset.icon = p.icon_url;
 
-					b.innerHTML = `
-          ${p.icon_url ? `<img src="${p.icon_url}" alt="${p.display_name} Logo" />` : ''} <span class="">${p.display_name}</span>
-          `
+					b.innerHTML = `<span class="">${p.displayName}</span>`
 					b.addEventListener('click', () => {
 						location.href = `/api/auth/oauth2/${p.name}/login`;
 					})

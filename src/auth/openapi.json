@@ -195,6 +195,86 @@
                 }
             }
         },
+        "/api/auth/providerList": {
+            "get": {
+                "operationId": "providerList",
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg",
+                                        "payload"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "providerList.success"
+                                            ]
+                                        },
+                                        "payload": {
+                                            "type": "object",
+                                            "required": [
+                                                "list"
+                                            ],
+                                            "properties": {
+                                                "list": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "display_name",
+                                                            "name",
+                                                            "colors"
+                                                        ],
+                                                        "properties": {
+                                                            "display_name": {
+                                                                "type": "string",
+                                                                "description": "Name to display to the user"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "internal Name of the provider"
+                                                            },
+                                                            "colors": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "normal",
+                                                                    "hover"
+                                                                ],
+                                                                "properties": {
+                                                                    "normal": {
+                                                                        "type": "string",
+                                                                        "description": "Default color for the provider"
+                                                                    },
+                                                                    "hover": {
+                                                                        "type": "string",
+                                                                        "description": "Hover color for the provider"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/guest": {
             "post": {
                 "operationId": "guestLogin",

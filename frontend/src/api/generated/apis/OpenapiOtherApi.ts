@@ -38,6 +38,7 @@ import type {
   LoginOtpRequest,
   LoginRequest,
   Logout200Response,
+  ProviderList200Response,
   Signin200Response,
   Signin400Response,
   Signin500Response,
@@ -92,6 +93,8 @@ import {
     LoginRequestToJSON,
     Logout200ResponseFromJSON,
     Logout200ResponseToJSON,
+    ProviderList200ResponseFromJSON,
+    ProviderList200ResponseToJSON,
     Signin200ResponseFromJSON,
     Signin200ResponseToJSON,
     Signin400ResponseFromJSON,
@@ -512,6 +515,44 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
      */
     async logout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Logout200Response> {
         const response = await this.logoutRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async providerListRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProviderList200Response>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/auth/providerList`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => ProviderList200ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200`);
+    }
+
+    /**
+     */
+    async providerList(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProviderList200Response> {
+        const response = await this.providerListRaw(initOverrides);
         return await response.value();
     }
 
