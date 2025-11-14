@@ -15,7 +15,6 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.25.0",
     "@tailwindcss/vite": "^4.1.17",
     "js-cookie": "^3.0.5",
     "openapi-fetch": "^0.15.0",

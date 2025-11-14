@@ -1,8 +1,11 @@
+import { updateUser } from '@app/auth';
 import { route_404 } from './special_routes'
 
 // ---- Router logic ----
-function navigateTo(url: string) {
-	history.pushState(null, "", `${url.startsWith('/') ? '/app' : ""}${url}`);
+export function navigateTo(url: string) {
+	if (url.startsWith('/') && !url.startsWith('/app'))
+		url = `/app${url}`;
+	history.pushState(null, "", url);
 	handleRoute();
 }
 
@@ -40,8 +43,9 @@ export class RouteHandlerData {
 	}
 
 	constructor(url: string, handler: RouteHandler, special_args: Partial<RouteHandlerSpecialArgs>) {
-		this.special_args = RouteHandlerData.SPECIAL_ARGS_DEFAULT;
+		this.special_args = Object.assign({}, RouteHandlerData.SPECIAL_ARGS_DEFAULT);
 		Object.assign(this.special_args, special_args);
+		console.log(url, this.special_args);
 
 		let parsed = RouteHandlerData.parseUrl(url);
 		this.handler = handler;
@@ -184,6 +188,11 @@ export async function handleRoute() {
 		break;
 	}
 
+	let user = await updateUser();
+	console.log(route_handler);
+	console.log(user, !route_handler.special_args.bypass_auth, user === null && !route_handler.special_args.bypass_auth);
+	if (user === null && !route_handler.special_args.bypass_auth)
+		return navigateTo(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`)
 	const app = document.getElementById('app')!;
 	let ret = await executeRouteHandler(route_handler, window.location.pathname, args)
 	app.innerHTML = ret.html;
