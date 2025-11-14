@@ -1,4 +1,4 @@
-# **************************************************************************** #make
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/11/10 01:05:11 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/11/14 17:40:57 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -157,4 +157,4 @@ fnginx: nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key
 	wait
 
 #	phony
-.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux
+.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux logs

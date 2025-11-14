@@ -1,0 +1,1 @@
+{"index_patterns":["docker-*"],"settings":{"index.lifecycle.name":"docker-logs-policy"}}}

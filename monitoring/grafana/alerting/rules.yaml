@@ -1,0 +1,782 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: availability
+      folder: alert_rules.yml
+      interval: 1m
+      rules:
+        - uid: 14db4fe7-faf3-5629-9ee1-c5c189d75fec
+          title: InstanceDown
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: up == 0
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations:
+            description: |
+                Instance {{ $labels.instance }} (job={{ $labels.job }}) has not responded to Prometheus scrapes for more than one minute.
+            summary: Instance {{ $labels.job }} down
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: critical
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+    - orgId: 1
+      name: blackbox-probes
+      folder: alert_rules.yml
+      interval: 1m
+      rules:
+        - uid: c549c658-ce15-5d56-9842-07730bb11e15
+          title: BlackboxProbeFailed
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: probe_success == 0
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 30s
+          annotations:
+            description: |
+                The Blackbox probe for {{ $labels.instance }} has failed (probe_success = 0).
+            summary: Blackbox probe failed
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: critical
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 78a2ece6-4f7a-5496-9a59-6de4a56db201
+          title: BlackboxHighLatency
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: probe_duration_seconds > 1
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 2m
+          annotations:
+            description: |
+                The Blackbox probe to {{ $labels.instance }} has been taking more than 1 second to respond for over 2 minutes.
+            summary: High latency on a Blackbox probe
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 00b5d799-0eef-59e9-9371-2a0bfb7df19b
+          title: BlackboxBadHTTPStatus
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: probe_http_status_code != 200
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 1m
+          annotations:
+            description: |
+                The Blackbox probe to {{ $labels.instance }} is returning HTTP status {{ $value }} different from 200.
+            summary: Bad HTTP status code on a Blackbox probe
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+    - orgId: 1
+      name: container-resources
+      folder: alert_rules.yml
+      interval: 1m
+      rules:
+        - uid: 985c697f-e309-524c-9cd4-650a2045c279
+          title: HighGlobalCPUUsage
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: (sum(rate(container_cpu_user_seconds_total[5m])) * 100) > 80
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: |
+                Global CPU usage of containers has been above 80% for more than 5 minutes. Check which services are consuming the most resources.
+            summary: High global CPU usage for containers
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 635d0ad1-10f2-51f4-9226-baf56557d870
+          title: HighGlobalMemoryUsage
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: (sum(container_memory_usage_bytes) / sum(machine_memory_bytes)) * 100 > 80
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: |
+                Global memory usage of containers has been above 80% for more than 5 minutes.
+            summary: High global memory usage for containers
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+    - orgId: 1
+      name: per-container-resources
+      folder: alert_rules.yml
+      interval: 1m
+      rules:
+        - uid: 3daf3f51-d4ad-5169-ace2-cdc1c43d8e4e
+          title: HighContainerCPUUsage
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: rate(container_cpu_user_seconds_total[5m]) * 100 > 80
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: |
+                Container {{ $labels.name }} has been using more than 80% CPU for more than 5 minutes.
+            summary: High CPU usage on a container
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 3202077e-ba84-5401-86fe-0fe6b0a4c26d
+          title: HighContainerMemoryUsage
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                expr: container_memory_usage_bytes > 500 * 1024 * 1024
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: |
+                Container {{ $labels.name }} has been using more than 500 MB of RAM for more than 5 minutes. Adjust the threshold if necessary.
+            summary: High memory usage on a container
+          labels:
+            __converted_prometheus_rule__: "true"
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
