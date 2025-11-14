@@ -10,6 +10,13 @@ import {
 import { FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 
+export const useMonitoring = fp(async (fastify) => {
+	fastify.get('/monitoring', { schema: { hide: true } }, (req, res) => {
+		void req;
+		res.code(200).send('Ok');
+	});
+});
+
 const kMakeResponseSym = Symbol('make-response-sym');
 declare module 'fastify' {
 	export interface RouteOptions {

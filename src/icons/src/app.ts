@@ -4,6 +4,7 @@ import fastifyMultipart from '@fastify/multipart';
 import { mkdir } from 'node:fs/promises';
 import fp from 'fastify-plugin';
 import * as db from '@shared/database';
+import * as utils from '@shared/utils';
 import { authPlugin, jwtPlugin } from '@shared/auth';
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
@@ -32,6 +33,7 @@ const app: FastifyPluginAsync = async (
 		void fastify.register(route as FastifyPluginAsync, {});
 	}
 
+	await fastify.register(utils.useMonitoring);
 	await fastify.register(db.useDatabase as FastifyPluginAsync, {});
 	await fastify.register(authPlugin as FastifyPluginAsync, {});
 	await fastify.register(jwtPlugin as FastifyPluginAsync, {});
@@ -46,7 +48,6 @@ const app: FastifyPluginAsync = async (
 		fastify2.decorate('image_store', image_store);
 		await mkdir(fastify2.image_store, { recursive: true });
 	}));
-	fastify.get('/monitoring', () => 'Ok');
 };
 
 export default app;
