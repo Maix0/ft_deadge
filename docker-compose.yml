@@ -15,6 +15,11 @@ services:
       - transcendance-network
     volumes:
       - static-volume:/volumes/static
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
   # 
   # The "entry point" as in it does all of this:
@@ -37,6 +42,11 @@ services:
     environment:
       # this can stay the same for developpement. This is an alias to `localhost`
       - NGINX_DOMAIN=local.maix.me
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
   ###############
   #    ICONS    #
@@ -58,6 +68,11 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - USER_ICONS_STORE=/volumes/store
       - DATABASE_DIR=/volumes/database
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
 
   ###############
@@ -80,6 +95,11 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
       - PROVIDER_FILE=/extra/providers.toml
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
 
   ###############
@@ -101,7 +121,11 @@ services:
     environment:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
-
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
 
   ###############
@@ -132,6 +156,11 @@ services:
       - GF_SERVER_ROOT_URL=http://local.maix.me:3000
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASS}
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
   prometheus:
     image: prom/prometheus:latest
@@ -142,6 +171,11 @@ services:
     volumes:
       - ./monitoring/prometheus:/etc/prometheus/
     restart: unless-stopped
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
@@ -156,6 +190,12 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
+
 
   blackbox:
     image: prom/blackbox-exporter:latest
