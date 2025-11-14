@@ -6,7 +6,7 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/11 18:10:26 by maiboyer          #+#    #+#              #
-#    Updated: 2025/07/30 19:32:11 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/11/14 16:13:22 by rparodi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ down:
 	docker compose down
 
 build:
+	@mkdir -p ./logs/elasticsearch/data/
 	docker compose build
 
 re:
@@ -39,3 +40,23 @@ prune: clean
 	-docker network prune
 	-docker system  prune -a
 
+ES_URL     ?= http://local.maix.me:9200
+KIBANA_URL ?= http://local.maix.me:5601
+
+logs-setup:
+	@until curl -s "$(ES_URL)" > /dev/null 2>&1; do sleep 1; done;
+
+	@curl -s -X PUT "$(ES_URL)/_ilm/policy/docker-logs-policy" \
+	  -H "Content-Type: application/json" \
+	  -d '{"policy":{"phases":{"hot":{"actions":{}},"delete":{"min_age":"7d","actions":{"delete":{}}}}}}' > /dev/null
+
+	@curl -s -X PUT "$(ES_URL)/_template/docker-logs-template" \
+	  -H "Content-Type: application/json" \
+	  -d '{"index_patterns":["docker-*"],"settings":{"index.lifecycle.name":"docker-logs-policy"}}' > /dev/null
+
+	@until curl -s "$(KIBANA_URL)/api/status" > /dev/null 2>&1; do sleep 1; done;
+
+	@curl -s -X POST "$(KIBANA_URL)/api/saved_objects/index-pattern/docker-logs" \
+	  -H "kbn-xsrf: true" \
+	  -H "Content-Type: application/json" \
+	  -d '{"attributes":{"title":"docker-*","timeFieldName":"@timestamp"}}' > /dev/null
