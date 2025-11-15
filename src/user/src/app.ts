@@ -16,6 +16,7 @@ const routes = import.meta.glob('./routes/**/*.ts', { eager: true });
 const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	void opts;
 	await fastify.register(utils.useMakeResponse);
+	await fastify.register(utils.useMonitoring);
 	await fastify.register(swagger.useSwagger, { service: __SERVICE_NAME });
 	await fastify.register(db.useDatabase as FastifyPluginAsync, {});
 	await fastify.register(auth.jwtPlugin as FastifyPluginAsync, {});
@@ -31,7 +32,6 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
 	void fastify.register(fastifyFormBody, {});
 	void fastify.register(fastifyMultipart, {});
-	fastify.get('/monitoring', () => 'Ok');
 };
 
 export default app;
