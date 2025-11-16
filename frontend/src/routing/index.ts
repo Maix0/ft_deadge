@@ -1,6 +1,7 @@
 import { updateUser } from '@app/auth';
 import { route_404 } from './special_routes'
 
+
 // ---- Router logic ----
 export function navigateTo(url: string) {
 	if (url.startsWith('/') && !url.startsWith('/app'))

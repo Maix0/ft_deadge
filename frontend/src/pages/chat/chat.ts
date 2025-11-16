@@ -4,16 +4,31 @@ import authHtml from './chat.html?raw';
 import client from '@app/api'
 import { updateUser } from "@app/auth";
 
+import  io  from "socket.io-client"
+const socket = io("https://localhost:8888");
+
+// Listen for the 'connect' event
+socket.on("connect", async() => {
+	console.log("Connected to the server: ", socket.id);
+	// Send a message to the server
+	socket.send("Hello from the client: " + `${socket.id}`);
+	// Emit a custom event 'coucou' with some data
+	socket.emit("coucou", { message: "Hello Nigel from coucou!" });
+});
+
+
+
 type Providers = {
-  name: string,
-  display_name: string,
-  icon_url?: string,
-  color?: { default: string, hover: string },
+	name: string,
+	display_name: string,
+	icon_url?: string,
+	color?: { default: string, hover: string },
 };
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-
+	
 	setTitle('Chat Page');
+	// Listen for the 'connect' event
 	return {
 
  		html: authHtml, postInsert: async (app) => {
@@ -78,7 +93,13 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					showError('Failed to login: Unknown error');
 				}
 			});
+
+
+
+			
 		}
 	}
-}
+				
+
+};
 addRoute('/chat', handleChat, { bypass_auth: true });
