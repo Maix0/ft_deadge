@@ -1,26 +1,23 @@
 import { FastifyPluginAsync } from 'fastify';
 import { MakeStaticResponse, typeResponse } from '@shared/utils';
 import { Type } from '@sinclair/typebox';
-import Fastify from 'fastify'
-import { Server } from "socket.io"
-import { Socket } from "socket.io";
+import Fastify from 'fastify';
+import { Server } from 'socket.io';
+import { Socket } from 'socket.io';
+import * as fsocketio from 'fastify-socket.io';
 
 
 const fastify = Fastify();
 
 const io = new Server(fastify.server, {
-  path: "/app/chat/socket.io/",
-  cors: { origin: "*" },
+	path: '/app/chat/socket.io/',
+	cors: { origin: '*' },
 });
 
 
-
-io.on("connection", (socket: Socket) => {
-  console.log("testing")
-  console.log(`Client connected: ${socket.id}`);
-	socket.on("message", (data: any) => console.log(data, `socketID: ${socket.id}`));
-	socket.once("message", () => socket.send("connected succesfully"));
-	socket.once("coucou", (data: any) => console.log(data))
+io.on('connection', (socket: Socket) => {
+	console.log('testing');
+	console.log(`Client connected: ${socket.id}`);
 });
 
 
@@ -32,9 +29,24 @@ export const ChatRes = {
 	}),
 };
 
+
 export type ChatResType = MakeStaticResponse<typeof ChatRes>;
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
+	/* await fastify.register(fsocketio.default);
+
+	fastify.get('/api/chat/socket.io', (req, reply) => {
+		console.log('GOT SOCKET ?!');
+
+		const socket = (fastify as any).io;
+		socket.emit('hello');
+		socket.on('message', (data: any) => console.log(data, `socketID: ${socket.id}`));
+		socket.once('message', () => socket.send('connected succesfully'));
+		socket.once('coucou', (data: any) => console.log(data));
+	});
+	*/
+
+
 	fastify.get(
 		'/api/chat/test',
 		{
