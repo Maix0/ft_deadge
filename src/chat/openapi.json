@@ -8,6 +8,15 @@
         "schemas": {}
     },
     "paths": {
+        "/api/chat/socket.io": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Default Response"
+                    }
+                }
+            }
+        },
         "/api/chat/test": {
             "get": {
                 "operationId": "chatTest",

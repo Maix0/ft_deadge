@@ -7,18 +7,12 @@ import { Socket } from 'socket.io';
 import * as fsocketio from 'fastify-socket.io';
 
 
-const fastify = Fastify();
+// const fastify = Fastify();
 
-const io = new Server(fastify.server, {
-	path: '/app/chat/socket.io/',
-	cors: { origin: '*' },
-});
-
-
-io.on('connection', (socket: Socket) => {
-	console.log('testing');
-	console.log(`Client connected: ${socket.id}`);
-});
+// const io = new Server(fastify.server, {
+// 	path: '/app/chat/socket.io/',
+// 	cors: { origin: '*' },
+// });
 
 
 export const ChatRes = {
@@ -33,18 +27,17 @@ export const ChatRes = {
 export type ChatResType = MakeStaticResponse<typeof ChatRes>;
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
-	/* await fastify.register(fsocketio.default);
+	await fastify.register(fsocketio.default);
+	
+	// fastify.get('/api/chat/socket.io', (req, reply) => {
 
-	fastify.get('/api/chat/socket.io', (req, reply) => {
-		console.log('GOT SOCKET ?!');
+	// 	console.log('Socket.io endpoint hit');
+	// 	reply.send({ status: 'ok' });
 
-		const socket = (fastify as any).io;
-		socket.emit('hello');
-		socket.on('message', (data: any) => console.log(data, `socketID: ${socket.id}`));
-		socket.once('message', () => socket.send('connected succesfully'));
-		socket.once('coucou', (data: any) => console.log(data));
-	});
-	*/
+	// });
+
+
+	
 
 
 	fastify.get(

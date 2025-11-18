@@ -74,6 +74,11 @@
   text-center z-50;
 }
 
+.mainboxDisplay button {
+  @apply
+  cursor-pointer;
+}
+
 p {
   @apply
   text-black

@@ -5,8 +5,8 @@ import * as db from '@shared/database';
 import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
-import { Server } from 'socket.io';
 import useSocketIo from 'fastify-socket.io';
+import { setupSocketIo } from "./socket";
 
 declare const __SERVICE_NAME: string;
 
@@ -14,17 +14,6 @@ declare const __SERVICE_NAME: string;
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const routes = import.meta.glob('./routes/**/*.ts', { eager: true });
-
-// When using .decorate you have to specify added properties for Typescript
-declare module 'fastify' {
-	interface FastifyInstance {
-		io: Server<{
-			hello: (message: string) => string,
-			coucou: (data: { message: string }) => void,
-			message: (msg: string) => void,
-		}>
-	}
-}
 
 const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	void opts;
@@ -49,21 +38,9 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	void fastify.register(fastifyMultipart, {});
 	fastify.get('/monitoring', () => 'Ok');
 
-	fastify.ready((err) => {
-		if (err) throw err;
-
-		fastify.io.on('connection', (socket) => {
-			console.info('Socket connected!', socket.id);
-			socket.on('hello', (value) => {
-				console.log(`GOT HELLO ${value}`);
-				return 'hi';
-			});
-			socket.on('message', (value) => console.log(`GOT MESSAGE ${value}`));
-			socket.on('coucou', (value) => console.log(`GOT COUCOU ${value.message}`));
-		},
-		);
-
-	});
+	// Setup Socket.io
+	setupSocketIo(fastify);
+	
 };
 
 export default app;
