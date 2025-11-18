@@ -8,21 +8,30 @@ import io from "socket.io-client";
 
 // const socket = io("wss://localhost:8888");
 
-const socket = io("wss://local.maix.me:8888", {
+const socket = io("wss://localhost:8888", {
 	path: "/api/chat/socket.io/",
-	secure: true,
+	secure: false,
 	transports: ["websocket"],
 });
 
 // Listen for the 'connect' event
 socket.on("connect", async () => {
-	console.log("Connected to the server: ", socket.id);
+	console.log("I AM Connected to the server: ", socket.id);
 	// Emit a custom event 'coucou' with some data
 	socket.emit("coucou", { message: "Hello Nigel from coucou!" });
-	console.log('sent coucou');
+	console.log('sent console.log coucou');
 	// Send a message to the server
 	socket.send("Hello from the client: " + `${socket.id}`);
 });
+
+
+// Listen for messages from the server
+socket.on("MsgObjectServer", (data) => {
+  console.log("Message from server:", data);
+});
+
+
+
 
 
 

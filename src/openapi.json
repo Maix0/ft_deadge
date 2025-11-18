@@ -1190,6 +1190,18 @@
         ]
       }
     },
+    "/api/chat/socket.io": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
     "/api/chat/test": {
       "get": {
         "operationId": "chatTest",
