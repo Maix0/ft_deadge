@@ -182,6 +182,9 @@ importers:
       fastify-plugin:
         specifier: ^5.1.0
         version: 5.1.0
+      fastify-socket.io:
+        specifier: ^5.1.0
+        version: 5.1.0(fastify@5.6.2)(socket.io@4.8.1)
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -1795,8 +1798,17 @@ packages:
     resolution: {integrity: sha512-7Jsfj2uLuGWvnxjrGDrHWpSm65+OcVx0ZbTD2wwkz6Wt6KjGm6+ZYwwpdXdwAlzbJYq+LCEMNvDJc4485AQ1vQ==}
     hasBin: true
 
+  fastify-plugin@4.5.1:
+    resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
+
   fastify-plugin@5.1.0:
     resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
+
+  fastify-socket.io@5.1.0:
+    resolution: {integrity: sha512-GC1gjrxBGeTbMWV779XHF4uw3AtgKwSQJ9MnjGiMp91ZBuPXEdBYa7NnAMDEl3oZPgK9JO4BlNncTV+UAN+1kg==}
+    peerDependencies:
+      fastify: 4.x.x
+      socket.io: '>=4'
 
   fastify@5.6.2:
     resolution: {integrity: sha512-dPugdGnsvYkBlENLhCgX8yhyGCsCPrpA8lFWbTNU428l+YOnLgYHR69hzV8HWPC79n536EqzqQtvhtdaCE0dKg==}
@@ -4923,7 +4935,16 @@ snapshots:
       semver: 7.7.3
       yargs-parser: 22.0.0
 
+  fastify-plugin@4.5.1: {}
+
   fastify-plugin@5.1.0: {}
+
+  fastify-socket.io@5.1.0(fastify@5.6.2)(socket.io@4.8.1):
+    dependencies:
+      fastify: 5.6.2
+      fastify-plugin: 4.5.1
+      socket.io: 4.8.1
+      tslib: 2.8.1
 
   fastify@5.6.2:
     dependencies:
