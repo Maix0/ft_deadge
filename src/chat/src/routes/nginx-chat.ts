@@ -1,42 +1,17 @@
 import { FastifyPluginAsync } from 'fastify';
 import { MakeStaticResponse, typeResponse } from '@shared/utils';
 import { Type } from '@sinclair/typebox';
-
 import Fastify from 'fastify'
 import { Server } from "socket.io"
-// import path from 'path'
-// import fastifyStatic from '@fastify/static'
-// import fs from 'fs/promises'
-
-
-// import { fileURLToPath } from 'url';
-// import { dirname } from 'path';
-
-
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
-// const fastifyWS = Fastify({
-//   logger: true
-// })
-
-
-
-// fastify.register(fastifyStatic, {
-//   root: path.join(__dirname, ''), prefix: '/'
-// })
-
-// const io = new Server(8888, {
-// 	cors: {
-// 		origin: "*",
-//   }
-// })
+import { Socket } from "socket.io";
 
 
 const fastify = Fastify();
-const io = new Server(fastify.server, { cors: { origin: "*" } });
-import { Socket } from "socket.io";
+
+const io = new Server(fastify.server, {
+  path: "/app/chat/socket.io/",
+  cors: { origin: "*" },
+});
 
 
 
@@ -47,10 +22,6 @@ io.on("connection", (socket: Socket) => {
 	socket.once("message", () => socket.send("connected succesfully"));
 	socket.once("coucou", (data: any) => console.log(data))
 });
-
-
-
-
 
 
 export const ChatRes = {

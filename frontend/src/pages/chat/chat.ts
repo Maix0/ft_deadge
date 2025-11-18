@@ -3,12 +3,19 @@ import { showError } from "@app/toast";
 import authHtml from './chat.html?raw';
 import client from '@app/api'
 import { updateUser } from "@app/auth";
-
 import  io  from "socket.io-client"
-const socket = io("https://localhost:8888");
+
+
+// const socket = io("wss://localhost:8888");
+
+const socket = io("wss://localhost:8888", {
+  path: "/app/chat/socket.io/",
+  secure: false,
+  transports: ["websocket"],
+});
 
 // Listen for the 'connect' event
-socket.on("connect", async() => {
+socket.on("connect", () => {
 	console.log("Connected to the server: ", socket.id);
 	// Send a message to the server
 	socket.send("Hello from the client: " + `${socket.id}`);
