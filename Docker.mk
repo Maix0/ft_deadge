@@ -6,7 +6,7 @@
 #    By: maiboyer <maiboyer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/11 18:10:26 by maiboyer          #+#    #+#              #
-#    Updated: 2025/11/14 18:54:16 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/11/19 13:52:55 by nrobinso         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ all: build
 	docker compose up -d
 
 logs:
-	docker compose logs -f
+	docker compose logs -f chat auth icons nginx
 
 down:
 	docker compose down
