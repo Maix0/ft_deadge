@@ -2,7 +2,7 @@ import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } 
 import { showError } from "@app/toast";
 import authHtml from './chat.html?raw';
 import client from '@app/api'
-import { updateUser } from "@app/auth";
+import { getUser, updateUser } from "@app/auth";
 import io from "socket.io-client";
 
 
@@ -18,10 +18,11 @@ const socket = io("wss://localhost:8888", {
 socket.on("connect", async () => {
 	console.log("I AM Connected to the server: ", socket.id);
 	// Emit a custom event 'coucou' with some data
-	socket.emit("coucou", { message: "Hello Nigel from coucou!" });
+	//socket.emit("coucou", { message: " Nigel from coucou!" });
 	console.log('sent console.log coucou');
+	//socket.emit('testend', socket.id);
 	// Send a message to the server
-	socket.send("Hello from the client: " + `${socket.id}`);
+	//socket.send(" from the client: " + `${socket.id}`);
 });
 
 
@@ -53,39 +54,70 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const sendButton = document.getElementById('b-send') as HTMLButtonElement;
 			const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
 			const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
-			const blogout = document.getElementById('b-logout') as HTMLButtonElement;
+			const clearText = document.getElementById('b-logout') as HTMLButtonElement;
 			const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
 			const username = document.getElementById('username') as HTMLDivElement;
 
 
-			const value = await client.chatTest();
-			if (value.kind === "success") {
-				console.log(value.payload);
-			}
-			else if (value.kind === "notLoggedIn") {
+			// const value = await client.chatTest();
+			// if (value.kind === "success") {
+			// 	console.log(value.payload);
+			// }
+			// else if (value.kind === "notLoggedIn") {
 
-			} else {
-				console.log('unknown response: ', value);
-			}
+			// } else {
+			// 	console.log('unknown response: ', value);
+			// }
 
-			// Add a new message to the chat display
-			const addMessage = (text: any) => {
-				const messageElement = document.createElement('div');
-				messageElement.textContent = JSON.stringify(text, null, 2);
-				chatWindow.appendChild(messageElement);
-				chatWindow.scrollTop = chatWindow.scrollHeight;   //puts scroll to the bottom
-			};
+			 // Helper to add a message locally
 
-			sendButton!.addEventListener('click', async () => {
-				let msgtext: string = sendtextbox.value;
+      	const addMessage = (text: string) => {
+        	if (!chatWindow) return;
+       	 	const messageElement = document.createElement("div");
+        	messageElement.textContent = text;
+        	chatWindow.appendChild(messageElement);
+        	chatWindow.scrollTop = chatWindow.scrollHeight;
+      	};
 
-				if (msgtext) {
-					addMessage(msgtext);
-					sendtextbox.value = "";
-				}
-			});
+			  // Send button
+      	sendButton?.addEventListener("click", () => {
+      	  if (sendtextbox && sendtextbox.value.trim()) {
+      	    const msgText = sendtextbox.value.trim();
+      	    addMessage(msgText);
 
-			chatWindow.textContent = "helloWorld";
+      	    const user = getUser();
+      	   if (user && socket?.connected) {
+      	      const message = {
+      	        type: "chat",
+      	        user: user.name,
+      	        id: document.cookie,
+      	        text: msgText,
+      	        timestamp: Date.now(),
+				userID: socket.id,
+      	      };
+      	      socket.send(JSON.stringify(message));
+      	    }
+
+      	    sendtextbox.value = "";
+      	  }
+      	});
+
+
+	// Clear Text button
+	clearText?.addEventListener("click", () => {
+		if (chatWindow) {
+			chatWindow.innerHTML = '';
+		}
+	});
+
+	// Enter key to send message
+	sendtextbox!.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			sendButton?.click();
+		}
+	});
+
+			chatWindow.textContent = "World";
 
 			// Whoami button to display user name
 			bwhoami?.addEventListener('click', async () => {

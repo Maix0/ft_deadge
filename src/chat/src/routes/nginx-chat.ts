@@ -1,9 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { MakeStaticResponse, typeResponse } from '@shared/utils';
 import { Type } from '@sinclair/typebox';
-import Fastify from 'fastify';
-import { Server } from 'socket.io';
-import { Socket } from 'socket.io';
 import * as fsocketio from 'fastify-socket.io';
 
 
@@ -28,31 +25,22 @@ export type ChatResType = MakeStaticResponse<typeof ChatRes>;
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	await fastify.register(fsocketio.default);
-	
-	// fastify.get('/api/chat/socket.io', (req, reply) => {
-
-	// 	console.log('Socket.io endpoint hit');
-	// 	reply.send({ status: 'ok' });
-
-	// });
 
 
-	
 
-
-	fastify.get(
-		'/api/chat/test',
-		{
-			schema: {
-				response: ChatRes,
-				operationId: 'chatTest',
-			},
-			config: { requireAuth: true },
-		},
-		async (req, res) => {
-			console.log('/api/chat called =================>');
-			res.makeResponse(200, 'success', 'chat.success', { name: req.authUser!.name, 'id': req.authUser!.id, guest: false });
-		},
-	);
+	// fastify.get(
+	// 	'/api/chat/test',
+	// 	{
+	// 		schema: {
+	// 			response: ChatRes,
+	// 			operationId: 'chatTest',
+	// 		},
+	// 		config: { requireAuth: true },
+	// 	},
+	// 	async (req, res) => {
+	// 		console.log('/api/chat called =================>');
+	// 		res.makeResponse(200, 'success', 'chat.success', { name: req.authUser!.name, 'id': req.authUser!.id, guest: false });
+	// 	},
+	// );
 };
 export default route;

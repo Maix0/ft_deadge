@@ -1,7 +1,6 @@
 apis/OpenapiOtherApi.ts
 apis/index.ts
 index.ts
-models/ChatTest200Response.ts
 models/DisableOtp200Response.ts
 models/DisableOtp401Response.ts
 models/DisableOtp500Response.ts
