@@ -3,7 +3,7 @@ import { showError } from "@app/toast";
 import authHtml from './chat.html?raw';
 import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
-import io from "socket.io-client";
+import io from 'socket.io-client';
 
 const socket = io("wss://localhost:8888", {
 	path: "/api/chat/socket.io/",
@@ -22,7 +22,7 @@ socket.on("connect", async () => {
 });
 
 // Listen for messages from the server "MsgObjectServer"
-socket.on("MsgObjectServer", (data) => {
+socket.on("MsgObjectServer", (data: any) => {
   	console.log("Message Obj Recieved:", data.message);
   	console.log("Recieved data.message.text: ", data.message.text);
   	console.log("Recieved data.message.user: ", data.message.user);
@@ -62,6 +62,17 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
 		const username = document.getElementById('username') as HTMLDivElement;
 
+	  	const value = await client.chatTest();
+		if (value.kind === "success") {
+			  console.log(value.payload);
+		}
+		else if (value.kind === "notLoggedIn") {
+			console.log('not logged in');
+		} else {
+			console.log('unknown response: ', value);
+		}
+				
+
 	  	const addMessage = (text: string) => {
 			if (!chatWindow) return;
 	   	 	const messageElement = document.createElement("div");
@@ -71,9 +82,15 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	  	};
 
 		// Send button
-	  	sendButton?.addEventListener("click", () => {
-	  	  if (sendtextbox && sendtextbox.value.trim()) {
-	  		const msgText = sendtextbox.value.trim();
+	  	sendButton?.addEventListener("click",() => {
+			  
+		
+			if (sendtextbox && sendtextbox.value.trim()) {
+				const msgText = sendtextbox.value.trim();
+
+
+
+
 	  		addMessage(msgText);
 
 	  		const user = getUser();
