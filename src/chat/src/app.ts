@@ -5,8 +5,10 @@ import * as db from '@shared/database';
 import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
-import useSocketIo from 'fastify-socket.io';
+// import useSocketIo from 'fastify-socket.io';
 import { setupSocketIo } from './socket';
+import.meta.glob('/plugins/**.ts')
+
 
 declare const __SERVICE_NAME: string;
 
@@ -22,9 +24,9 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	await fastify.register(db.useDatabase as FastifyPluginAsync, {});
 	await fastify.register(auth.jwtPlugin as FastifyPluginAsync, {});
 	await fastify.register(auth.authPlugin as FastifyPluginAsync, {});
-	await fastify.register(useSocketIo, {
-		path: '/api/chat/socket.io',
-	});
+	// await fastify.register(useSocketIo, {
+	// 	path: '/api/chat/socket.io',
+	// });
 
 	// Place here your custom code!
 	for (const plugin of Object.values(plugins)) {
@@ -42,7 +44,7 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
 
 	// Setup Socket.io
-	setupSocketIo(fastify);
+	setupSocketIo();
 };
 export default app;
 export { app };
