@@ -18,9 +18,9 @@
     "better-sqlite3": "^11.10.0",
     "fastify": "^5.6.2",
     "fastify-plugin": "^5.1.0",
-    "joi": "^18.0.1",
+    "joi": "^18.0.2",
     "otp": "^1.1.2",
-    "typebox": "^1.0.53",
+    "typebox": "^1.0.55",
     "uuidv7": "^1.0.2"
   },
   "devDependencies": {
