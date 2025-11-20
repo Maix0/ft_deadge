@@ -5,9 +5,6 @@ import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
 import io from "socket.io-client";
 
-
-// const socket = io("wss://localhost:8888");
-
 const socket = io("wss://localhost:8888", {
 	path: "/api/chat/socket.io/",
 	secure: false,
@@ -19,12 +16,10 @@ socket.on("connect", async () => {
 	console.log("I AM Connected to the server: ", socket.id);
 	// Emit a custom event 'coucou' with some data
 	//socket.emit("coucou", { message: " Nigel from coucou!" });
-	console.log('sent console.log coucou');
 	//socket.emit('testend', socket.id);
 	// Send a message to the server
 	//socket.send(" from the client: " + `${socket.id}`);
 });
-
 
 // Listen for messages from the server "MsgObjectServer"
 socket.on("MsgObjectServer", (data) => {
@@ -46,8 +41,6 @@ socket.on("MsgObjectServer", (data) => {
   	console.log("Getuser():", getUser());
 });
 
-
-
 type Providers = {
 	name: string,
 	display_name: string,
@@ -62,104 +55,80 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	return {
 
 		html: authHtml, postInsert: async (app) => {
+		const sendButton = document.getElementById('b-send') as HTMLButtonElement;
+		const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
+		const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
+		const clearText = document.getElementById('b-logout') as HTMLButtonElement;
+		const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
+		const username = document.getElementById('username') as HTMLDivElement;
 
-			const sendButton = document.getElementById('b-send') as HTMLButtonElement;
-			const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
-			const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
-			const clearText = document.getElementById('b-logout') as HTMLButtonElement;
-			const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
-			const username = document.getElementById('username') as HTMLDivElement;
+	  	const addMessage = (text: string) => {
+			if (!chatWindow) return;
+	   	 	const messageElement = document.createElement("div");
+			messageElement.textContent = text;
+			chatWindow.appendChild(messageElement);
+			chatWindow.scrollTop = chatWindow.scrollHeight;
+	  	};
 
+		// Send button
+	  	sendButton?.addEventListener("click", () => {
+	  	  if (sendtextbox && sendtextbox.value.trim()) {
+	  		const msgText = sendtextbox.value.trim();
+	  		addMessage(msgText);
 
-
-
-      	const addMessage = (text: string) => {
-        	if (!chatWindow) return;
-       	 	const messageElement = document.createElement("div");
-        	messageElement.textContent = text;
-        	chatWindow.appendChild(messageElement);
-        	chatWindow.scrollTop = chatWindow.scrollHeight;
-      	};
-
-			  // Send button
-      	sendButton?.addEventListener("click", () => {
-      	  if (sendtextbox && sendtextbox.value.trim()) {
-      	    const msgText = sendtextbox.value.trim();
-      	    addMessage(msgText);
-
-      	    const user = getUser();
-      	   if (user && socket?.connected) {
-      	      const message = {
-      	        type: "chat",
-      	        user: user.name,
-      	        token: document.cookie,
-      	        text: msgText,
-      	        timestamp: Date.now(),
+	  		const user = getUser();
+	  	   if (user && socket?.connected) {
+	  		  const message = {
+	  			type: "chat",
+	  			user: user.name,
+	  			token: document.cookie,
+	  			text: msgText,
+	  			timestamp: Date.now(),
 				SenderWindowID: socket.id,
-      	      };
-      	      socket.send(JSON.stringify(message));
-      	    }
+	  		  };
+	  		  socket.send(JSON.stringify(message));
+	  		}
+	  		sendtextbox.value = "";
+	  	  }
+	  	});
 
-      	    sendtextbox.value = "";
-      	  }
-      	});
 
+		// Clear Text button
+		clearText?.addEventListener("click", () => {
+			if (chatWindow) {
+				chatWindow.innerHTML = '';
+			}
+		});
 
-	// Clear Text button
-	clearText?.addEventListener("click", () => {
-		if (chatWindow) {
-			chatWindow.innerHTML = '';
-		}
-	});
+		// Enter key to send message
+		sendtextbox!.addEventListener('keydown', (event) => {
+			if (event.key === 'Enter') {
+				sendButton?.click();
+			}
+		});
 
-	// Enter key to send message
-	sendtextbox!.addEventListener('keydown', (event) => {
-		if (event.key === 'Enter') {
-			sendButton?.click();
-		}
-	});
-
-			chatWindow.textContent = "World";
-
-			// Whoami button to display user name
-			bwhoami?.addEventListener('click', async () => {
-				try {
-					const res = await client.guestLogin();
-					switch (res.kind) {
-						case 'success': {
-							let user = await updateUser();
-							if (user === null)
-								return showError('Failed to get user: no user ?');
-							setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
-							break;
-						}
-						case 'failed': {
-							showError(`Failed to login: ${res.msg}`);
-						}
+		// Whoami button to display user name
+		bwhoami?.addEventListener('click', async () => {
+			try {
+				const res = await client.guestLogin();
+				switch (res.kind) {
+					case 'success': {
+						let user = await updateUser();
+						if (user === null)
+							return showError('Failed to get user: no user ?');
+						setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
+						break;
 					}
-				} catch (e) {
-					console.error("Login error:", e);
-					showError('Failed to login: Unknown error');
+					case 'failed': {
+						showError(`Failed to login: ${res.msg}`);
+					}
 				}
-			});
-
-
-
-
+			} catch (e) {
+				console.error("Login error:", e);
+				showError('Failed to login: Unknown error');
+			}
+		});
 		}
 	}
-
-
 };
 addRoute('/chat', handleChat, { bypass_auth: true });
-			// const value = await client.chatTest();
-			// if (value.kind === "success") {
-			// 	console.log(value.payload);
-			// }
-			// else if (value.kind === "notLoggedIn") {
-
-			// } else {
-			// 	console.log('unknown response: ', value);
-			// }
-
-			 // Helper to add a message locally
