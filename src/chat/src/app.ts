@@ -6,7 +6,7 @@ import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import useSocketIo from 'fastify-socket.io';
-import { setupSocketIo } from "./socket";
+import { setupSocketIo } from './socket';
 
 declare const __SERVICE_NAME: string;
 
@@ -40,8 +40,6 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
 	// Setup Socket.io
 	setupSocketIo(fastify);
-	
 };
-
 export default app;
 export { app };
