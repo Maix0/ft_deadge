@@ -9,12 +9,15 @@ import { UUID, newUUID } from '@shared/utils/uuid';
 export interface IUserDb extends Database {
 	getUserFromLoginName(name: string): User | undefined,
 	getUser(id: string): User | undefined,
+	getOauth2User(provider: string, unique: string): User | undefined,
 	getUserOtpSecret(id: UserId): string | undefined,
-	createUser(login_name: string | null, display_name: string, password: string | undefined, guest: boolean): Promise<User | undefined>,
-	createUser(login_name: string | null, display_name: string, password: string | undefined): Promise<User | undefined>,
+	createUser(login: string | null, name: string, password: string): Promise<User | undefined>,
+	createGuestUser(name: string): Promise<User | undefined>,
+	createOauth2User(name: string, provider: string, provider_unique: string): Promise<User | undefined>,
 	setUserPassword(id: UserId, password: string | undefined): Promise<User | undefined>,
 	ensureUserOtpSecret(id: UserId): string | undefined,
 	deleteUserOtpSecret(id: UserId): void,
+	getAllUserFromProvider(provider: string): User[] | undefined,
 };
 
 export const UserImpl: Omit<IUserDb, keyof Database> = {
@@ -28,7 +31,7 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	getUserFromLoginName(this: IUserDb, name: string): User | undefined {
 		return userFromRow(
 			this.prepare(
-				'SELECT * FROM user WHERE login_name = @name LIMIT 1',
+				'SELECT * FROM user WHERE login = @name LIMIT 1',
 			).get({ name }) as (Partial<User> | undefined),
 		);
 	},
@@ -56,13 +59,47 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	 *
 	 * @returns The user struct
 	 */
-	async createUser(this: IUserDb, login_name: string | null, display_name: string, password: string | undefined, guest: boolean = false): Promise<User | undefined> {
-		password = await hashPassword(password);
+	async createUser(this: IUserDb, login: string, name: string, password: string): Promise<User | undefined> {
+		const password_ = await hashPassword(password);
 		const id = newUUID();
 		return userFromRow(
 			this.prepare(
-				'INSERT OR FAIL INTO user (id, login_name, display_name, password, guest) VALUES (@id, @login_name, @display_name, @password, @guest) RETURNING *',
-			).get({ id, login_name, display_name, password, guest: guest ? 1 : 0 }) as (Partial<User> | undefined),
+				'INSERT OR FAIL INTO user (id, login, name, password, guest, oauth2) VALUES (@id, @login, @name, @password, @guest, @oauth2) RETURNING *',
+			).get({ id, login, name, password: password_, guest: 0, oauth2: null }) as (Partial<User> | undefined),
+		);
+	},
+
+	/**
+	 * Create a new user using password hash
+	 *
+	 * @param name the username for the new user (must be unique and sanitized)
+	 * @param password the plaintext password of the new user (if any)
+	 *
+	 * @returns The user struct
+	 */
+	async createGuestUser(this: IUserDb, name: string): Promise<User | undefined> {
+		const id = newUUID();
+		return userFromRow(
+			this.prepare(
+				'INSERT OR FAIL INTO user (id, login, name, password, guest, oauth2) VALUES (@id, @login, @name, @password, @guest, @oauth2) RETURNING *',
+			).get({ id, login: null, name, password: null, guest: 1, oauth2: null }) as (Partial<User> | undefined),
+		);
+	},
+
+	/**
+	 * Create a new user using password hash
+	 *
+	 * @param name the username for the new user (must be unique and sanitized)
+	 * @param password the plaintext password of the new user (if any)
+	 *
+	 * @returns The user struct
+	 */
+	async createOauth2User(this: IUserDb, name: string, provider: string, provider_unique: string): Promise<User | undefined> {
+		const id = newUUID();
+		return userFromRow(
+			this.prepare(
+				'INSERT OR FAIL INTO user (id, login, name, password, guest, oauth2) VALUES (@id, @login, @name, @password, @guest, @oauth2) RETURNING *',
+			).get({ id, login: null, name, password: null, guest: 0, oauth2: `${provider}:${provider_unique}` }) as (Partial<User> | undefined),
 		);
 	},
 
@@ -102,17 +139,29 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	deleteUserOtpSecret(this: IUserDb, id: UserId): void {
 		this.prepare('UPDATE OR IGNORE user SET otp = NULL WHERE id = @id').run({ id });
 	},
+
+	getAllUserFromProvider(this: IUserDb, provider: string): User[] | undefined {
+		const req = this.prepare('SELECT * FROM user WHERE oauth2 LIKE oauth2 = @oauth2 || \'%\'');
+		return (req.all({ oauth2: provider }) as Partial<User>[]).map(userFromRow).filter(v => !isNullish(v));
+	},
+	getOauth2User(this: IUserDb, provider: string, unique: string): User | undefined {
+		const req = this.prepare('SELECT * FROM user WHERE oauth2 = @oauth2').get({ oauth2: `${provider}:${unique}` }) as Partial<User> | undefined;
+		return userFromRow(req);
+	},
 };
 
 export type UserId = UUID;
 
 export type User = {
 	readonly id: UserId;
-	readonly login_name?: string;
-	readonly display_name: string;
+	readonly login?: string;
+	readonly name: string;
 	readonly password?: string;
 	readonly otp?: string;
 	readonly guest: boolean;
+	// will be split/merged from the `provider` column
+	readonly provider_name?: string;
+	readonly provider_unique?: string;
 };
 
 export async function verifyUserPassword(
@@ -147,17 +196,29 @@ async function hashPassword(
  *
  * @returns The user if it exists, undefined otherwise
  */
-export function userFromRow(row?: Partial<User>): User | undefined {
+export function userFromRow(row?: Partial<Omit<User, 'provider_name' | 'provider_unique'> & { provider?: string }>): User | undefined {
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
-	if (isNullish(row.display_name)) return undefined;
+	if (isNullish(row.name)) return undefined;
 	if (isNullish(row.guest)) return undefined;
+
+	let provider_name = undefined;
+	let provider_unique = undefined;
+
+	if (row.provider) {
+		const splitted = row.provider.split(':', 1);
+		if (splitted.length != 2) { return undefined; }
+		provider_name = splitted[0];
+		provider_unique = splitted[1];
+	}
+
 	return {
 		id: row.id,
-		login_name: row.login_name ?? undefined,
-		display_name: row.display_name,
+		login: row.login ?? undefined,
+		name: row.name,
 		password: row.password ?? undefined,
 		otp: row.otp ?? undefined,
 		guest: !!(row.guest ?? true),
+		provider_name, provider_unique,
 	};
 }

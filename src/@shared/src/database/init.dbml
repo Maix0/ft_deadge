@@ -17,21 +17,11 @@ Project Transcendance {
 
 Table user {
   id text [PK, not null]
-  login_name text [unique]
-  display_name text [not null]
-  password text [null, Note: "If password is NULL, this means that the user is created through OAUTH2"]
+  login text [unique]
+  name text [not null]
+  password text [null, Note: "If password is NULL, this means that the user is created through OAUTH2 or guest login"]
   otp text [null, Note: "If otp is NULL, then the user didn't configure 2FA"]
   guest integer [not null, default: 0]
-
+  oauth2 text [null, default: `NULL` , Note: "format: <provider>:<unique_id>; null if not logged via provider"]
   Note: "Represent a user"
-}
-
-Table auth {
-  id integer [PK, not null, increment]
-  provider text [not null]
-  user text [ref: > user.id, not null]
-  oauth2_user text [not null, unique, Note: '''
-    This makes sure that an oauth2 login is the always the same `user`
-    Aka can't have two account bound to the same <OAUTH2> account
-  ''']
 }

@@ -47,7 +47,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			// password is good too !
 
 			if (this.db.getUserFromLoginName(name) !== undefined) { return res.makeResponse(400, 'failed', 'signin.failed.username.existing'); }
-			const u = await this.db.createUser(name, name, password, false);
+			const u = await this.db.createUser(name, name, password);
 			if (isNullish(u)) { return res.makeResponse(500, 'failed', 'signin.failed.generic'); }
 
 			// every check has been passed, they are now logged in, using this token to say who they are...

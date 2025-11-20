@@ -59,6 +59,7 @@ function makeResponse<T extends object>(
 	key: string,
 	payload?: T,
 ): ReturnType<FastifyReply['send']> {
+	this.log.info(`Sending response: ${status}; response = ${JSON.stringify({ kind, msg: key, payload })}`);
 	return this.code(status).send({ kind, msg: key, payload });
 }
 

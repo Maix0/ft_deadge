@@ -30,9 +30,9 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			const result = await creq.getCode();
 
 			const userinfo = await provider.getUserInfo(result);
-			let u = this.db.getUserFromProviderUser(provider.display_name, userinfo.unique_id);
+			let u = this.db.getOauth2User(provider.display_name, userinfo.unique_id);
 			if (isNullish(u)) {
-				u = await this.db.createUserWithProvider(provider.display_name, userinfo.unique_id, userinfo.name);
+				u = await this.db.createOauth2User(userinfo.name, provider.display_name, userinfo.unique_id);
 			}
 			if (isNullish(u)) {
 				return res.code(500).send('failed to fetch or create user...');
@@ -40,7 +40,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			const token = this.signJwt('auth', u.id);
 
 
-			return res.setCookie('token', token, { path: '/' }).redirect('/');
+			return res.setCookie('token', token, { path: '/' }).redirect('/app/');
 		},
 	);
 };
