@@ -17,72 +17,43 @@ declare module 'fastify' {
 			testend: (sock_id_client: string) => void,
 		}>
 	}
-}
-
-
-
-
+};
 
 export function setupSocketIo(fastify: import('fastify').FastifyInstance): void {
 	
 	fastify.ready((err) => {
 		if (err) throw err;
 		
-		// function broadcast(message: any, sender?: any) {
-			
-		// 	fastify.io.fetchSockets().then((sockets) => {
-		// 		console.log("Connected clients:", sockets.length);
-    	// 		for (const s of sockets) {
-					
-		// 			if (s.id !== sender) {
-		// 				s.emit('MsgObjectServer',{ message: `${message}` });
-		// 				console.log("Socket ID:", s.id);
-		// 				console.log("Rooms:", [...s.rooms]);
-		// 				console.log("Sender:", sender ? sender : 'none');
-		// 				console.log("ID:", message.text  ? message.text : 'none');
-		// 			}
-    	// 		}
-		// 	});
-		// }
-		
+	// Broadcast function to send messages to all connected clients except the sender
+	function broadcast(data: any, sender?: string) {
+		fastify.io.fetchSockets().then((sockets) => {
+			console.log("Connected clients:", sockets.length);
 
-function broadcast(data: any, sender?: string) {
-    fastify.io.fetchSockets().then((sockets) => {
-        console.log("Connected clients:", sockets.length);
+			for (const s of sockets) {
+				if (s.id !== sender) {
+					// Send REAL JSON object
+					s.emit("MsgObjectServer", { message: data }); 
 
-        for (const s of sockets) {
-            if (s.id !== sender) {
-                // Send REAL JSON object
-				s.emit("MsgObjectServer", { message: data }); 
-
-                console.log(" emit window socket ID:", s.id);
-                console.log(" emit window ID:", [...s.rooms]);
-                console.log(" Sender window ID:", sender ? sender : "none");
-                console.log(" text recieved:", data.text ? data.text : "none");
-                console.log(color.red, "data:", color.reset, data ? data : "none");
-            }
-        }
-    });
-}
-
-
-
-
+					console.log(" emit window socket ID:", s.id);
+					console.log(" emit window ID:", [...s.rooms]);
+					console.log(" Sender window ID:", sender ? sender : "none");
+					console.log(" text recieved:", data.text ? data.text : "none");
+					console.log(color.red, "data:", color.reset, data ? data : "none");
+				}
+			}
+		});
+	};
 		// console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(fastify.io)));
 		fastify.io.on('connection', (socket : Socket) => {
 			console.info(color.blue, 'Socket connected!', color.reset, socket.id);
 			socket.on("message", (message: string) => {
 				console.log(color.blue, `Received message from client`, color.reset, message);
-			    const obj = JSON.parse(message);  // { userID, text }
-			    console.log(color.green, `Message from client`, color.reset, `${obj.userID}: ${obj.text}`);
+				const obj = JSON.parse(message);  // { userID, text }
+				console.log(color.green, `Message from client`, color.reset, `${obj.userID}: ${obj.text}`);
 			
-			    // Send object directly — DO NOT wrap it in a string
-			    broadcast(obj, obj.SenderWindowID);
+				// Send object directly — DO NOT wrap it in a string
+				broadcast(obj, obj.SenderWindowID);
 			});
-
-
-
-
 			socket.on('testend', (sock_id_cl : string) => {
 				console.log('testend received from client socket id:', sock_id_cl);
 			});
@@ -90,12 +61,6 @@ function broadcast(data: any, sender?: string) {
 				console.log("Client is disconnecting:", socket.id, "reason:", reason);
 				console.log('Socket AAAAAAAActing because:', socket.connected);
 			});
-			
-			
-			
 		});
-
-		});
-
-	};
-	
+	});
+};
