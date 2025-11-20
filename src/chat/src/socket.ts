@@ -1,3 +1,4 @@
+import Fastify from "fastify";
 import { Server, Socket } from 'socket.io';
 
 export const color = {
@@ -26,10 +27,26 @@ declare module 'fastify' {
 	}
 };
 
-export function setupSocketIo(fastify: import('fastify').FastifyInstance): void {
+const fastify = Fastify({
+  logger: true
+});
 
-	fastify.ready((err) => {
-		if (err) throw err;
+
+export async function setupSocketIo() {
+  // Wait for Fastify to be ready so .server exists
+  await fastify.ready();
+
+  const io = new Server(fastify.server, {
+    cors: {
+      origin: "*"
+    }
+  });
+
+
+// export function setupSocketIo(fastify: import('fastify').FastifyInstance): void {
+
+// 	fastify.ready((err) => {
+// 		if (err) throw err;
 
 		// Broadcast function to send messages to all connected clients except the sender
 		function broadcast(data: ClientMessage, sender?: string) {
@@ -51,7 +68,7 @@ export function setupSocketIo(fastify: import('fastify').FastifyInstance): void 
 			});
 		};
 		// console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(fastify.io)));
-		fastify.io.on('connection', (socket : Socket) => {
+		io.on('connection', (socket : Socket) => {
 			console.info(color.blue, 'Socket connected!', color.reset, socket.id);
 			socket.on('message', (message: string) => {
 				console.log(color.blue, 'Received message from client', color.reset, message);
@@ -69,5 +86,5 @@ export function setupSocketIo(fastify: import('fastify').FastifyInstance): void 
 				console.log('Socket AAAAAAAActing because:', socket.connected);
 			});
 		});
-	});
+// 	});
 };

@@ -38,6 +38,9 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	void fastify.register(fastifyMultipart, {});
 	fastify.get('/monitoring', () => 'Ok');
 
+
+
+
 	// Setup Socket.io
 	setupSocketIo(fastify);
 };

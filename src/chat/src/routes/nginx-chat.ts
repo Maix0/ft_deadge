@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import { MakeStaticResponse, typeResponse } from '@shared/utils';
 import { Type } from '@sinclair/typebox';
-import * as fsocketio from 'fastify-socket.io';
+import * as fsocketio from 'socket.io';
 
 export const ChatRes = {
 	200: typeResponse('success', 'chat.success', {
@@ -14,8 +14,7 @@ export const ChatRes = {
 export type ChatResType = MakeStaticResponse<typeof ChatRes>;
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
-	await fastify.register(fsocketio.default);
-
+	
 	// fastify.get(
 	// 	'/api/chat/test',
 	// 	{
