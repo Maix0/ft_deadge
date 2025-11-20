@@ -26,13 +26,25 @@ socket.on("connect", async () => {
 });
 
 
-// Listen for messages from the server
+// Listen for messages from the server "MsgObjectServer"
 socket.on("MsgObjectServer", (data) => {
-  console.log("Message from server:", data);
+  	console.log("Message Obj Recieved:", data.message);
+  	console.log("Recieved data.message.text: ", data.message.text);
+  	console.log("Recieved data.message.user: ", data.message.user);
+  	console.log("Recieved data.message.type: ", data.message.type);
+  	console.log("Recieved data.message.token: ", data.message.token);
+  	console.log("Recieved data.message.timestamp: ", data.message.timestamp);
+
+	// Display the message in the chat window
+	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+	if (chatWindow) {
+		const messageElement = document.createElement("div");
+		messageElement.textContent = `${data.message.user}: ${data.message.text}`;
+		chatWindow.appendChild(messageElement);
+		chatWindow.scrollTop = chatWindow.scrollHeight;
+	}
+  	console.log("Getuser():", getUser());
 });
-
-
-
 
 
 
@@ -59,17 +71,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const username = document.getElementById('username') as HTMLDivElement;
 
 
-			// const value = await client.chatTest();
-			// if (value.kind === "success") {
-			// 	console.log(value.payload);
-			// }
-			// else if (value.kind === "notLoggedIn") {
 
-			// } else {
-			// 	console.log('unknown response: ', value);
-			// }
-
-			 // Helper to add a message locally
 
       	const addMessage = (text: string) => {
         	if (!chatWindow) return;
@@ -90,10 +92,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
       	      const message = {
       	        type: "chat",
       	        user: user.name,
-      	        id: document.cookie,
+      	        token: document.cookie,
       	        text: msgText,
       	        timestamp: Date.now(),
-				userID: socket.id,
+				SenderWindowID: socket.id,
       	      };
       	      socket.send(JSON.stringify(message));
       	    }
@@ -150,3 +152,14 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 };
 addRoute('/chat', handleChat, { bypass_auth: true });
+			// const value = await client.chatTest();
+			// if (value.kind === "success") {
+			// 	console.log(value.payload);
+			// }
+			// else if (value.kind === "notLoggedIn") {
+
+			// } else {
+			// 	console.log('unknown response: ', value);
+			// }
+
+			 // Helper to add a message locally
