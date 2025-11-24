@@ -10,7 +10,8 @@ import { Server, Socket } from 'socket.io';
 declare const __SERVICE_NAME: string;
 
 // Global map of clients
-const clientChat = new Map<string, string>(); // key = client name, value = socket
+// key = socket, value = clientname
+const clientChat = new Map<string, string>();
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
@@ -110,8 +111,8 @@ async function onReady(fastify: FastifyInstance) {
 				// console.log(color.green,"count: ", count);
 				console.log(color.yellow, 'Client:', color.reset, username);
 
-				const targetSocketId: any = target;
-				io.to(targetSocketId).emit('listObj', username);
+				const targetSocketId = target;
+				io.to(targetSocketId!).emit('listObj', username);
 
 				console.log(
 					color.yellow,
