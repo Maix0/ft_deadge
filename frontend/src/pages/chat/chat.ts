@@ -6,6 +6,12 @@ import { getUser, updateUser } from "@app/auth";
 import io, { Socket } from 'socket.io-client';
 
 let __socket: Socket | undefined = undefined;
+document.addEventListener('ft:pageChange', () => {
+	if (__socket !== undefined)
+		__socket.close();
+	__socket = undefined;
+	console.log("Page changed");
+})
 function getSocket(): Socket {
 	if (__socket === undefined)
 		__socket = io("wss://localhost:8888", {
