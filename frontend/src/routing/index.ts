@@ -195,6 +195,7 @@ export async function handleRoute() {
 	if (user === null && !route_handler.special_args.bypass_auth)
 		return navigateTo(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`)
 	const app = document.getElementById('app')!;
+	document.dispatchEvent(new CustomEvent('ft:pageChange' as any, {} as any) as any);
 	let ret = await executeRouteHandler(route_handler, window.location.pathname, args)
 	app.innerHTML = ret.html;
 	if (ret.postInsert) {
