@@ -9,6 +9,9 @@ import { Server, Socket } from 'socket.io';
 
 declare const __SERVICE_NAME: string;
 
+// Global map of clients
+const clientChat = new Map<string, string>();   // key = client name, value = socket
+
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
@@ -55,7 +58,7 @@ export const color = {
 };
 
 type ClientMessage = {
-	userID: string;
+	user: string;
 	text: string;
 	SenderWindowID: string;
 };
@@ -73,36 +76,73 @@ declare module 'fastify' {
 }
 
 async function onReady(fastify: FastifyInstance) {
-	// Broadcast function to send messages to all connected clients except the sender
+
+
+function connectedUser(io?: Server): number {
+  let count = 0;
+  const seen = new Set<string>(); // <- only log/count unique usernames
+
+  for (const [socketId, username] of clientChat) {
+    // Basic sanity checks
+    if (typeof socketId !== "string" || socketId.length === 0) {
+      clientChat.delete(socketId);
+      continue;
+    }
+    if (typeof username !== "string" || username.length === 0) {
+      clientChat.delete(socketId);
+      continue;
+    }
+
+    // If we have the io instance, attempt to validate the socket is still connected
+    if (io && typeof io.sockets?.sockets?.get === "function") {
+      const s = io.sockets.sockets.get(socketId) as Socket | undefined;
+      // If socket not found or disconnected, remove from map and skip
+      if (!s || s.disconnected) {
+		  clientChat.delete(socketId);
+		  continue;
+		}
+	
+		// Skip duplicates (DO NOT delete them — just don't count)
+    	if (seen.has(username)) {
+      		continue;
+    	}
+		// socket exists and is connected
+		seen.add(username);
+		count++;
+	  	// console.log(color.green,"count: ", count);
+      	console.log(color.yellow, "Client:", color.reset, username);
+      	console.log(color.yellow, "Socket ID:", color.reset, socketId);
+      	continue;
+    }
+
+    // If no io provided, assume entries in the map are valid and count them.
+    count++;
+    console.log(color.red, "Client (unverified):", color.reset, username);
+    console.log(color.red, "Socket ID (unverified):", color.reset, socketId);
+  }
+
+  return count;
+}
+
+
 	function broadcast(data: ClientMessage, sender?: string) {
 		fastify.io.fetchSockets().then((sockets) => {
-			console.log('Connected clients:', sockets.length);
 
 			for (const s of sockets) {
 				if (s.id !== sender) {
 					// Send REAL JSON object
 					s.emit('MsgObjectServer', { message: data });
 
-					console.log(' emit window socket ID:', s.id);
-					console.log(' emit window ID:', [...s.rooms]);
+					console.log(' Target window socket ID:', s.id);
+					console.log(' Target window ID:', [...s.rooms]);
 					console.log(' Sender window ID:', sender ? sender : 'none');
-					console.log(
-						' text recieved:',
-						data.text ? data.text : 'none',
-					);
-					console.log(
-						color.red,
-						'data:',
-						color.reset,
-						data ? data : 'none',
-					);
 				}
 			}
 		});
 	}
 	fastify.io.on('connection', (socket: Socket) => {
-		console.info(color.blue, 'Socket connected!', color.reset, socket.id);
 		socket.on('message', (message: string) => {
+			console.info(color.blue, 'Socket connected!', color.reset, socket.id);
 			console.log(
 				color.blue,
 				'Received message from client',
@@ -110,27 +150,43 @@ async function onReady(fastify: FastifyInstance) {
 				message,
 			);
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
+			clientChat.set(socket.id, obj.user);
 			console.log(
 				color.green,
 				'Message from client',
 				color.reset,
-				`${obj.userID}: ${obj.text}`,
+				`Sender: login name: "${obj.user}" - windowID "${obj.SenderWindowID}" - text message: "${obj.text}"`,
 			);
-
 			// Send object directly — DO NOT wrap it in a string
 			broadcast(obj, obj.SenderWindowID);
+			connectedUser(fastify.io);
 		});
+		
+		
 		socket.on('testend', (sock_id_cl: string) => {
 			console.log('testend received from client socket id:', sock_id_cl);
 		});
-		socket.on('disconnecting', (reason) => {
-			console.log(
-				'Client is disconnecting:',
-				socket.id,
-				'reason:',
-				reason,
-			);
-			console.log('Socket AAAAAAAActing because:', socket.connected);
+		
+		
+		socket.on("disconnecting", (reason) => {
+
+  			const clientName = clientChat.get(socket.id) || "Unknown";
+
+  			const obj = {
+  			  type: "chat",
+  			  user: clientName,
+  			  token: "",
+  			  text: `LEFT the chat`,
+  			  timestamp: Date.now(),
+  			  SenderWindowID: socket.id,
+  			};
+
+  			broadcast(obj, obj.SenderWindowID);
+
+  			console.log(`Client disconnecting: ${clientName} (${socket.id}) reason:`, reason);
+
+  			// Remove from map
+  			clientChat.delete(socket.id);
 		});
 	});
 }

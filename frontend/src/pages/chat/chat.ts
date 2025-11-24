@@ -5,6 +5,7 @@ import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
 import io from 'socket.io-client';
 
+function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 const socket = io("wss://localhost:8888", {
 	path: "/api/chat/socket.io/",
 	secure: false,
@@ -12,13 +13,23 @@ const socket = io("wss://localhost:8888", {
 });
 
 // Listen for the 'connect' event
-socket.on("connect", async () => {
-	console.log("I AM Connected to the server: ", socket.id);
-	// Emit a custom event 'coucou' with some data
-	//socket.emit("coucou", { message: " Nigel from coucou!" });
-	//socket.emit('testend', socket.id);
-	// Send a message to the server
-	//socket.send(" from the client: " + `${socket.id}`);
+socket.on("connect", () => {
+  console.log("I AM Connected to the server:", socket.id);
+
+  const user = getUser()?.name;
+
+  // Ensure we have a user AND socket is connected
+  if (!user || !socket.connected) return;
+
+  const message = {
+    type: "chat",
+    user,
+    token: document.cookie ?? "",
+    text: " has Just ARRIVED in the chat",
+    timestamp: Date.now(),
+    SenderWindowID: socket.id,
+  };
+   socket.emit('message', JSON.stringify(message));
 });
 
 // Listen for messages from the server "MsgObjectServer"
@@ -34,7 +45,13 @@ socket.on("MsgObjectServer", (data: any) => {
 	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 	if (chatWindow) {
 		const messageElement = document.createElement("div");
-		messageElement.textContent = `${data.message.user}: ${data.message.text}`;
+		// if (getUser()?.id !== `${data.message.id}`) {
+			console.log('==================> HERE');
+			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
+		// } else {
+		// 	console.log('==================>AND HERE');
+		// 	messageElement.textContent = `here`;
+		// }
 		chatWindow.appendChild(messageElement);
 		chatWindow.scrollTop = chatWindow.scrollHeight;
 	}
@@ -48,7 +65,7 @@ type Providers = {
 	color?: { default: string, hover: string },
 };
 
-function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
+// function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 
 	setTitle('Chat Page');
 	// Listen for the 'connect' event
@@ -58,8 +75,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const sendButton = document.getElementById('b-send') as HTMLButtonElement;
 		const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
 		const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
-		const clearText = document.getElementById('b-logout') as HTMLButtonElement;
+		const clearText = document.getElementById('b-clear') as HTMLButtonElement;
 		const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
+		const bhelp = document.getElementById('b-help') as HTMLButtonElement;
 		const username = document.getElementById('username') as HTMLDivElement;
 
 	  	const value = await client.chatTest();
@@ -116,6 +134,16 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				chatWindow.innerHTML = '';
 			}
 		});
+
+
+		// Help Text button
+		bhelp?.addEventListener("click", () => {
+			if (chatWindow) {
+				addMessage('@Help - List Chat Commands:');
+				addMessage('@list - lists all user connected');
+			}
+		});
+
 
 		// Enter key to send message
 		sendtextbox!.addEventListener('keydown', (event) => {

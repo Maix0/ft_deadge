@@ -23,7 +23,7 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 			config: { requireAuth: true },
 		},
 		async (req, res) => {
-			console.log('/api/chat called =================>');
+			//console.log('/api/chat/test called =================>');
 			res.makeResponse(200, 'success', 'CCChat.success', { name: 'My_namw', 'id': req.authUser!.id, guest: false });
 		},
 	);
