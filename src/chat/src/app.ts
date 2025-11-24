@@ -6,6 +6,7 @@ import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
+import { Null } from '@sinclair/typebox';
 
 declare const __SERVICE_NAME: string;
 
@@ -111,14 +112,14 @@ function connectedUser(io?: Server): number {
 		count++;
 	  	// console.log(color.green,"count: ", count);
       	console.log(color.yellow, "Client:", color.reset, username);
-      	console.log(color.yellow, "Socket ID:", color.reset, socketId);
+      	console.log(color.yellow, "Chat Socket ID:", color.reset, socketId);
       	continue;
     }
 
     // If no io provided, assume entries in the map are valid and count them.
     count++;
     console.log(color.red, "Client (unverified):", color.reset, username);
-    console.log(color.red, "Socket ID (unverified):", color.reset, socketId);
+    console.log(color.red, "Chat Socket ID (unverified):", color.reset, socketId);
   }
 
   return count;
@@ -131,8 +132,11 @@ function connectedUser(io?: Server): number {
 			for (const s of sockets) {
 				if (s.id !== sender) {
 					// Send REAL JSON object
-					s.emit('MsgObjectServer', { message: data });
 
+				const clientName = clientChat.get(s.id) || null;
+				if (clientName !== null) {
+					s.emit('MsgObjectServer', { message: data });
+				}
 					console.log(' Target window socket ID:', s.id);
 					console.log(' Target window ID:', [...s.rooms]);
 					console.log(' Sender window ID:', sender ? sender : 'none');
@@ -159,7 +163,7 @@ function connectedUser(io?: Server): number {
 			);
 			// Send object directly — DO NOT wrap it in a string
 			broadcast(obj, obj.SenderWindowID);
-			connectedUser(fastify.io);
+			console.log(color.red, 'connected in the Chat :', connectedUser(fastify.io), color.reset);
 		});
 		
 		
@@ -170,23 +174,21 @@ function connectedUser(io?: Server): number {
 		
 		socket.on("disconnecting", (reason) => {
 
-  			const clientName = clientChat.get(socket.id) || "Unknown";
+  			const clientName = clientChat.get(socket.id) || null;
+			if (clientName !== null) {
+  			   const obj = {
+  			   type: "chat",
+  			   user: clientName,
+  			   token: "",
+  			   text: `LEFT the chat`,
+  			   timestamp: Date.now(),
+  			   SenderWindowID: socket.id,
+  			  };
 
-  			const obj = {
-  			  type: "chat",
-  			  user: clientName,
-  			  token: "",
-  			  text: `LEFT the chat`,
-  			  timestamp: Date.now(),
-  			  SenderWindowID: socket.id,
-  			};
-
-  			broadcast(obj, obj.SenderWindowID);
-
-  			console.log(`Client disconnecting: ${clientName} (${socket.id}) reason:`, reason);
-
-  			// Remove from map
-  			clientChat.delete(socket.id);
+  			  broadcast(obj, obj.SenderWindowID);
+  		   	  console.log(`Client disconnecting: ${clientName} (${socket.id}) reason:`, reason);
+  			  clientChat.delete(obj.user);
+			}
 		});
 	});
 }
