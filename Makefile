@@ -6,7 +6,7 @@
 #    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/11/14 17:40:57 by maiboyer         ###   ########.fr        #
+#    Updated: 2025/11/24 17:02:33 by maiboyer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -121,7 +121,8 @@ npm@build:
 	(cd ./src/ && npx pnpm run build)
 
 npm@update:
-	(cd ./src/ && rm -rf ./src/node_modules/ && npx pnpm update -r --workspace)
+	(cd ./src/ && rm -rf ./node_modules/ && npx pnpm update -r --workspace)
+	(cd ./frontend/ && rm -rf ./node_modules/ && npx pnpm update)
 
 npm@openapi: openapi.jar
 	@(cd ./src/ && npx pnpm run --if-present -r build:openapi)
