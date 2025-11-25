@@ -88,8 +88,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
       typebox:
-        specifier: ^1.0.55
-        version: 1.0.55
+        specifier: ^1.0.56
+        version: 1.0.56
       uuidv7:
         specifier: ^1.0.2
         version: 1.0.2
@@ -131,8 +131,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       typebox:
-        specifier: ^1.0.55
-        version: 1.0.55
+        specifier: ^1.0.56
+        version: 1.0.56
     devDependencies:
       '@types/node':
         specifier: ^22.19.1
@@ -266,8 +266,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       typebox:
-        specifier: ^1.0.55
-        version: 1.0.55
+        specifier: ^1.0.56
+        version: 1.0.56
     devDependencies:
       '@types/node':
         specifier: ^22.19.1
@@ -3025,8 +3025,8 @@ packages:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
 
-  typebox@1.0.55:
-    resolution: {integrity: sha512-TP02wN0B6tDZngprrGVu/Z9s/QUyVEmR7VIg1yEOtsqyDdXXEoQPSfWdkD2PsA2lGLxu6GgwOTtGZVS9CAoERg==}
+  typebox@1.0.56:
+    resolution: {integrity: sha512-KMd1DJnIRqLUzAicpFmGqgmt+/IePCEmT/Jtywyyyn0hK6+dupQnxm7OAIn/cL/vu22jKi1XvDjDhrpatZ46kA==}
 
   typescript-eslint@8.48.0:
     resolution: {integrity: sha512-fcKOvQD9GUn3Xw63EgiDqhvWJ5jsyZUaekl3KVpGsDJnN46WJTe3jWxtQP9lMZm1LJNkFLlTaWAxK2vUQR+cqw==}
@@ -6156,7 +6156,7 @@ snapshots:
       media-typer: 0.3.0
       mime-types: 2.1.35
 
-  typebox@1.0.55: {}
+  typebox@1.0.56: {}
 
   typescript-eslint@8.48.0(eslint@9.39.1)(typescript@5.9.3):
     dependencies:

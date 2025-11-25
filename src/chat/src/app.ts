@@ -11,7 +11,12 @@ declare const __SERVICE_NAME: string;
 
 // Global map of clients
 // key = socket, value = clientname
-const clientChat = new Map<string, string>();
+interface ClientInfo {
+  user: string;
+  lastSeen: number;
+}
+
+const clientChat = new Map<string, ClientInfo>();
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
@@ -79,13 +84,13 @@ async function onReady(fastify: FastifyInstance) {
 		const seen = new Set<string>();
 		// <- only log/count unique usernames
 
-		for (const [socketId, username] of clientChat) {
+		for (const [socketId, username,] of clientChat) {
 			// Basic sanity checks
 			if (typeof socketId !== 'string' || socketId.length === 0) {
 				clientChat.delete(socketId);
 				continue;
 			}
-			if (typeof username !== 'string' || username.length === 0) {
+			if (typeof username.user !== 'string' || username.user.length === 0) {
 				clientChat.delete(socketId);
 				continue;
 			}
@@ -102,17 +107,17 @@ async function onReady(fastify: FastifyInstance) {
 				}
 
 				// Skip duplicates (DO NOT delete them — just don't count)
-				if (seen.has(username)) {
+				if (seen.has(username.user)) {
 					continue;
 				}
 				// socket exists and is connected
-				seen.add(username);
+				seen.add(username.user);
 				count++;
 				// console.log(color.green,"count: ", count);
-				console.log(color.yellow, 'Client:', color.reset, username);
+				console.log(color.yellow, 'Client:', color.reset, username.user);
 
 				const targetSocketId = target;
-				io.to(targetSocketId!).emit('listObj', username);
+				io.to(targetSocketId!).emit('listObj', username.user);
 
 				console.log(
 					color.yellow,
@@ -147,8 +152,8 @@ async function onReady(fastify: FastifyInstance) {
 			for (const s of sockets) {
 				if (s.id !== sender) {
 					// Send REAL JSON object
-					const clientName = clientChat.get(s.id) || null;
-					if (clientName !== null) {
+					const clientName = clientChat.get(s.id)?.user;
+					if (clientName !== undefined) {
 						s.emit('MsgObjectServer', { message: data });
 					}
 					console.log(' Target window socket ID:', s.id);
@@ -159,7 +164,11 @@ async function onReady(fastify: FastifyInstance) {
 		});
 	}
 
+	
 	fastify.io.on('connection', (socket: Socket) => {
+
+
+
 		socket.on('message', (message: string) => {
 			console.info(
 				color.blue,
@@ -173,9 +182,9 @@ async function onReady(fastify: FastifyInstance) {
 				color.reset,
 				message,
 			);
-
+			
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
-			clientChat.set(socket.id, obj.user);
+			clientChat.set(socket.id, { user: obj.user, lastSeen: Date.now() });
 			console.log(
 				color.green,
 				'Message from client',
@@ -191,35 +200,40 @@ async function onReady(fastify: FastifyInstance) {
 				color.reset,
 			);
 		});
-
+		
+		socket.emit("welcome", {
+			msg: `Welcome to the chat!`,
+        	id: socket.id
+    	});
+		
 		socket.on('testend', (sock_id_cl: string) => {
 			console.log('testend received from client socket id:', sock_id_cl);
 		});
-
+		
 		socket.on('list', () => {
 			console.log(color.red, 'list activated', color.reset, socket.id);
 			connectedUser(fastify.io, socket.id);
 		});
-
+		
 		socket.on('disconnecting', (reason) => {
 			const clientName = clientChat.get(socket.id) || null;
 			console.log(
 				color.green,
-				`Client disconnecting: ${clientName} (${socket.id}) reason:`,
+				`Client disconnecting: ${clientName?.user} (${socket.id}) reason:`,
 				reason,
 			);
 			if (reason === 'transport error') return;
-
-			if (clientName !== null) {
+			
+			if (clientName?.user !== null) {
 				const obj = {
 					type: 'chat',
-					user: clientName,
+					user: clientName!.user,
 					token: '',
 					text: 'LEFT the chat',
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
 				};
-
+				
 				broadcast(obj, obj.SenderWindowID);
 				//   clientChat.delete(obj.user);
 			}

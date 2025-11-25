@@ -196,6 +196,7 @@ export async function handleRoute() {
 		return navigateTo(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`)
 	const app = document.getElementById('app')!;
 	document.dispatchEvent(new CustomEvent('ft:pageChange' as any, {} as any) as any);
+	document.dispatchEvent(new CustomEvent('ft:tabChange' as any, {} as any) as any);
 	let ret = await executeRouteHandler(route_handler, window.location.pathname, args)
 	app.innerHTML = ret.html;
 	if (ret.postInsert) {
