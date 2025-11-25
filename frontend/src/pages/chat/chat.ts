@@ -12,6 +12,33 @@ document.addEventListener('ft:pageChange', () => {
 	__socket = undefined;
 	console.log("Page changed");
 })
+
+
+document.addEventListener("visibilitychange", async () => {
+
+	// When user leaves tab
+	if (document.visibilityState === "hidden") {
+		console.log("User LEFT this tab");
+
+		// if (__socket) {
+		// 	__socket.close();
+		// 	__socket = undefined;
+		// }
+
+		return;
+	}
+
+	// When user returns to tab → soft reload using imported HTML file
+	if (document.visibilityState === "visible") {
+	//     location.reload();
+	//console.log(location.replace(location.href));
+
+
+		console.log('Chat Visible')
+	}
+});
+
+
 function getSocket(): Socket {
 	if (__socket === undefined)
 		__socket = io("wss://localhost:8888", {
@@ -22,6 +49,10 @@ function getSocket(): Socket {
 	return __socket;
 }
 
+
+async function isLoggedIn() {
+	return getUser() || null;
+} 
 
 
 
@@ -43,6 +74,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		};
 		socket.emit('message', JSON.stringify(message));
 	});
+
 	// Listen for messages from the server "MsgObjectServer"
 	socket.on("MsgObjectServer", (data: any) => {
 		console.log("Message Obj Recieved:", data.message);
@@ -109,6 +141,11 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				console.log(`Added new message: ${text}`)
 			};
 
+
+			socket.on("welcome", (data) => {
+    			addMessage(`${data.msg}`);
+			});
+
 			// Send button
 			sendButton?.addEventListener("click", () => {
 				if (sendtextbox && sendtextbox.value.trim()) {
@@ -141,15 +178,22 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			// Help Text button
 			bconnected?.addEventListener("click", async () => {
+
+				const loggedIn = await isLoggedIn();
+				
+				if (loggedIn?.name === undefined) return ;
 				if (chatWindow) {
 					addMessage('@list - lists all connected users in the chat');
-					await socket.emit('list');
+					socket.emit('list');
 				}
 			});
 			socket.on('listObj', (list: string) => {
 				console.log('List chat clients connected ', list);
 				addMessage(list);
 			});
+
+
+
 
 
 			// Enter key to send message
