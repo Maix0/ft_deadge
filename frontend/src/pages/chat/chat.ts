@@ -43,9 +43,13 @@ document.addEventListener("visibilitychange", async () => {
 	if (socketId == undefined) return;
 	if (document.visibilityState === "hidden") {
 		let userName = await updateUser();
-		oldName =  userName?.name || "undefined";
-		localStorage.setItem("oldName", oldName);
-		socketId.emit("client_left");
+		oldName =  userName?.name || undefined;
+		if (oldName === undefined) return;
+		localStorage.setItem('oldName', oldName);
+		socketId.emit('client_left', {
+			user: userName?.name,
+			why: 'tab window hidden - socket not dead',
+		});
 		return;
 	}
 	if (document.visibilityState === "visible") {
