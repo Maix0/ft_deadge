@@ -14,6 +14,28 @@ document.addEventListener('ft:pageChange', () => {
 })
 
 
+function getSocket(): Socket {
+	if (__socket === undefined)
+		__socket = io("wss://localhost:8888", {
+			path: "/api/chat/socket.io/",
+			secure: false,
+			transports: ["websocket"],
+		});
+	return __socket;
+}
+
+
+async function isLoggedIn() {
+	return getUser() || null;
+} 
+
+
+
+function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
+	let socket = getSocket();
+
+
+
 document.addEventListener("visibilitychange", async () => {
 
 	const socketId = __socket || undefined;
@@ -40,44 +62,6 @@ document.addEventListener("visibilitychange", async () => {
 
 
 
-async function getUserName(): Promise<string | null> {
-  try {
-    const res = await client.guestLogin();
-
-    if (res.kind !== "success") {
-      console.error("Login failed:", res.msg);
-      return null;
-    }
-
-    const user = await updateUser();
-    if (!user) return null;
-
-    return user.name; // <-- return the username
-  } catch (err) {
-    console.error("getUserName error:", err);
-    return null;
-  }
-}
-
-function getSocket(): Socket {
-	if (__socket === undefined)
-		__socket = io("wss://localhost:8888", {
-			path: "/api/chat/socket.io/",
-			secure: false,
-			transports: ["websocket"],
-		});
-	return __socket;
-}
-
-
-async function isLoggedIn() {
-	return getUser() || null;
-} 
-
-
-
-function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-	let socket = getSocket();
 	// Listen for the 'connect' event
 	socket.on("connect", () => {
 		console.log("I AM Connected to the server:", socket.id);
@@ -154,7 +138,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			const addMessage = (text: string) => {
 				if (!chatWindow) return;
-				const messageElement = document.createElement("div");
+				const messageElement = document.createElement("div-test");
 				messageElement.textContent = text;
 				chatWindow.appendChild(messageElement);
 				chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -200,14 +184,20 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			bconnected?.addEventListener("click", async () => {
 
 				const loggedIn = await isLoggedIn();
-				
+				let oldUser = localStorage.getItem("oldName") || undefined;
 				if (loggedIn?.name === undefined) return ;
+				oldUser =  loggedIn.name || "undefined";
 				const res = await client.guestLogin();
 				let user = await updateUser();
+				localStorage.setItem("oldName", oldUser);
+
 				console.log('USER ', user?.name);
 				if (chatWindow) {
 					addMessage('@list - lists all connected users in the chat');
-					socket.emit('list');
+					socket.emit('list', {
+						oldUser: oldUser,
+						user: user?.name
+					});
 				}
 			});
 			socket.on('listObj', (list: string) => {
@@ -229,10 +219,22 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// Whoami button to display user name
 			bwhoami?.addEventListener('click', async () => {
 				try {
+					const loggedIn = await isLoggedIn();
+					let oldUser = localStorage.getItem("oldName") || undefined;
+					oldUser =  loggedIn?.name || "undefined";
+					localStorage.setItem("oldName", oldUser);
+					
 					const res = await client.guestLogin();
 					switch (res.kind) {
 						case 'success': {
 							let user = await updateUser();
+							console.log('USER ', user?.name);
+							if (chatWindow) {
+								socket.emit('updateClientName', {
+									oldUser: oldUser,
+									user: user?.name
+								});
+							}
 							if (user === null)
 								return showError('Failed to get user: no user ?');
 							setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
