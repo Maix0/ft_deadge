@@ -80,20 +80,17 @@
 
 .mainboxDisplay button {
   @apply
-  cursor-pointer;
+  cursor-pointer
 }
 
 p {
   @apply
   text-black
-
-
-
 }
 
-.div-test {
+div-test {
   @apply
-  italic
-
+  text-red-800
+  text-right
 
 }
