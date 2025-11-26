@@ -75,6 +75,7 @@ declare module 'fastify' {
 			message: (msg: string) => void;
 			testend: (sock_id_client: string) => void;
 			client_entered: (userName: string, user: string) => void;
+			client_left: (userName: string, why: string) => void;
 			list: (oldUser: string, user: string) => void;
 			updateClientName: (oldUser: string, user: string) => void;
 		}>;
@@ -192,7 +193,7 @@ async function onReady(fastify: FastifyInstance) {
 				`Sender: login name: ${obj.user} - windowID ${obj.SenderWindowID} - text message: ${obj.text}`,
 			);
 			socket.emit('welcome', {
-				msg: 'Welcome to the chat!',
+				msg: 'Welcome to the chat! : ',
 			});
 
 			// Send object directly — DO NOT wrap it in a string
@@ -269,14 +270,14 @@ async function onReady(fastify: FastifyInstance) {
 			}
 		});
 
-		socket.on('client_left', (reason) => {
+		socket.on('client_left', (data) => {
 			const clientName = clientChat.get(socket.id)?.user || null;
+			const leftChat = data || null;
 			console.log(
 				color.green,
-				`Client left the Chat: ${clientName} (${socket.id}) reason:`,
-				reason,
+				`Left the Chat User: ${clientName} id Socket: ${socket.id} reason:`,
+				leftChat.why,
 			);
-			if (reason === 'transport error') return;
 
 			if (clientName !== null) {
 				const obj = {
