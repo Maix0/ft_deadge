@@ -163,12 +163,10 @@ async function onReady(fastify: FastifyInstance) {
 			}
 		});
 	}
-
+	
 	
 	fastify.io.on('connection', (socket: Socket) => {
-
-
-
+		
 		socket.on('message', (message: string) => {
 			console.info(
 				color.blue,
@@ -191,6 +189,10 @@ async function onReady(fastify: FastifyInstance) {
 				color.reset,
 				`Sender: login name: "${obj.user}" - windowID "${obj.SenderWindowID}" - text message: "${obj.text}"`,
 			);
+			socket.emit('welcome', {
+				msg: `Welcome to the chat! `,
+			});
+		
 			// Send object directly — DO NOT wrap it in a string
 			broadcast(obj, obj.SenderWindowID);
 			console.log(
@@ -201,33 +203,35 @@ async function onReady(fastify: FastifyInstance) {
 			);
 		});
 		
-		socket.emit("welcome", {
-			msg: `Welcome to the chat!`,
-        	id: socket.id
-    	});
-		
 		socket.on('testend', (sock_id_cl: string) => {
 			console.log('testend received from client socket id:', sock_id_cl);
 		});
 		
+		socket.on('wakeup', (message: string) => {
+			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
+			clientChat.set(socket.id, { user: obj.user, lastSeen: Date.now() });
+			connectedUser(fastify.io),
+			console.log('Wakeup: ', message);
+		});
+
 		socket.on('list', () => {
 			console.log(color.red, 'list activated', color.reset, socket.id);
 			connectedUser(fastify.io, socket.id);
 		});
 		
 		socket.on('disconnecting', (reason) => {
-			const clientName = clientChat.get(socket.id) || null;
+			const clientName = clientChat.get(socket.id)?.user|| null;
 			console.log(
 				color.green,
-				`Client disconnecting: ${clientName?.user} (${socket.id}) reason:`,
+				`Client disconnecting: ${clientName} (${socket.id}) reason:`,
 				reason,
 			);
 			if (reason === 'transport error') return;
 			
-			if (clientName?.user !== null) {
+			if (clientName !== null) {
 				const obj = {
 					type: 'chat',
-					user: clientName!.user,
+					user: clientName,
 					token: '',
 					text: 'LEFT the chat',
 					timestamp: Date.now(),
@@ -237,6 +241,71 @@ async function onReady(fastify: FastifyInstance) {
 				broadcast(obj, obj.SenderWindowID);
 				//   clientChat.delete(obj.user);
 			}
+		});
+
+		socket.on('client_left', (reason) => {
+			const clientName = clientChat.get(socket.id)?.user|| null;
+			console.log(
+				color.green,
+				`Client left the Chat: ${clientName} (${socket.id}) reason:`,
+				reason,
+			);
+			if (reason === 'transport error') return;
+			
+			if (clientName !== null) {
+				const obj = {
+					type: 'chat',
+					user: clientName,
+					token: '',
+					text: 'LEFT the chat but the window is still open',
+					timestamp: Date.now(),
+					SenderWindowID: socket.id,
+				};
+				console.log(obj.SenderWindowID);				
+				broadcast(obj, obj.SenderWindowID);
+				//   clientChat.delete(obj.user);
+			}
+		});
+
+
+		socket.on('client_entered', (data) => {
+
+    		// data may be undefined (when frontend calls emit with no payload)
+    		const userNameFromFrontend = data?.userName || null;
+    		const userFromFrontend = data?.user || null;
+			let clientName = clientChat.get(socket.id)?.user || null;
+			const client = clientChat.get(socket.id) || null;
+			let text = 'is back in the chat';
+			
+    		// connectedUser(fastify.io, socket.id);
+			if(clientName === null) {console.log('ERROR: clientName is NULL'); return;};
+			if(client === null) {console.log('ERROR: client is NULL'); return;};
+			
+			if (userNameFromFrontend !== userFromFrontend) {
+				text = `'is back in the chat, I used to be called '${userNameFromFrontend}`;
+				clientName = userFromFrontend;
+				if(clientName === null) {console.log('ERROR: clientName is NULL'); return;};
+				if (client) {
+  					client.user = clientName;	
+				}			
+			}
+    		console.log(
+    		    color.green,
+    		    `Client entered the Chat: ${clientName} (${socket.id})`
+    		);
+    		if (clientName !== null) {
+    		    const obj = {
+    		        type: 'chat',
+    		        user: clientName,                 // server-side stored name
+    		        frontendUserName: userNameFromFrontend, // from frontend
+    		        frontendUser: userFromFrontend,          // from frontend
+    		        token: '',
+    		        text: text,
+    		        timestamp: Date.now(),
+    		        SenderWindowID: socket.id,
+    		    };
+    		    broadcast(obj, obj.SenderWindowID);
+    		}
 		});
 	});
 }

@@ -16,28 +16,48 @@ document.addEventListener('ft:pageChange', () => {
 
 document.addEventListener("visibilitychange", async () => {
 
-	// When user leaves tab
+	const socketId = __socket || undefined;
+	let oldName = localStorage.getItem("oldName") || undefined;
+	if (socketId == undefined) return;
 	if (document.visibilityState === "hidden") {
-		console.log("User LEFT this tab");
-
-		// if (__socket) {
-		// 	__socket.close();
-		// 	__socket = undefined;
-		// }
-
+		let userName = await updateUser();
+		oldName =  userName?.name || "undefined";
+		localStorage.setItem("oldName", oldName);
+		socketId.emit("client_left");
 		return;
 	}
-
-	// When user returns to tab → soft reload using imported HTML file
 	if (document.visibilityState === "visible") {
-	//     location.reload();
-	//console.log(location.replace(location.href));
-
-
-		console.log('Chat Visible')
+		const res = await client.guestLogin();
+		let user = await updateUser();
+ 		socketId.emit('client_entered', {
+    		userName: oldName,
+			user: user?.name,
+		});
+		setTitle('Chat Page');
+		return;
 	}
 });
 
+
+
+async function getUserName(): Promise<string | null> {
+  try {
+    const res = await client.guestLogin();
+
+    if (res.kind !== "success") {
+      console.error("Login failed:", res.msg);
+      return null;
+    }
+
+    const user = await updateUser();
+    if (!user) return null;
+
+    return user.name; // <-- return the username
+  } catch (err) {
+    console.error("getUserName error:", err);
+    return null;
+  }
+}
 
 function getSocket(): Socket {
 	if (__socket === undefined)
@@ -142,8 +162,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			};
 
 
-			socket.on("welcome", (data) => {
-    			addMessage(`${data.msg}`);
+			socket.once('welcome', (data) => {
+				addMessage (`${data.msg}  ` + getUser()?.name);
 			});
 
 			// Send button
@@ -161,7 +181,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 							timestamp: Date.now(),
 							SenderWindowID: socket.id,
 						};
-						socket.send(JSON.stringify(message));
+						socket.emit('message', JSON.stringify(message));
 					}
 					sendtextbox.value = "";
 				}
@@ -182,6 +202,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				const loggedIn = await isLoggedIn();
 				
 				if (loggedIn?.name === undefined) return ;
+				const res = await client.guestLogin();
+				let user = await updateUser();
+				console.log('USER ', user?.name);
 				if (chatWindow) {
 					addMessage('@list - lists all connected users in the chat');
 					socket.emit('list');
@@ -228,3 +251,4 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	}
 };
 addRoute('/chat', handleChat, { bypass_auth: true });
+addRoute('/chat/', handleChat, { bypass_auth: true });

@@ -1294,32 +1294,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "kind",
-                    "msg"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "enum": [
-                        "failed"
-                      ]
-                    },
-                    "msg": {
-                      "enum": [
-                        "chat.failed.generic"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "tags": [
