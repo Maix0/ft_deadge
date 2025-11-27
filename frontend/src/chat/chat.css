@@ -92,6 +92,13 @@ p {
 div-test {
   @apply
   text-red-800
-  text-right
+  text-right;
+  
+}
 
+div-notlog {
+  @apply
+  text-red-800
+  text-3xl
+  text-center;
 }
