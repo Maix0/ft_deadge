@@ -5,6 +5,21 @@ import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
 import io, { Socket } from 'socket.io-client';
 
+const color = {
+	red: 'color: red; font-weight: bold;',
+	green: 'color: green; font-weight: bold;',
+	yellow: 'color: orange; font-weight: bold;',
+	blue: 'color: blue; font-weight: bold;',
+	reset: '', // not needed in browser
+};
+
+
+// get the name of the machine useed to connect 
+const machineHostName = window.location.hostname;
+console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
+
+
+
 let __socket: Socket | undefined = undefined;
 document.addEventListener('ft:pageChange', () => {
 	if (__socket !== undefined)
@@ -15,8 +30,10 @@ document.addEventListener('ft:pageChange', () => {
 
 
 function getSocket(): Socket {
+	let addressHost = `wss://${machineHostName}:8888`;
 	if (__socket === undefined)
-		__socket = io("wss://localhost:8888", {
+
+		__socket = io(addressHost, {
 			path: "/api/chat/socket.io/",
 			secure: false,
 			transports: ["websocket"],
@@ -31,38 +48,88 @@ async function isLoggedIn() {
 
 
 
-function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-	let socket = getSocket();
 
-
-
-document.addEventListener("visibilitychange", async () => {
-
+async function windowStateHidden() {		
 	const socketId = __socket || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
 	if (socketId == undefined) return;
-	if (document.visibilityState === "hidden") {
-		let userName = await updateUser();
-		oldName =  userName?.name || undefined;
-		if (oldName === undefined) return;
-		localStorage.setItem('oldName', oldName);
-		socketId.emit('client_left', {
-			user: userName?.name,
-			why: 'tab window hidden - socket not dead',
-		});
-		return;
-	}
-	if (document.visibilityState === "visible") {
-		const res = await client.guestLogin();
-		let user = await updateUser();
- 		socketId.emit('client_entered', {
-    		userName: oldName,
-			user: user?.name,
-		});
-		setTitle('Chat Page');
-		return;
-	}
-});
+	let userName = await updateUser();
+	oldName =  userName?.name || undefined;
+	if (oldName === undefined) return;
+	localStorage.setItem('oldName', oldName);
+	socketId.emit('client_left', {
+		user: userName?.name,
+		why: 'tab window hidden - socket not dead',
+	});
+	return;
+}
+	
+	
+async function windowStateVisable() {		
+	const socketId = __socket || undefined;
+	let oldName = localStorage.getItem("oldName") || undefined;
+	if (socketId == undefined) return;
+	const res = await client.guestLogin();
+	let user = await updateUser();
+	socketId.emit('client_entered', {
+		userName: oldName,
+		user: user?.name,
+	});
+	setTitle('Chat Page');
+	return;
+}
+
+
+
+
+
+
+
+
+
+
+function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
+	let socket = getSocket();
+	
+	
+// 	document.addEventListener("visibilitychange", async () => {
+		
+// 		const socketId = __socket || undefined;
+// 		let oldName = localStorage.getItem("oldName") || undefined;
+		
+
+
+// 	if (socketId == undefined) return;
+// 	if (document.visibilityState === "hidden") {
+// 		let userName = await updateUser();
+// 		oldName =  userName?.name || undefined;
+// 		if (oldName === undefined) return;
+// 		localStorage.setItem('oldName', oldName);
+// 		socketId.emit('client_left', {
+// 			user: userName?.name,
+// 			why: 'tab window hidden - socket not dead',
+// 		});
+// 		return;
+// 	}
+	
+	
+	
+// 	if (document.visibilityState === "visible") {
+// 		const res = await client.guestLogin();
+// 		let user = await updateUser();
+//  		socketId.emit('client_entered', {
+//     		userName: oldName,
+// 			user: user?.name,
+// 		});
+// 		setTitle('Chat Page');
+// 		return;
+// 	}
+
+
+
+
+
+// });
 
 
 
@@ -133,11 +200,7 @@ document.addEventListener("visibilitychange", async () => {
 			const value = await client.chatTest();
 			if (value.kind === "success") {
 				console.log(value.payload);
-			} else if (value.kind === "notLoggedIn") {
-				console.log('not logged in');
-			} else {
-				console.log('unknown response: ', value);
-			}
+			
 
 
 			const addMessage = (text: string) => {
@@ -147,8 +210,20 @@ document.addEventListener("visibilitychange", async () => {
 				chatWindow.appendChild(messageElement);
 				chatWindow.scrollTop = chatWindow.scrollHeight;
 				console.log(`Added new message: ${text}`)
+				return ;
 			};
 
+		if (window.location.pathname === "/app/chat") {
+		  window.addEventListener("focus", () => {
+			windowStateVisable();
+			console.log("%cWindow is focused on /chat", color.green);
+		  });
+		
+		  window.addEventListener("blur", () => {
+			windowStateHidden();
+			console.log("%cWindow is not focused on /chat", color.red);
+		  });
+		}
 
 			socket.once('welcome', (data) => {
 				addMessage (`${data.msg}  ` + getUser()?.name);
@@ -253,6 +328,19 @@ document.addEventListener("visibilitychange", async () => {
 					showError('Failed to login: Unknown error');
 				}
 			});
+
+			} else if (value.kind === "notLoggedIn") {
+
+				if (!chatWindow) return;
+				const messageElement = document.createElement('div-notlog');
+				messageElement.textContent = "Not Logged in ....";
+				chatWindow.appendChild(messageElement);
+				chatWindow.scrollTop = chatWindow.scrollHeight;
+				console.log('not logged in');
+
+			} else {
+				console.log('unknown response: ', value);
+			}
 		}
 	}
 };

@@ -7,6 +7,22 @@ import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
 
+// colors for console.log
+export const color = {
+	red: '\x1b[31m',
+	green: '\x1b[32m',
+	yellow: '\x1b[33m',
+	blue: '\x1b[34m',
+	reset: '\x1b[0m',
+};
+
+// shows address for connection au server transcendance
+const session = process.env.SESSION_MANAGER ?? '';
+const part = session.split('/')[1];
+const machineName = part.split('.')[0];
+console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
+
+
 declare const __SERVICE_NAME: string;
 
 // Global map of clients
@@ -52,13 +68,6 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 export default app;
 export { app };
 
-export const color = {
-	red: '\x1b[31m',
-	green: '\x1b[32m',
-	yellow: '\x1b[33m',
-	blue: '\x1b[34m',
-	reset: '\x1b[0m',
-};
 
 type ClientMessage = {
 	user: string;
