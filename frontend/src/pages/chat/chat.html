@@ -2,7 +2,7 @@
   <div id="mainbox" class="mainboxDisplay">
     <button id="b-whoami" class="btn-style absolute top-4 left-6">Who am i</button>
     <h1 class="text-3xl font-bold text-gray-800">
-		ChatterBoxes 😀😀😀<span id="t-username"></span>
+		  ChatterBoxes <span id="t-username"></span>
     </h1><br>
     <button id="b-clear" class="btn-style absolute top-4 right-6">Clear Text</button>
     <button id="b-help" class="btn-style absolute top-14 left-6">Connected</button>
@@ -10,7 +10,7 @@
     <!-- Center wrapper for chat + vertical box -->
     <div class="flex justify-center mt-2">
       <!-- Groupe Chat + vertical box container -->
-      <div id = "g-boxes" class="flex gap-1">
+      <div id = "g-boxes" class="flex gap-2">
         <!-- Text Chat box panel + send -->
         <div id = "g-textBoxes" class="flex flex-col">
           <div id="t-chatbox" class="chatbox-style"></div>
@@ -20,13 +20,15 @@
           </div>
         </div>
 
-        <!-- Vertical Ping box panel-->
-        <div id="ping-box" class="w-[150px] ml-2 bg-gray-300 rounded-2xl p-2 shadow-md flex flex-col gap-1 h-[350px]">
-          <p id="ping-title" class="text-sm font-semibold text-gray-700">Ping Buddies</p>
+        <!-- Vertical Ping Buddies box panel-->
+        <div id="ping-box" class="ping-box">
+          <p id="ping-title" class="ping-title">Ping Buddies</p>
           <div id="ping-list" class="flex-1 overflow-y-auto">
-            <p>Alice</p>
-            <p>Bob</p>
-            <p>Charlie</p>
+            <div id = "div-buddies">
+              <!-- <p>Alice</p>
+              <p>Bob</p>
+              <p>Charlie</p> -->
+            </div>
           </div>
         </div>
       </div>
