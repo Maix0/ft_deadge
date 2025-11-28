@@ -30,8 +30,8 @@ document.addEventListener('ft:pageChange', () => {
 
 
 function getSocket(): Socket {
-	//let addressHost = `wss://${machineHostName}:8888`;
-	let addressHost = `wss://localhost:8888`;
+	let addressHost = `wss://${machineHostName}:8888`;
+	// let addressHost = `wss://localhost:8888`;
 	if (__socket === undefined)
 
 		__socket = io(addressHost, {
@@ -82,55 +82,23 @@ async function windowStateVisable() {
 
 
 
+async function listBuddies(buddies: HTMLDivElement, listBuddies: string ) {
 
+	if (!buddies) return;
+	const messageElement = document.createElement("div-buddies-list");
+	messageElement.textContent = listBuddies + '\n';
+	buddies.appendChild(messageElement);
+	buddies.scrollTop = buddies.scrollHeight;
+	console.log(`Added buddies: ${listBuddies}`)
+	return ;
 
-
+}
 
 
 
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 	let socket = getSocket();
-	
-	
-// 	document.addEventListener("visibilitychange", async () => {
-		
-// 		const socketId = __socket || undefined;
-// 		let oldName = localStorage.getItem("oldName") || undefined;
-		
-
-
-// 	if (socketId == undefined) return;
-// 	if (document.visibilityState === "hidden") {
-// 		let userName = await updateUser();
-// 		oldName =  userName?.name || undefined;
-// 		if (oldName === undefined) return;
-// 		localStorage.setItem('oldName', oldName);
-// 		socketId.emit('client_left', {
-// 			user: userName?.name,
-// 			why: 'tab window hidden - socket not dead',
-// 		});
-// 		return;
-// 	}
-	
-	
-	
-// 	if (document.visibilityState === "visible") {
-// 		const res = await client.guestLogin();
-// 		let user = await updateUser();
-//  		socketId.emit('client_entered', {
-//     		userName: oldName,
-// 			user: user?.name,
-// 		});
-// 		setTitle('Chat Page');
-// 		return;
-// 	}
-
-
-
-
-
-// });
 
 
 
@@ -161,8 +129,14 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		console.log("Recieved data.message.timestamp: ", data.message.timestamp);
 		// Display the message in the chat window
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+		const bconnected = document.getElementById('b-help') as HTMLButtonElement;
+		if (bconnected) {
+			bconnected.click();
+		}
+		
 		if (chatWindow) {
 			const messageElement = document.createElement("div");
+			
 			// if (getUser()?.id !== `${data.message.id}`) {
 			console.log('==================> HERE');
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
@@ -197,6 +171,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
 			const bconnected = document.getElementById('b-help') as HTMLButtonElement;
 			const username = document.getElementById('username') as HTMLDivElement;
+			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 
 			const value = await client.chatTest();
 			if (value.kind === "success") {
@@ -216,6 +191,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 		if (window.location.pathname === "/app/chat") {
 		  window.addEventListener("focus", () => {
+			bconnected.click();
 			windowStateVisable();
 			console.log("%cWindow is focused on /chat", color.green);
 		  });
@@ -227,11 +203,13 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		}
 
 			socket.once('welcome', (data) => {
+				bconnected.click();
 				addMessage (`${data.msg}  ` + getUser()?.name);
 			});
 
 			// Send button
 			sendButton?.addEventListener("click", () => {
+				bconnected.click();
 				if (sendtextbox && sendtextbox.value.trim()) {
 					const msgText = sendtextbox.value.trim();
 					addMessage(msgText);
@@ -259,6 +237,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				}
 			});
 
+					
+			// setInterval(async () => {
+			//     bconnected.click();
+			// }, 5000); // every 1 second
 
 			// Help Text button
 			bconnected?.addEventListener("click", async () => {
@@ -270,19 +252,25 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				const res = await client.guestLogin();
 				let user = await updateUser();
 				localStorage.setItem("oldName", oldUser);
-
+				buddies.textContent = "";
 				console.log('USER ', user?.name);
 				if (chatWindow) {
-					addMessage('@list - lists all connected users in the chat');
+					//addMessage('@list - lists all connected users in the chat');
 					socket.emit('list', {
 						oldUser: oldUser,
-						user: user?.name
+						user: user?.name,
 					});
 				}
+			
 			});
 			socket.on('listObj', (list: string) => {
 				console.log('List chat clients connected ', list);
 				addMessage(list);
+			});
+
+			socket.on('listBud', (myBuddies: string) => {
+				console.log('List buddies connected ', myBuddies);
+				listBuddies(buddies,myBuddies);
 			});
 
 

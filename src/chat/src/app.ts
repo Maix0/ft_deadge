@@ -82,6 +82,7 @@ declare module 'fastify' {
 			hello: (message: string) => string;
 			MsgObjectServer: (data: { message: ClientMessage }) => void;
 			message: (msg: string) => void;
+			listBud: (msg: string) => void;
 			testend: (sock_id_client: string) => void;
 			client_entered: (userName: string, user: string) => void;
 			client_left: (userName: string, why: string) => void;
@@ -130,8 +131,8 @@ async function onReady(fastify: FastifyInstance) {
 				console.log(color.yellow, 'Client:', color.reset, username.user);
 
 				const targetSocketId = target;
-				io.to(targetSocketId!).emit('listObj', username.user);
-
+				// io.to(targetSocketId!).emit('listObj', username.user);
+				io.to(targetSocketId!).emit('listBud', username.user);
 				console.log(
 					color.yellow,
 					'Chat Socket ID:',
@@ -163,9 +164,9 @@ async function onReady(fastify: FastifyInstance) {
 	function broadcast(data: ClientMessage, sender?: string) {
 		fastify.io.fetchSockets().then((sockets) => {
 			for (const s of sockets) {
+				const clientName = clientChat.get(s.id)?.user;
 				if (s.id !== sender) {
 					// Send REAL JSON object
-					const clientName = clientChat.get(s.id)?.user;
 					if (clientName !== undefined) {
 						s.emit('MsgObjectServer', { message: data });
 					}

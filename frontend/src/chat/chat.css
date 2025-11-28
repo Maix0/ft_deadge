@@ -107,6 +107,33 @@
   text-gray-800
 }
 
+.ping-box {
+  @apply
+  w-[150px] 
+  ml-2 border-1
+  border-gray-500 
+  bg-white 
+  rounded-2xl 
+  p-2 
+  shadow-md 
+  flex flex-col 
+  gap-1 
+  h-[350px];
+}
+
+.ping-title {
+  @apply
+  text-sm 
+  font-semibold
+  text-blue-800;
+}
+
+div-buddies-list {
+  @apply
+  text-black
+  whitespace-pre-wrap;
+
+}
 
 p {
   @apply
