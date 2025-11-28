@@ -157,15 +157,14 @@ async function onReady(fastify: FastifyInstance) {
 				socketId,
 			);
 		}
-
 		return count;
 	}
 
 	function broadcast(data: ClientMessage, sender?: string) {
 		fastify.io.fetchSockets().then((sockets) => {
 			for (const s of sockets) {
-				const clientName = clientChat.get(s.id)?.user;
 				if (s.id !== sender) {
+					const clientName = clientChat.get(s.id)?.user;
 					// Send REAL JSON object
 					if (clientName !== undefined) {
 						s.emit('MsgObjectServer', { message: data });
@@ -229,7 +228,7 @@ async function onReady(fastify: FastifyInstance) {
 
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				console.log(color.red, 'list activated', userFromFrontend.oldUser, color.reset);
-				if (client === null) {
+				if (client?.user === null) {
 					console.log('ERROR: clientName is NULL');
 					return;
 				};

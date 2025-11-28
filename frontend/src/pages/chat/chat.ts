@@ -18,8 +18,6 @@ const color = {
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
 
-
-
 let __socket: Socket | undefined = undefined;
 document.addEventListener('ft:pageChange', () => {
 	if (__socket !== undefined)
@@ -28,10 +26,9 @@ document.addEventListener('ft:pageChange', () => {
 	console.log("Page changed");
 })
 
-
 function getSocket(): Socket {
-	let addressHost = `wss://${machineHostName}:8888`;
-	// let addressHost = `wss://localhost:8888`;
+	// let addressHost = `wss://${machineHostName}:8888`;
+	let addressHost = `wss://localhost:8888`;
 	if (__socket === undefined)
 
 		__socket = io(addressHost, {
@@ -46,9 +43,6 @@ function getSocket(): Socket {
 async function isLoggedIn() {
 	return getUser() || null;
 } 
-
-
-
 
 async function windowStateHidden() {		
 	const socketId = __socket || undefined;
@@ -81,7 +75,6 @@ async function windowStateVisable() {
 }
 
 
-
 async function listBuddies(buddies: HTMLDivElement, listBuddies: string ) {
 
 	if (!buddies) return;
@@ -94,6 +87,16 @@ async function listBuddies(buddies: HTMLDivElement, listBuddies: string ) {
 
 }
 
+function waitSocketConnected(socket: Socket): Promise<void> {
+    return new Promise(resolve => {
+        if (socket.connected) return resolve(); // already connected
+        socket.on("connect", () => resolve());
+    });
+}
+const bconnected = document.getElementById('b-help') as HTMLButtonElement;
+if (bconnected) {
+	bconnected.click();
+}
 
 
 
@@ -103,7 +106,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 
 	// Listen for the 'connect' event
-	socket.on("connect", () => {
+	socket.on("connect", async () => {
+		
+		await waitSocketConnected(socket);
 		console.log("I AM Connected to the server:", socket.id);
 		const user = getUser()?.name;
 		// Ensure we have a user AND socket is connected
@@ -157,7 +162,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		color?: { default: string, hover: string },
 	};
 
-	// function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 
 	setTitle('Chat Page');
 	// Listen for the 'connect' event
@@ -173,10 +177,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const username = document.getElementById('username') as HTMLDivElement;
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 
-			const value = await client.chatTest();
-			if (value.kind === "success") {
-				console.log(value.payload);
-			
+			chatWindow.textContent = '';
+			chatWindow.innerHTML = '';
+			buddies.textContent = '';
+			buddies.innerHTML = '';
 
 
 			const addMessage = (text: string) => {
@@ -191,27 +195,32 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 		if (window.location.pathname === "/app/chat") {
 		  window.addEventListener("focus", () => {
-			bconnected.click();
 			windowStateVisable();
+			bconnected.click();
 			console.log("%cWindow is focused on /chat", color.green);
 		  });
 		
 		  window.addEventListener("blur", () => {
 			windowStateHidden();
+			bconnected.click();
 			console.log("%cWindow is not focused on /chat", color.red);
 		  });
 		}
 
 			socket.once('welcome', (data) => {
+				chatWindow.textContent = '';
+				chatWindow.innerHTML = '';
+				buddies.textContent = '';
+				buddies.innerHTML = '';
 				bconnected.click();
 				addMessage (`${data.msg}  ` + getUser()?.name);
 			});
 
 			// Send button
 			sendButton?.addEventListener("click", () => {
-				bconnected.click();
 				if (sendtextbox && sendtextbox.value.trim()) {
 					const msgText = sendtextbox.value.trim();
+					bconnected.click();
 					addMessage(msgText);
 					const user = getUser();
 					if (user && socket?.connected) {
@@ -233,14 +242,16 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// Clear Text button
 			clearText?.addEventListener("click", () => {
 				if (chatWindow) {
+					bconnected.click();
 					chatWindow.innerHTML = '';
 				}
 			});
 
 					
-			// setInterval(async () => {
-			//     bconnected.click();
-			// }, 5000); // every 1 second
+			bconnected.click();
+			setInterval(async () => {
+			    bconnected.click();
+			}, 50000); // every 1 second
 
 			// Help Text button
 			bconnected?.addEventListener("click", async () => {
@@ -253,9 +264,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				let user = await updateUser();
 				localStorage.setItem("oldName", oldUser);
 				buddies.textContent = "";
-				console.log('USER ', user?.name);
 				if (chatWindow) {
-					//addMessage('@list - lists all connected users in the chat');
+					// addMessage('@list - lists all connected users in the chat');
 					socket.emit('list', {
 						oldUser: oldUser,
 						user: user?.name,
@@ -317,21 +327,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					showError('Failed to login: Unknown error');
 				}
 			});
-
-			} else if (value.kind === "notLoggedIn") {
-
-				if (!chatWindow) return;
-				const messageElement = document.createElement('div-notlog');
-				messageElement.textContent = "Not Logged in ....";
-				chatWindow.appendChild(messageElement);
-				chatWindow.scrollTop = chatWindow.scrollHeight;
-				console.log('not logged in');
-
-			} else {
-				console.log('unknown response: ', value);
-			}
 		}
 	}
 };
 addRoute('/chat', handleChat, { bypass_auth: true });
 addRoute('/chat/', handleChat, { bypass_auth: true });
+

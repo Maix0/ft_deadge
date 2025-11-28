@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@font-face {
+  font-family: "Nimbus Mono L";
+  src: url("/fonts/NimbusMonoL.woff2") format("woff2");
+}
 
 .btn-style {
   @apply
