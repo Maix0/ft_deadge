@@ -27,8 +27,8 @@ document.addEventListener('ft:pageChange', () => {
 })
 
 function getSocket(): Socket {
-	// let addressHost = `wss://${machineHostName}:8888`;
-	let addressHost = `wss://localhost:8888`;
+	let addressHost = `wss://${machineHostName}:8888`;
+	// let addressHost = `wss://localhost:8888`;
 	if (__socket === undefined)
 
 		__socket = io(addressHost, {
@@ -63,9 +63,12 @@ async function windowStateHidden() {
 async function windowStateVisable() {		
 	const socketId = __socket || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
-	if (socketId == undefined) return;
+	console.log("%coldName :'" + oldName + "'", color.green);
+	
+	if (socketId === undefined || oldName === undefined) {console.log("%SOCKET ID", color.red); return;}
 	const res = await client.guestLogin();
 	let user = await updateUser();
+	console.log("%cUserName :'" + user?.name + "'", color.green);
 	socketId.emit('client_entered', {
 		userName: oldName,
 		user: user?.name,
@@ -101,10 +104,10 @@ if (bconnected) {
 
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
+	
+
 	let socket = getSocket();
-
-
-
+	
 	// Listen for the 'connect' event
 	socket.on("connect", async () => {
 		
@@ -163,6 +166,32 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	};
 
 
+		let toggle = false
+		window.addEventListener("focus", () => {
+			if (window.location.pathname === "/app/chat" && !toggle) {
+			//   bconnected.click();
+			  console.log("%cWindow is focused on /chat:" + socket.id, color.green);
+			if (socket.id)
+				windowStateVisable();
+			  toggle = true;
+			}
+		});
+
+		window.addEventListener("blur", () => {
+		// if (window.location.pathname !== "/app/chat" && !toggle) {
+		// 	//   bconnected.click();
+		// 	  console.log("%cWindow is not focused on /chat", color.red);
+		
+			if (socket.id)
+				windowStateHidden();
+		// 	});
+		  		toggle = false;
+			// }
+		});
+
+
+
+
 	setTitle('Chat Page');
 	// Listen for the 'connect' event
 	return {
@@ -193,20 +222,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				return ;
 			};
 
-		if (window.location.pathname === "/app/chat") {
-		  window.addEventListener("focus", () => {
-			windowStateVisable();
-			bconnected.click();
-			console.log("%cWindow is focused on /chat", color.green);
-		  });
-		
-		  window.addEventListener("blur", () => {
-			windowStateHidden();
-			bconnected.click();
-			console.log("%cWindow is not focused on /chat", color.red);
-		  });
-		}
-
 			socket.once('welcome', (data) => {
 				chatWindow.textContent = '';
 				chatWindow.innerHTML = '';
@@ -214,7 +229,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				buddies.innerHTML = '';
 				bconnected.click();
 				addMessage (`${data.msg}  ` + getUser()?.name);
-			});
+		});
 
 			// Send button
 			sendButton?.addEventListener("click", () => {
@@ -331,5 +346,5 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	}
 };
 addRoute('/chat', handleChat, { bypass_auth: true });
-addRoute('/chat/', handleChat, { bypass_auth: true });
+// addRoute('/chat/', handleChat, { bypass_auth: true });
 

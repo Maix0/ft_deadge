@@ -168,6 +168,7 @@ async function onReady(fastify: FastifyInstance) {
 					// Send REAL JSON object
 					if (clientName !== undefined) {
 						s.emit('MsgObjectServer', { message: data });
+						console.log(color.green, 'Name Sender', clientChat);
 					}
 					console.log(' Target window socket ID:', s.id);
 					console.log(' Target window ID:', [...s.rooms]);
@@ -309,24 +310,24 @@ async function onReady(fastify: FastifyInstance) {
     		const userNameFromFrontend = data?.userName || null;
     		const userFromFrontend = data?.user || null;
 			let clientName = clientChat.get(socket.id)?.user || null;
-			const client = clientChat.get(socket.id) || null;
+			// const client = clientChat.get(socket.id) || null;
 			let text = 'is back in the chat';
 
 			if (clientName === null) {
 				console.log('ERROR: clientName is NULL'); return;
 			};
-			if (client === null) {
-				console.log('ERROR: client is NULL'); return;
-			};
+			// if (client === null) {
+			// 	console.log('ERROR: client is NULL'); return;
+			// };
 			if (userNameFromFrontend !== userFromFrontend) {
 				text = `'is back in the chat, I used to be called '${userNameFromFrontend}`;
 				clientName = userFromFrontend;
 				if (clientName === null) {
 					console.log('ERROR: clientName is NULL'); return;
 				};
-				if (client) {
-  					client.user = clientName;
-				}
+				// if (client) {
+  				// 	client.user = clientName;
+				// }
 			}
     		console.log(
     		    color.green,
@@ -346,5 +347,6 @@ async function onReady(fastify: FastifyInstance) {
     		    broadcast(obj, obj.SenderWindowID);
     		}
 		});
+
 	});
 }
