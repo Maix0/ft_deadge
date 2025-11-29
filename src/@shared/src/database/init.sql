@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS blocked (
   user TEXT NOT NULL,
   blocked TEXT NOT NULL,
 
-  FOREIGN KEY(user) REFERENCES user(id);
-  FOREIGN KEY(blocked) REFERENCES user(id);
+  FOREIGN KEY(user) REFERENCES user(id)
+  FOREIGN KEY(blocked) REFERENCES user(id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_user_pair

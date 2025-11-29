@@ -10,7 +10,7 @@ const color = {
 	green: 'color: green; font-weight: bold;',
 	yellow: 'color: orange; font-weight: bold;',
 	blue: 'color: blue; font-weight: bold;',
-	reset: '', // not needed in browser
+	reset: '', 
 };
 
 
@@ -27,8 +27,8 @@ document.addEventListener('ft:pageChange', () => {
 })
 
 function getSocket(): Socket {
-	let addressHost = `wss://${machineHostName}:8888`;
-	// let addressHost = `wss://localhost:8888`;
+	// let addressHost = `wss://${machineHostName}:8888`;
+	let addressHost = `wss://localhost:8888`;
 	if (__socket === undefined)
 
 		__socket = io(addressHost, {
@@ -144,14 +144,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		
 		if (chatWindow) {
 			const messageElement = document.createElement("div");
-			
-			// if (getUser()?.id !== `${data.message.id}`) {
-			console.log('==================> HERE');
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
-			// } else {
-			// 	console.log('==================>AND HERE');
-			// 	messageElement.textContent = `here`;
-			// }
 			chatWindow.appendChild(messageElement);
 			chatWindow.scrollTop = chatWindow.scrollHeight;
 		}
@@ -178,19 +171,12 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		});
 
 		window.addEventListener("blur", () => {
-		// if (window.location.pathname !== "/app/chat" && !toggle) {
-		// 	//   bconnected.click();
-		// 	  console.log("%cWindow is not focused on /chat", color.red);
-		
+			bconnected.click();
+			console.log("%cWindow is not focused on /chat", color.red);
 			if (socket.id)
 				windowStateHidden();
-		// 	});
-		  		toggle = false;
-			// }
+		  	toggle = false;
 		});
-
-
-
 
 	setTitle('Chat Page');
 	// Listen for the 'connect' event
@@ -299,9 +285,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 
 
-
-
-
 			// Enter key to send message
 			sendtextbox!.addEventListener('keydown', (event) => {
 				if (event.key === 'Enter') {
@@ -346,5 +329,4 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	}
 };
 addRoute('/chat', handleChat, { bypass_auth: true });
-// addRoute('/chat/', handleChat, { bypass_auth: true });
 
