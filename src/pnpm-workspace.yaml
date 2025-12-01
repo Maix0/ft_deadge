@@ -4,7 +4,9 @@ packages:
 nodeLinker: hoisted
 
 onlyBuiltDependencies:
-  - better-sqlite3
-  - esbuild
-  - sharp
   - bcrypt
+  - better-sqlite3
+  - core-js
+  - esbuild
+  - protobufjs
+  - sharp
