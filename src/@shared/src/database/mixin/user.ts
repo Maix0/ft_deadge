@@ -18,6 +18,8 @@ export interface IUserDb extends Database {
 	ensureUserOtpSecret(id: UserId): string | undefined,
 	deleteUserOtpSecret(id: UserId): void,
 	getAllUserFromProvider(provider: string): User[] | undefined,
+    getAllUsers(this: IUserDb): User[] | undefined,
+
 };
 
 export const UserImpl: Omit<IUserDb, keyof Database> = {
@@ -35,6 +37,15 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 			).get({ name }) as (Partial<User> | undefined),
 		);
 	},
+
+	getAllUsers(this: IUserDb): User[] {
+    	const rows = this.prepare('SELECT * FROM user').all() as Partial<User>[];
+
+    	return rows
+        	.map(row => userFromRow(row))
+        	.filter((u): u is User => u !== undefined);
+	},
+
 
 	/**
 	 * Get a user from a raw [UserId]

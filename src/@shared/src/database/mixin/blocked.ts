@@ -2,7 +2,6 @@ import { isNullish } from '@shared/utils';
 import type { Database } from './_base';
 import { UserId } from './user';
 
-// never use this directly
 
 // describe every function in the object
 export interface IBlockedDb extends Database {
@@ -10,6 +9,8 @@ export interface IBlockedDb extends Database {
 	addBlockedUserFor(id: UserId, blocked: UserId): void,
 	removeBlockedUserFor(id: UserId, blocked: UserId): void,
 	unblockAllUserFor(id: UserId): void,
+	getAllBlockedUsers(this: IBlockedDb): BlockedData[] | undefined,
+
 };
 
 export const BlockedImpl: Omit<IBlockedDb, keyof Database> = {
@@ -28,6 +29,23 @@ export const BlockedImpl: Omit<IBlockedDb, keyof Database> = {
 	removeBlockedUserFor(this: IBlockedDb, id: UserId, blocked: UserId): void {
 		this.prepare('DELETE FROM blocked WHERE user = @id AND blocked = @blocked').run({ id, blocked });
 	},
+
+	
+	/**
+	 * Get all blocked user
+	 *
+	 * @param 
+	 *
+	 * @returns The list of users if it exists, undefined otherwise
+	 */
+	getAllBlockedUsers(this: IBlockedDb): BlockedData[] {
+		const rows = this.prepare('SELECT * FROM blocked').all() as Partial<BlockedData>[];
+
+		return rows
+			.map(row => blockedFromRow(row))
+			.filter((u): u is BlockedData => u !== undefined);
+	},
+
 };
 
 export type BlockedId = number & { readonly __brand: unique symbol };
@@ -46,6 +64,7 @@ export type BlockedData = {
  * @returns The blocked if it exists, undefined otherwise
  */
 export function blockedFromRow(row?: Partial<BlockedData>): BlockedData | undefined {
+	console.log('HELLO ?????', row);
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
 	if (isNullish(row.user)) return undefined;

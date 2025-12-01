@@ -184,7 +184,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 		let toggle = false
 		window.addEventListener("focus", () => {
-			if (window.location.pathname === "/app/chat" && !toggle) {
+			if (window.location.pathname === "" && !toggle) {
 			//   bconnected.click();
 			  console.log("%cWindow is focused on /chat:" + socket.id, color.green);
 			if (socket.id)
@@ -221,6 +221,15 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			buddies.textContent = '';
 			buddies.innerHTML = '';
 
+
+			const value = await client.chatTest();
+            if (value.kind === "success") {
+                console.log(value.payload);
+            } else if (value.kind === "notLoggedIn") {
+                console.log('not logged in');
+            } else {
+                console.log('unknown response: ', value);
+            }
 
 			const addMessage = (text: string) => {
 				if (!chatWindow) return;
