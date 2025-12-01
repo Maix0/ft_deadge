@@ -46,14 +46,14 @@ async function isLoggedIn() {
 
 async function windowStateHidden() {		
 	const socketId = __socket || undefined;
-	let oldName = localStorage.getItem("oldName") || undefined;
+	let oldName = localStorage.getItem("oldName") ?? "";
 	if (socketId == undefined) return;
 	let userName = await updateUser();
-	oldName =  userName?.name || undefined;
-	if (oldName === undefined) return;
+	oldName =  userName?.name ?? "";
+	if (oldName === "") return;
 	localStorage.setItem('oldName', oldName);
 	socketId.emit('client_left', {
-		user: userName?.name,
+		user: userName?.name ?? "",
 		why: 'tab window hidden - socket not dead',
 	});
 	return;
@@ -66,7 +66,6 @@ async function windowStateVisable() {
 	console.log("%coldName :'" + oldName + "'", color.green);
 	
 	if (socketId === undefined || oldName === undefined) {console.log("%SOCKET ID", color.red); return;}
-	const res = await client.guestLogin();
 	let user = await updateUser();
 	console.log("%cUserName :'" + user?.name + "'", color.green);
 	socketId.emit('client_entered', {
@@ -171,8 +170,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		});
 
 		window.addEventListener("blur", () => {
-			bconnected.click();
-			console.log("%cWindow is not focused on /chat", color.red);
+			//bconnected.click();
+			//console.log("%cWindow is not focused on /chat", color.red);
 			if (socket.id)
 				windowStateHidden();
 		  	toggle = false;
@@ -258,7 +257,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			bconnected?.addEventListener("click", async () => {
 
 				const loggedIn = await isLoggedIn();
-				let oldUser = localStorage.getItem("oldName") || undefined;
+				let oldUser;
+				// let oldUser = localStorage.getItem("oldName") || undefined;
 				if (loggedIn?.name === undefined) return ;
 				oldUser =  loggedIn.name || "undefined";
 				const res = await client.guestLogin();
@@ -272,7 +272,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						user: user?.name,
 					});
 				}
-			
+				return ;
 			});
 			socket.on('listObj', (list: string) => {
 				console.log('List chat clients connected ', list);
@@ -296,9 +296,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			bwhoami?.addEventListener('click', async () => {
 				try {
 					const loggedIn = await isLoggedIn();
-					let oldUser = localStorage.getItem("oldName") || undefined;
-					oldUser =  loggedIn?.name || "undefined";
-					localStorage.setItem("oldName", oldUser);
+					// let oldUser = localStorage.getItem("oldName") || undefined;
+					let oldUser: string | undefined;
+					oldUser =  loggedIn?.name;
+					localStorage.setItem("oldName", oldUser ?? "");
 					
 					const res = await client.guestLogin();
 					switch (res.kind) {

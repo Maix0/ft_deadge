@@ -16,7 +16,7 @@ export const color = {
 	reset: '\x1b[0m',
 };
 
-// shows address for connection au server transcendance
+// shows address for connection to the server transcendance
 const session = process.env.SESSION_MANAGER ?? '';
 const part = session.split('/')[1];
 const machineName = part.split('.')[0];
@@ -229,10 +229,10 @@ async function onReady(fastify: FastifyInstance) {
 
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				console.log(color.red, 'list activated', userFromFrontend.oldUser, color.reset);
-				if (client?.user === null) {
+				if (client === null) {
 					console.log('ERROR: clientName is NULL');
 					return;
-				};
+				}
 				if (client) {
   					client.user = userFromFrontend.user;
 				}
@@ -281,15 +281,15 @@ async function onReady(fastify: FastifyInstance) {
 		});
 
 		socket.on('client_left', (data) => {
-			const clientName = clientChat.get(socket.id)?.user || null;
+			const clientName: string = clientChat.get(socket.id)?.user ?? '';
 			const leftChat = data || null;
 			console.log(
 				color.green,
 				`Left the Chat User: ${clientName} id Socket: ${socket.id} reason:`,
-				leftChat.why,
+				leftChat.why ?? '',
 			);
 
-			if (clientName !== null) {
+			if (clientName !== '') {
 				const obj = {
 					type: 'chat',
 					user: clientName,
@@ -309,11 +309,11 @@ async function onReady(fastify: FastifyInstance) {
     		// data may be undefined (when frontend calls emit with no payload)
     		const userNameFromFrontend = data?.userName || null;
     		const userFromFrontend = data?.user || null;
-			let clientName = clientChat.get(socket.id)?.user || null;
+			let clientName = clientChat.get(socket.id)?.user || undefined;
 			// const client = clientChat.get(socket.id) || null;
 			let text = 'is back in the chat';
 
-			if (clientName === null) {
+			if (clientName === undefined) {
 				console.log('ERROR: clientName is NULL'); return;
 			};
 			// if (client === null) {
@@ -322,7 +322,7 @@ async function onReady(fastify: FastifyInstance) {
 			if (userNameFromFrontend !== userFromFrontend) {
 				text = `'is back in the chat, I used to be called '${userNameFromFrontend}`;
 				clientName = userFromFrontend;
-				if (clientName === null) {
+				if (clientName === undefined) {
 					console.log('ERROR: clientName is NULL'); return;
 				};
 				// if (client) {
@@ -333,7 +333,7 @@ async function onReady(fastify: FastifyInstance) {
     		    color.green,
     		    `Client entered the Chat: ${clientName} (${socket.id})`,
     		);
-    		if (clientName !== null) {
+    		if (clientName !== undefined) {
     		    const obj = {
     		        type: 'chat',
     		        user: clientName,
