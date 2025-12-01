@@ -51,6 +51,32 @@
               }
             }
           },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "disableOtp.failure.guest"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "description": "Default Response",
             "content": {
@@ -149,6 +175,32 @@
                           "description": "The otp url to feed into a 2fa app"
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "enableOtp.failure.guest"
+                      ]
                     }
                   }
                 }
@@ -883,12 +935,12 @@
                         "payload": {
                           "type": "object",
                           "required": [
-                            "url"
+                            "secret"
                           ],
                           "properties": {
-                            "url": {
+                            "secret": {
                               "type": "string",
-                              "description": "The otp url to feed into a 2fa app"
+                              "description": "The otp secret"
                             }
                           }
                         }
@@ -1069,6 +1121,20 @@
                         },
                         "guest": {
                           "type": "boolean"
+                        },
+                        "selfInfo": {
+                          "type": "object",
+                          "properties": {
+                            "login_name": {
+                              "type": "string"
+                            },
+                            "provider_id": {
+                              "type": "string"
+                            },
+                            "provider_user": {
+                              "type": "string"
+                            }
+                          }
                         }
                       }
                     }

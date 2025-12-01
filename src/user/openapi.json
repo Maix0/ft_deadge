@@ -72,6 +72,20 @@
                                                 },
                                                 "guest": {
                                                     "type": "boolean"
+                                                },
+                                                "selfInfo": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "login_name": {
+                                                            "type": "string"
+                                                        },
+                                                        "provider_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "provider_user": {
+                                                            "type": "string"
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

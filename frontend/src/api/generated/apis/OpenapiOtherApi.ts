@@ -17,9 +17,11 @@ import * as runtime from '../runtime';
 import type {
   ChatTest200Response,
   DisableOtp200Response,
+  DisableOtp400Response,
   DisableOtp401Response,
   DisableOtp500Response,
   EnableOtp200Response,
+  EnableOtp400Response,
   EnableOtp401Response,
   GetUser200Response,
   GetUser403Response,
@@ -51,12 +53,16 @@ import {
     ChatTest200ResponseToJSON,
     DisableOtp200ResponseFromJSON,
     DisableOtp200ResponseToJSON,
+    DisableOtp400ResponseFromJSON,
+    DisableOtp400ResponseToJSON,
     DisableOtp401ResponseFromJSON,
     DisableOtp401ResponseToJSON,
     DisableOtp500ResponseFromJSON,
     DisableOtp500ResponseToJSON,
     EnableOtp200ResponseFromJSON,
     EnableOtp200ResponseToJSON,
+    EnableOtp400ResponseFromJSON,
+    EnableOtp400ResponseToJSON,
     EnableOtp401ResponseFromJSON,
     EnableOtp401ResponseToJSON,
     GetUser200ResponseFromJSON,
@@ -174,7 +180,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
-    async disableOtpRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DisableOtp200Response | DisableOtp401Response | DisableOtp500Response>> {
+    async disableOtpRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DisableOtp200Response | DisableOtp400Response | DisableOtp401Response | DisableOtp500Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -197,6 +203,10 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
             // Object response for status 200
             return new runtime.JSONApiResponse(response, (jsonValue) => DisableOtp200ResponseFromJSON(jsonValue));
         }
+        if (response.status === 400) {
+            // Object response for status 400
+            return new runtime.JSONApiResponse(response, (jsonValue) => DisableOtp400ResponseFromJSON(jsonValue));
+        }
         if (response.status === 401) {
             // Object response for status 401
             return new runtime.JSONApiResponse(response, (jsonValue) => DisableOtp401ResponseFromJSON(jsonValue));
@@ -208,19 +218,19 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         // CHANGED: Throw error if status code is not handled by any of the defined responses
         // This ensures all code paths return a value and provides clear error messages for unexpected status codes
         // Only throw if responses were defined but none matched the actual status code
-        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 401, 500`);
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 400, 401, 500`);
     }
 
     /**
      */
-    async disableOtp(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DisableOtp200Response | DisableOtp401Response | DisableOtp500Response> {
+    async disableOtp(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DisableOtp200Response | DisableOtp400Response | DisableOtp401Response | DisableOtp500Response> {
         const response = await this.disableOtpRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async enableOtpRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnableOtp200Response | EnableOtp401Response>> {
+    async enableOtpRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnableOtp200Response | EnableOtp400Response | EnableOtp401Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -243,6 +253,10 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
             // Object response for status 200
             return new runtime.JSONApiResponse(response, (jsonValue) => EnableOtp200ResponseFromJSON(jsonValue));
         }
+        if (response.status === 400) {
+            // Object response for status 400
+            return new runtime.JSONApiResponse(response, (jsonValue) => EnableOtp400ResponseFromJSON(jsonValue));
+        }
         if (response.status === 401) {
             // Object response for status 401
             return new runtime.JSONApiResponse(response, (jsonValue) => EnableOtp401ResponseFromJSON(jsonValue));
@@ -250,12 +264,12 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         // CHANGED: Throw error if status code is not handled by any of the defined responses
         // This ensures all code paths return a value and provides clear error messages for unexpected status codes
         // Only throw if responses were defined but none matched the actual status code
-        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 401`);
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 400, 401`);
     }
 
     /**
      */
-    async enableOtp(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnableOtp200Response | EnableOtp401Response> {
+    async enableOtp(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnableOtp200Response | EnableOtp400Response | EnableOtp401Response> {
         const response = await this.enableOtpRaw(initOverrides);
         return await response.value();
     }

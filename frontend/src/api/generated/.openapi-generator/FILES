@@ -2,15 +2,19 @@ apis/OpenapiOtherApi.ts
 apis/index.ts
 index.ts
 models/ChatTest200Response.ts
+models/ChatTest200ResponsePayload.ts
 models/DisableOtp200Response.ts
+models/DisableOtp400Response.ts
 models/DisableOtp401Response.ts
 models/DisableOtp500Response.ts
 models/EnableOtp200Response.ts
 models/EnableOtp200ResponsePayload.ts
+models/EnableOtp400Response.ts
 models/EnableOtp401Response.ts
 models/EnableOtp401ResponseAnyOf.ts
 models/GetUser200Response.ts
 models/GetUser200ResponsePayload.ts
+models/GetUser200ResponsePayloadSelfInfo.ts
 models/GetUser403Response.ts
 models/GetUser404Response.ts
 models/GetUserUserParameter.ts
@@ -41,6 +45,7 @@ models/Signin500Response.ts
 models/StatusOtp200Response.ts
 models/StatusOtp200ResponseAnyOf.ts
 models/StatusOtp200ResponseAnyOf1.ts
+models/StatusOtp200ResponseAnyOfPayload.ts
 models/StatusOtp401Response.ts
 models/StatusOtp500Response.ts
 models/index.ts

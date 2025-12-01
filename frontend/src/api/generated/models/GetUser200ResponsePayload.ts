@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { GetUser200ResponsePayloadSelfInfo } from './GetUser200ResponsePayloadSelfInfo';
+import {
+    GetUser200ResponsePayloadSelfInfoFromJSON,
+    GetUser200ResponsePayloadSelfInfoFromJSONTyped,
+    GetUser200ResponsePayloadSelfInfoToJSON,
+    GetUser200ResponsePayloadSelfInfoToJSONTyped,
+} from './GetUser200ResponsePayloadSelfInfo';
+
 /**
  * 
  * @export
@@ -37,6 +45,12 @@ export interface GetUser200ResponsePayload {
      * @memberof GetUser200ResponsePayload
      */
     guest: boolean;
+    /**
+     * 
+     * @type {GetUser200ResponsePayloadSelfInfo}
+     * @memberof GetUser200ResponsePayload
+     */
+    selfInfo?: GetUser200ResponsePayloadSelfInfo;
 }
 
 /**
@@ -62,6 +76,7 @@ export function GetUser200ResponsePayloadFromJSONTyped(json: any, ignoreDiscrimi
         'name': json['name'],
         'id': json['id'],
         'guest': json['guest'],
+        'selfInfo': json['selfInfo'] == null ? undefined : GetUser200ResponsePayloadSelfInfoFromJSON(json['selfInfo']),
     };
 }
 
@@ -79,6 +94,7 @@ export function GetUser200ResponsePayloadToJSONTyped(value?: GetUser200ResponseP
         'name': value['name'],
         'id': value['id'],
         'guest': value['guest'],
+        'selfInfo': GetUser200ResponsePayloadSelfInfoToJSON(value['selfInfo']),
     };
 }
 

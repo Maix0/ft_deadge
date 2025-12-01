@@ -14,6 +14,7 @@ const kRouteAuthDone = Symbol('shared-route-auth-done');
 type AuthedUser = {
 	id: UserId;
 	name: string;
+	guest: boolean;
 };
 
 declare module 'fastify' {
@@ -118,7 +119,7 @@ export const authPlugin = fp<{ onlySchema?: boolean }>(async (fastify, { onlySch
 								.clearCookie('token', { path: '/' })
 								.makeResponse(401, 'notLoggedIn', 'auth.noUser');
 						}
-						req.authUser = { id: user.id, name: user.display_name };
+						req.authUser = { id: user.id, name: user.name, guest: user.guest };
 					}
 					catch {
 						return res

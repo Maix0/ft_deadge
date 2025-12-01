@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { EnableOtp200ResponsePayload } from './EnableOtp200ResponsePayload';
+import type { StatusOtp200ResponseAnyOfPayload } from './StatusOtp200ResponseAnyOfPayload';
 import {
-    EnableOtp200ResponsePayloadFromJSON,
-    EnableOtp200ResponsePayloadFromJSONTyped,
-    EnableOtp200ResponsePayloadToJSON,
-    EnableOtp200ResponsePayloadToJSONTyped,
-} from './EnableOtp200ResponsePayload';
+    StatusOtp200ResponseAnyOfPayloadFromJSON,
+    StatusOtp200ResponseAnyOfPayloadFromJSONTyped,
+    StatusOtp200ResponseAnyOfPayloadToJSON,
+    StatusOtp200ResponseAnyOfPayloadToJSONTyped,
+} from './StatusOtp200ResponseAnyOfPayload';
 
 /**
  * 
@@ -41,10 +41,10 @@ export interface StatusOtp200ResponseAnyOf {
     msg: StatusOtp200ResponseAnyOfMsgEnum;
     /**
      * 
-     * @type {EnableOtp200ResponsePayload}
+     * @type {StatusOtp200ResponseAnyOfPayload}
      * @memberof StatusOtp200ResponseAnyOf
      */
-    payload: EnableOtp200ResponsePayload;
+    payload: StatusOtp200ResponseAnyOfPayload;
 }
 
 
@@ -87,7 +87,7 @@ export function StatusOtp200ResponseAnyOfFromJSONTyped(json: any, ignoreDiscrimi
         
         'kind': json['kind'],
         'msg': json['msg'],
-        'payload': EnableOtp200ResponsePayloadFromJSON(json['payload']),
+        'payload': StatusOtp200ResponseAnyOfPayloadFromJSON(json['payload']),
     };
 }
 
@@ -104,7 +104,7 @@ export function StatusOtp200ResponseAnyOfToJSONTyped(value?: StatusOtp200Respons
         
         'kind': value['kind'],
         'msg': value['msg'],
-        'payload': EnableOtp200ResponsePayloadToJSON(value['payload']),
+        'payload': StatusOtp200ResponseAnyOfPayloadToJSON(value['payload']),
     };
 }
 

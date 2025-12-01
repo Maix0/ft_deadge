@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { GetUser200ResponsePayload } from './GetUser200ResponsePayload';
+import type { ChatTest200ResponsePayload } from './ChatTest200ResponsePayload';
 import {
-    GetUser200ResponsePayloadFromJSON,
-    GetUser200ResponsePayloadFromJSONTyped,
-    GetUser200ResponsePayloadToJSON,
-    GetUser200ResponsePayloadToJSONTyped,
-} from './GetUser200ResponsePayload';
+    ChatTest200ResponsePayloadFromJSON,
+    ChatTest200ResponsePayloadFromJSONTyped,
+    ChatTest200ResponsePayloadToJSON,
+    ChatTest200ResponsePayloadToJSONTyped,
+} from './ChatTest200ResponsePayload';
 
 /**
  * 
@@ -41,10 +41,10 @@ export interface ChatTest200Response {
     msg: ChatTest200ResponseMsgEnum;
     /**
      * 
-     * @type {GetUser200ResponsePayload}
+     * @type {ChatTest200ResponsePayload}
      * @memberof ChatTest200Response
      */
-    payload: GetUser200ResponsePayload;
+    payload: ChatTest200ResponsePayload;
 }
 
 
@@ -87,7 +87,7 @@ export function ChatTest200ResponseFromJSONTyped(json: any, ignoreDiscriminator:
         
         'kind': json['kind'],
         'msg': json['msg'],
-        'payload': GetUser200ResponsePayloadFromJSON(json['payload']),
+        'payload': ChatTest200ResponsePayloadFromJSON(json['payload']),
     };
 }
 
@@ -104,7 +104,7 @@ export function ChatTest200ResponseToJSONTyped(value?: ChatTest200Response | nul
         
         'kind': value['kind'],
         'msg': value['msg'],
-        'payload': GetUser200ResponsePayloadToJSON(value['payload']),
+        'payload': ChatTest200ResponsePayloadToJSON(value['payload']),
     };
 }
 

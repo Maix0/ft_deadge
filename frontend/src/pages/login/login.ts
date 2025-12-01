@@ -5,14 +5,98 @@ import {
 	type RouteHandlerParams,
 	type RouteHandlerReturn,
 } from "@app/routing";
-import { showError, showInfo, showSuccess } from "@app/toast";
+import Cookie from "js-cookie";
 import authHtml from "./login.html?raw";
 import client from "@app/api";
-import { updateUser } from "@app/auth";
-import Cookie from "js-cookie";
-import loggedInHtml from "./alreadyLoggedin.html?raw";
 import cuteCat from "./cuteCat.png";
+import loggedInHtml from "./alreadyLoggedin.html?raw";
+import totpHtml from "./totp.html?raw";
 import { isNullish } from "@app/utils";
+import { showError, showInfo, showSuccess } from "@app/toast";
+import { updateUser } from "@app/auth";
+
+const TOTP_LENGTH = 6;
+
+async function handleOtp(app: HTMLElement, token: string, returnTo: string | null) {
+	app.innerHTML = totpHtml;
+
+	const container = app.querySelector("#totp-container")!;
+	container.innerHTML = "";
+
+	const inputs: HTMLInputElement[] = [];
+
+	for (let i = 0; i < TOTP_LENGTH; i++) {
+		const input = document.createElement("input");
+		input.maxLength = 1;
+		input.inputMode = "numeric";
+		input.className =
+			"w-12 h-12 text-center text-xl border border-gray-300 rounded " +
+			"focus:outline-none focus:ring-2 focus:ring-blue-500";
+
+		container.appendChild(input);
+		inputs.push(input);
+
+		// Handle typing a digit
+		input.addEventListener("input", async () => {
+			const value = input.value.replace(/\D/g, "");
+			input.value = value;
+
+			// Auto-advance when filled
+			if (value && i < TOTP_LENGTH - 1) {
+				inputs[i + 1].focus();
+			}
+			await checkComplete();
+		});
+
+		// Handle backspace
+		input.addEventListener("keydown", (e) => {
+			if (e.key === "Backspace" && !input.value && i > 0) {
+				inputs[i - 1].focus();
+			}
+		});
+
+		// Handle pasting a full code
+		input.addEventListener("paste", (e: ClipboardEvent) => {
+			const pasted = e.clipboardData?.getData("text") ?? "";
+			const digits = pasted.replace(/\D/g, "").slice(0, TOTP_LENGTH);
+
+			if (digits.length > 1) {
+				e.preventDefault();
+				digits.split("").forEach((d, idx) => {
+					if (inputs[idx]) inputs[idx].value = d;
+				});
+				if (digits.length === TOTP_LENGTH) checkComplete();
+			}
+		});
+	}
+
+	// Check if all digits are entered and then call totpSend
+	async function checkComplete() {
+		const code = inputs.map((i) => i.value).join("");
+		if (code.length === TOTP_LENGTH && /^[0-9]+$/.test(code)) {
+			let res = await client.loginOtp({
+				loginOtpRequest: {
+					code, token,
+				}
+			})
+
+			if (res.kind === "success") {
+				Cookie.set("token", res.payload.token, {
+					path: "/",
+					sameSite: "lax",
+				});
+				if (returnTo !== null) navigateTo(returnTo);
+				else navigateTo("/");
+			}
+			else if (res.kind === "failed") {
+				showError(`Failed to authenticate: ${res.msg}`);
+			}
+		}
+	}
+
+	inputs[0].focus();
+}
+
 
 async function handleLogin(
 	_url: string,
@@ -67,7 +151,7 @@ async function handleLogin(
 				return showError(
 					"Error while rendering the page: no form found",
 				);
-			fLogin.addEventListener("submit", async function (e: SubmitEvent) {
+			fLogin.addEventListener("submit", async function(e: SubmitEvent) {
 				e.preventDefault();
 				let form = e.target as HTMLFormElement | null;
 				if (form === null) return showError("Failed to send form...");
@@ -109,8 +193,7 @@ async function handleLogin(
 							break;
 						}
 						case "otpRequired": {
-							showInfo("Got ask OTP, not yet implemented");
-							break;
+							return await handleOtp(app!, res.payload.token, returnTo);
 						}
 						case "failed": {
 							showError(`Failed to login: ${res.msg}`);

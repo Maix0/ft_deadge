@@ -7,6 +7,10 @@ export default defineConfig({
 		tailwindcss(),
 		tsconfigPaths(),
 	],
+	build: {
+		minify: false,
+		sourcemap: true,
+	},
 	server: {
 		hmr: {
 			protocol: 'ws',

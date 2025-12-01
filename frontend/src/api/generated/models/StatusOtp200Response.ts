@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { EnableOtp200ResponsePayload } from './EnableOtp200ResponsePayload';
-import {
-    EnableOtp200ResponsePayloadFromJSON,
-    EnableOtp200ResponsePayloadFromJSONTyped,
-    EnableOtp200ResponsePayloadToJSON,
-    EnableOtp200ResponsePayloadToJSONTyped,
-} from './EnableOtp200ResponsePayload';
 import type { StatusOtp200ResponseAnyOf } from './StatusOtp200ResponseAnyOf';
 import {
     StatusOtp200ResponseAnyOfFromJSON,
@@ -27,6 +20,13 @@ import {
     StatusOtp200ResponseAnyOfToJSON,
     StatusOtp200ResponseAnyOfToJSONTyped,
 } from './StatusOtp200ResponseAnyOf';
+import type { StatusOtp200ResponseAnyOfPayload } from './StatusOtp200ResponseAnyOfPayload';
+import {
+    StatusOtp200ResponseAnyOfPayloadFromJSON,
+    StatusOtp200ResponseAnyOfPayloadFromJSONTyped,
+    StatusOtp200ResponseAnyOfPayloadToJSON,
+    StatusOtp200ResponseAnyOfPayloadToJSONTyped,
+} from './StatusOtp200ResponseAnyOfPayload';
 import type { StatusOtp200ResponseAnyOf1 } from './StatusOtp200ResponseAnyOf1';
 import {
     StatusOtp200ResponseAnyOf1FromJSON,
@@ -55,10 +55,10 @@ export interface StatusOtp200Response {
     msg: StatusOtp200ResponseMsgEnum;
     /**
      * 
-     * @type {EnableOtp200ResponsePayload}
+     * @type {StatusOtp200ResponseAnyOfPayload}
      * @memberof StatusOtp200Response
      */
-    payload: EnableOtp200ResponsePayload;
+    payload: StatusOtp200ResponseAnyOfPayload;
 }
 
 
@@ -101,7 +101,7 @@ export function StatusOtp200ResponseFromJSONTyped(json: any, ignoreDiscriminator
         
         'kind': json['kind'],
         'msg': json['msg'],
-        'payload': EnableOtp200ResponsePayloadFromJSON(json['payload']),
+        'payload': StatusOtp200ResponseAnyOfPayloadFromJSON(json['payload']),
     };
 }
 
@@ -118,7 +118,7 @@ export function StatusOtp200ResponseToJSONTyped(value?: StatusOtp200Response | n
         
         'kind': value['kind'],
         'msg': value['msg'],
-        'payload': EnableOtp200ResponsePayloadToJSON(value['payload']),
+        'payload': StatusOtp200ResponseAnyOfPayloadToJSON(value['payload']),
     };
 }
 

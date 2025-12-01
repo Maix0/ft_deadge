@@ -7,6 +7,11 @@ import { isNullish, MakeStaticResponse, typeResponse } from '@shared/utils';
 export const UserInfoRes = {
 	'200': typeResponse('success', 'userinfo.success', {
 		name: Type.String(), id: Type.String(), guest: Type.Boolean(),
+		selfInfo: Type.Optional(Type.Object({
+			login_name: Type.Optional(Type.String()),
+			provider_id: Type.Optional(Type.String()),
+			provider_user: Type.Optional(Type.String()),
+		})),
 	}),
 	'403': typeResponse('failure', 'userinfo.failure.notLoggedIn'),
 	'404': typeResponse('failure', 'userinfo.failure.unknownUser'),
@@ -38,6 +43,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			if (req.params.user === 'me') {
 				req.params.user = req.authUser.id;
 			}
+			const askSelf = req.params.user === req.authUser.id;
 
 			const user = this.db.getUser(req.params.user);
 			if (isNullish(user)) {
@@ -57,6 +63,11 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 				// ```
 				// is the same as `val = !!something`
 				guest: !!user.guest,
+				selfInfo: askSelf ? {
+					login_name: user.login,
+					provider_id: user.provider_name,
+					provider_user: user.provider_unique,
+				} : null,
 			};
 
 			return res.makeResponse(200, 'success', 'userinfo.success', payload);

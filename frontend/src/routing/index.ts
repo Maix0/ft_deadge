@@ -46,12 +46,11 @@ export class RouteHandlerData {
 	constructor(url: string, handler: RouteHandler, special_args: Partial<RouteHandlerSpecialArgs>) {
 		this.special_args = Object.assign({}, RouteHandlerData.SPECIAL_ARGS_DEFAULT);
 		Object.assign(this.special_args, special_args);
-		console.log(url, this.special_args);
 
 		let parsed = RouteHandlerData.parseUrl(url);
 		this.handler = handler;
-		this.parts = parsed.parts;
-		this.url = parsed.parts.map((v, i) => v ?? `:${i}`).reduce((p, c) => `${p}/${c}`, '');
+		this.parts = parsed.parts.filter(p => p?.length !== 0);
+		this.url = parsed.parts.filter(p => p?.length !== 0).map((v, i) => v ?? `:${i}`).reduce((p, c) => `${p}/${c}`, '');
 		this.args = parsed.args;
 		this.orignal_url = parsed.original;
 	}
@@ -99,7 +98,7 @@ function urlToParts(url: string): string[] {
 	let parts = trimed.split('/');
 	if (parts.at(0) === 'app')
 		parts.shift();
-	return parts;
+	return parts.filter(p => p.length !== 0);
 }
 
 function setupRoutes(): [
@@ -190,8 +189,6 @@ export async function handleRoute() {
 	}
 
 	let user = await updateUser();
-	console.log(route_handler);
-	console.log(user, !route_handler.special_args.bypass_auth, user === null && !route_handler.special_args.bypass_auth);
 	if (user === null && !route_handler.special_args.bypass_auth)
 		return navigateTo(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`)
 	const app = document.getElementById('app')!;
