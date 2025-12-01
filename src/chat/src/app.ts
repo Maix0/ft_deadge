@@ -131,7 +131,6 @@ async function onReady(fastify: FastifyInstance) {
 				console.log(color.yellow, 'Client:', color.reset, username.user);
 
 				const targetSocketId = target;
-				// io.to(targetSocketId!).emit('listObj', username.user);
 				io.to(targetSocketId!).emit('listBud', username.user);
 				console.log(
 					color.yellow,
@@ -160,23 +159,32 @@ async function onReady(fastify: FastifyInstance) {
 		return count;
 	}
 
-	function broadcast(data: ClientMessage, sender?: string) {
-		fastify.io.fetchSockets().then((sockets) => {
-			for (const s of sockets) {
-				if (s.id !== sender) {
-					const clientName = clientChat.get(s.id)?.user;
-					// Send REAL JSON object
-					if (clientName !== undefined) {
-						s.emit('MsgObjectServer', { message: data });
-						console.log(color.green, 'Name Sender', clientChat);
-					}
-					console.log(' Target window socket ID:', s.id);
-					console.log(' Target window ID:', [...s.rooms]);
-					console.log(' Sender window ID:', sender ? sender : 'none');
-				}
+function broadcast(data: ClientMessage, sender?: string) {
+	fastify.io.fetchSockets().then((sockets) => {
+		for (const s of sockets) {
+
+			// Skip sender's own socket
+			if (s.id === sender) continue;
+
+			// Get client name from map
+			const clientInfo = clientChat.get(s.id);
+
+			if (!clientInfo?.user) {
+				console.log(color.yellow, `Skipping socket ${s.id} (no user found)`);
+				continue;
 			}
-		});
-	}
+
+			// Emit structured JSON object
+			s.emit("MsgObjectServer", { message: data });
+
+			// Debug logs
+			console.log(color.green, "Broadcast to:", clientInfo.user);
+			console.log(" Target socket ID:", s.id);
+			console.log(" Target rooms:", [...s.rooms]);
+			console.log(" Sender socket ID:", sender ?? "none");
+		}
+	});
+}
 
 	fastify.io.on('connection', (socket: Socket) => {
 
@@ -229,7 +237,7 @@ async function onReady(fastify: FastifyInstance) {
 
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				console.log(color.red, 'list activated', userFromFrontend.oldUser, color.reset);
-				if (client?.user === null) {
+				if (client?.user === null) {					
 					console.log('ERROR: clientName is NULL');
 					return;
 				};
@@ -255,6 +263,28 @@ async function onReady(fastify: FastifyInstance) {
 				}
 			}
 		});
+
+		socket.on("logout", () => {
+		  const clientInfo = clientChat.get(socket.id);
+		  const clientName = clientInfo?.user;
+		
+		  if (!clientName) return;
+		  	console.log(color.green, `Client logging out: ${clientName} (${socket.id})`);
+		  	const obj = {
+		    	type: "chat" as const,
+		    	user: clientName,
+		    	token: "",
+		    	text: "LEFT the chat",
+		    	timestamp: Date.now(),
+		    	SenderWindowID: socket.id,
+			};
+			broadcast(obj, socket.id);
+			// Optional: remove from map
+			clientChat.delete(socket.id);
+			// Ensure socket is fully disconnected
+			if (socket.connected) socket.disconnect(true);		
+		});
+
 
 
 		socket.on('disconnecting', (reason) => {

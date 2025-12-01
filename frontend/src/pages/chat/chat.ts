@@ -14,6 +14,9 @@ const color = {
 };
 
 
+
+
+
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -101,6 +104,14 @@ if (bconnected) {
 	bconnected.click();
 }
 
+function logout(socket: Socket) {
+  socket.emit("logout");  // notify server
+  socket.disconnect();    // actually close the socket
+  localStorage.clear();
+  if (__socket !== undefined)
+		__socket.close();
+//   window.location.href = "/login";
+}
 
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
@@ -108,6 +119,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	let socket = getSocket();
 	
+
+
 	// Listen for the 'connect' event
 	socket.on("connect", async () => {
 		
@@ -151,6 +164,16 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		console.log("Getuser():", getUser());
 	});
 
+
+					
+
+	socket.on('logout', () => {
+		const bquit = document.getElementById('b-quit') as HTMLDivElement | null;
+		if (bquit instanceof HTMLDivElement) {	
+			bquit.click();
+		}
+	});
+
 	type Providers = {
 		name: string,
 		display_name: string,
@@ -191,6 +214,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const bconnected = document.getElementById('b-help') as HTMLButtonElement;
 			const username = document.getElementById('username') as HTMLDivElement;
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
+			const bquit = document.getElementById('b-quit') as HTMLDivElement;
 
 			chatWindow.textContent = '';
 			chatWindow.innerHTML = '';
@@ -240,16 +264,28 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 
 
+
+
 			// Clear Text button
 			clearText?.addEventListener("click", () => {
+
 				if (chatWindow) {
 					bconnected.click();
 					chatWindow.innerHTML = '';
 				}
 			});
 
+			bquit?.addEventListener('click', () => {
+				if (socket) {
+					logout(socket);
+					setTitle('Chat Page');
+					bconnected.click();
+				} else {
+					getSocket();
+				}
+			});
+
 					
-			bconnected.click();
 			setInterval(async () => {
 			    bconnected.click();
 			}, 10000); // every 10 second
@@ -273,10 +309,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					});
 				}
 			
-			});
-			socket.on('listObj', (list: string) => {
-				console.log('List chat clients connected ', list);
-				addMessage(list);
 			});
 
 			socket.on('listBud', (myBuddies: string) => {

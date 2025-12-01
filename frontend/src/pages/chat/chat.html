@@ -5,6 +5,7 @@
 		  ChatterBox<span id="t-username"></span>
     </h1><br>
     <button id="b-clear" class="btn-style absolute top-4 right-6">Clear Text</button>
+    <button id="b-quit" class="btn-style absolute top-14 right-6">Quit Chat</button>
     <button id="b-help" class="btn-style absolute top-14 left-6">Connected</button>
 
     <!-- Center wrapper for chat + vertical box -->
@@ -12,9 +13,9 @@
       <!-- Groupe Chat + vertical box container -->
       <div id = "g-boxes" class="flex gap-2">
         <!-- Text Chat box panel + send -->
-        <div id = "g-textBoxes" class="flex flex-col">
+        <div id="g-textBoxes" class="flex flex-col">
           <div id="t-chatbox" class="chatbox-style"></div>
-          <div id = "t-input-send" class="flex gap-1 mt-2">
+          <div id="t-input-send" class="flex gap-1 mt-2">
             <input id="t-chat-window" placeholder="Type your message..." class="chat-window-style" />
             <button id="b-send" class="send-btn-style">Send</button>
           </div>
