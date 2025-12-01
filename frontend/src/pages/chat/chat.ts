@@ -171,7 +171,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		});
 
 		window.addEventListener("blur", () => {
-			bconnected.click();
+			//bconnected.click();
 			console.log("%cWindow is not focused on /chat", color.red);
 			if (socket.id)
 				windowStateHidden();
@@ -252,7 +252,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			bconnected.click();
 			setInterval(async () => {
 			    bconnected.click();
-			}, 50000); // every 1 second
+			}, 10000); // every 10 second
 
 			// Help Text button
 			bconnected?.addEventListener("click", async () => {
