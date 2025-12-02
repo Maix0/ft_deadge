@@ -4,17 +4,22 @@ import authHtml from './chat.html?raw';
 import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
 import io, { Socket } from 'socket.io-client';
+// import type { ClientMessage } from "@app/@types/dom";
 
 const color = {
-	red: 'color: red; font-weight: bold;',
-	green: 'color: green; font-weight: bold;',
-	yellow: 'color: orange; font-weight: bold;',
-	blue: 'color: blue; font-weight: bold;',
+	red: 'color: red;',
+	green: 'color: green;',
+	yellow: 'color: orange;',
+	blue: 'color: blue;',
 	reset: '', 
 };
 
-
-
+export type ClientMessage = {
+	destination: string;
+	user: string;
+	text: string;
+	SenderWindowID: string;
+};
 
 
 // get the name of the machine used to connect 
@@ -143,26 +148,39 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	});
 
 	// Listen for messages from the server "MsgObjectServer"
-	socket.on("MsgObjectServer", (data: any) => {
-		console.log("Message Obj Recieved:", data.message);
-		console.log("Recieved data.message.text: ", data.message.text);
-		console.log("Recieved data.message.user: ", data.message.user);
-		console.log("Recieved data.message.type: ", data.message.type);
-		console.log("Recieved data.message.token: ", data.message.token);
-		console.log("Recieved data.message.timestamp: ", data.message.timestamp);
+	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
+		console.log("Message Obj Recieved:", data);
+		console.log("%cRecieved data.message.text: ", color.blue, data.message.text);
+		console.log("%cRecieved data.message.user: ", color.blue, data.message.user);
 		// Display the message in the chat window
+		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const bconnected = document.getElementById('b-help') as HTMLButtonElement;
 		if (bconnected) {
 			bconnected.click();
 		}
 		
-		if (chatWindow) {
+		if (chatWindow && data.message.destination === "") {
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
 			chatWindow.scrollTop = chatWindow.scrollHeight;
 		}
+		const MAX_SYSTEM_MESSAGES = 10;
+
+		if (systemWindow && data.message.destination === "system-info") {
+    		const messageElement = document.createElement("div");
+    		messageElement.textContent = `${data.message.user}: ${data.message.text}`;
+    		systemWindow.appendChild(messageElement);
+
+    		// keep only last 10
+    		while (systemWindow.children.length > MAX_SYSTEM_MESSAGES) {
+    		    systemWindow.removeChild(systemWindow.firstChild!);
+    		}
+
+    		systemWindow.scrollTop = systemWindow.scrollHeight;
+		}
+
 		console.log("Getuser():", getUser());
 	});
 
@@ -261,6 +279,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					const user = getUser();
 					if (user && socket?.connected) {
 						const message = {
+							destination: "",
 							type: "chat",
 							user: user.name,
 							token: document.cookie,
@@ -298,7 +317,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 					
 			setInterval(async () => {
-			    bconnected.click();
+			    //bconnected.click();
 			}, 10000); // every 10 second
 
 			// Help Text button
@@ -312,7 +331,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				oldUser =  loggedIn.name || "undefined";
 				const res = await client.guestLogin();
 				let user = await updateUser();
-				console.log('%User?name:',color.yellow, user?.name);
+				console.log('%cUser?name:',color.yellow, user?.name);
 				localStorage.setItem("oldName", oldUser);
 				buddies.textContent = "";
 				// if (chatWindow) {
@@ -347,8 +366,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					switch (res.kind) {
 						case 'success': {
 							let user = await updateUser();
-							console.log('%cUSER_NAME ',color.yellow, user?.name);
-							console.log('%cGET_user ',color.yellow, getUser()?.name || null);
 							if (chatWindow) {
 								socket.emit('updateClientName', {
 									oldUser: '',

@@ -32,6 +32,13 @@ interface ClientInfo {
   lastSeen: number;
 }
 
+export type ClientMessage = {
+	destination: string;
+	user: string;
+	text: string;
+	SenderWindowID: string;
+};
+
 const clientChat = new Map<string, ClientInfo>();
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
@@ -69,18 +76,13 @@ export default app;
 export { app };
 
 
-type ClientMessage = {
-	user: string;
-	text: string;
-	SenderWindowID: string;
-};
 
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
 	interface FastifyInstance {
 		io: Server<{
 			hello: (message: string) => string;
-			MsgObjectServer: (data: { message: ClientMessage }) => void;
+			MsgObjectServer: (data: { message: ClientMessage } ) => void;
 			message: (msg: string) => void;
 			listBud: (msg: string) => void;
 			testend: (sock_id_client: string) => void;
@@ -273,6 +275,7 @@ function broadcast(data: ClientMessage, sender?: string) {
 		  if (!clientName) return;
 		  	console.log(color.green, `Client logging out: ${clientName} (${socket.id})`);
 		  	const obj = {
+				destination: "system-info",
 		    	type: "chat" as const,
 		    	user: clientName,
 		    	token: "",
@@ -300,6 +303,7 @@ function broadcast(data: ClientMessage, sender?: string) {
 
 			if (clientName !== null) {
 				const obj = {
+					destination: "system-info",
 					type: 'chat',
 					user: clientName,
 					token: '',
@@ -323,6 +327,7 @@ function broadcast(data: ClientMessage, sender?: string) {
 
 			if (clientName !== null) {
 				const obj = {
+					destination: "system-info",
 					type: 'chat',
 					user: clientName,
 					token: '',
@@ -367,6 +372,7 @@ function broadcast(data: ClientMessage, sender?: string) {
     		);
     		if (clientName !== null) {
     		    const obj = {
+					destination: "system-info",
     		        type: 'chat',
     		        user: clientName,
     		        frontendUserName: userNameFromFrontend,

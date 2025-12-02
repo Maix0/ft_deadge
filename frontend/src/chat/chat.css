@@ -40,7 +40,6 @@
   active:shadow-[0_2px_0_0_black];;
 }
 
-
 .chatbox-style {
   @apply
   w-[650px]
@@ -60,12 +59,37 @@
   mx-auto;
 }
 
+.system-info {
+  @apply
+  h-[40px]
+  bg-gray-200 
+  text-gray-700 
+  p-3 
+  rounded-3xl 
+  mb-2 border 
+  border-gray-200 
+  text-center
+  shadow
+  overflow-y-auto
+  justify-end    /* 👈 forces text to bottom */
+  relative; /* needed for overlay */
+}
+
+
+.text-info {
+  @apply
+  text-blue-800
+
+}
+
+
 .chat-window-style {
   @apply
   w-[400px]
   h-[50px]
   p-[10px]
-  border-1 border-black
+  border-1 
+  border-black
   shadow-sm
   flex-1
   rounded-3xl

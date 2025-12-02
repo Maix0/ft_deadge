@@ -34,54 +34,6 @@ export const ChatRes = {
 export type ChatResType = MakeStaticResponse<typeof ChatRes>;
 
 
-function connectedUser(io: Server | undefined, targetSocketId?: string): number {
-    let count = 0;
-
-    // Track unique usernames (avoid duplicates)
-    const seenUsers = new Set<string>();
-
-    for (const [socketId, info] of clientChat) {
-
-        // Validate entry
-        if (!info || typeof info.user !== "string" || info.user.trim() === "") {
-            clientChat.delete(socketId);
-            continue;
-        }
-
-        const username = info.user;
-
-        // Validate socket exists if io is passed
-        if (io) {
-            const socket = io.sockets.sockets.get(socketId);
-
-            // Remove disconnected sockets
-            if (!socket || socket.disconnected) {
-                clientChat.delete(socketId);
-                continue;
-            }
-        }
-
-        // Skip duplicates
-        if (seenUsers.has(username))
-            continue;
-
-        seenUsers.add(username);
-        count++;
-
-        // Send to target only
-        if (io && targetSocketId) {
-            io.to(targetSocketId).emit("listBud", username);
-        }
-
-        console.log(color.yellow, "Client:", color.reset, username);
-        console.log(color.yellow, "Socket ID:", color.reset, socketId);
-    }
-
-    return count;
-}
-
-
-
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	fastify.get(
