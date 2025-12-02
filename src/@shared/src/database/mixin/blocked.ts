@@ -30,11 +30,10 @@ export const BlockedImpl: Omit<IBlockedDb, keyof Database> = {
 		this.prepare('DELETE FROM blocked WHERE user = @id AND blocked = @blocked').run({ id, blocked });
 	},
 
-	
 	/**
 	 * Get all blocked user
 	 *
-	 * @param 
+	 * @param
 	 *
 	 * @returns The list of users if it exists, undefined otherwise
 	 */
@@ -64,7 +63,6 @@ export type BlockedData = {
  * @returns The blocked if it exists, undefined otherwise
  */
 export function blockedFromRow(row?: Partial<BlockedData>): BlockedData | undefined {
-	console.log('HELLO ?????', row);
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
 	if (isNullish(row.user)) return undefined;
