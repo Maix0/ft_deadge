@@ -49,11 +49,12 @@ async function isLoggedIn() {
 
 async function windowStateHidden() {		
 	const socketId = __socket || undefined;
-	let oldName = localStorage.getItem("oldName") || undefined;
-	if (socketId == undefined) return;
+	// let oldName = localStorage.getItem("oldName") ??  undefined;
+	let oldName: string;
+	if (socketId === undefined) return;
 	let userName = await updateUser();
-	oldName =  userName?.name || undefined;
-	if (oldName === undefined) return;
+	oldName =  userName?.name ?? "";
+	if (oldName === "") return;
 	localStorage.setItem('oldName', oldName);
 	socketId.emit('client_left', {
 		user: userName?.name,
@@ -66,11 +67,12 @@ async function windowStateHidden() {
 async function windowStateVisable() {		
 	const socketId = __socket || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
-	console.log("%coldName :'" + oldName + "'", color.green);
+	console.log("%c WINDOW VISIBLE - oldName :'" + oldName + "'", color.green);
 	
 	if (socketId === undefined || oldName === undefined) {console.log("%SOCKET ID", color.red); return;}
-	const res = await client.guestLogin();
+	// const res = await client.guestLogin();
 	let user = await updateUser();
+	if(user === null) return;
 	console.log("%cUserName :'" + user?.name + "'", color.green);
 	socketId.emit('client_entered', {
 		userName: oldName,
@@ -184,21 +186,21 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 		let toggle = false
 		window.addEventListener("focus", () => {
-			if (window.location.pathname === "" && !toggle) {
-			//   bconnected.click();
-			  console.log("%cWindow is focused on /chat:" + socket.id, color.green);
-			if (socket.id)
-				windowStateVisable();
-			  toggle = true;
+			const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
+			if (window.location.pathname === '/app/chat') {
+				console.log("%cWindow is focused on /chat:" + socket.id, color.green);
+				if (socket.id)
+					windowStateVisable();
+				bwhoami.click();
+				toggle = true;
 			}
 		});
 
 		window.addEventListener("blur", () => {
-			//bconnected.click();
 			console.log("%cWindow is not focused on /chat", color.red);
 			if (socket.id)
 				windowStateHidden();
-		  	toggle = false;
+			toggle = false;
 		});
 
 	setTitle('Chat Page');
@@ -303,20 +305,23 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			bconnected?.addEventListener("click", async () => {
 
 				const loggedIn = await isLoggedIn();
-				let oldUser = localStorage.getItem("oldName") || undefined;
-				if (loggedIn?.name === undefined) return ;
+				console.log('%cloggedIn:',color.blue, loggedIn?.name);
+				let oldUser = localStorage.getItem("oldName") ?? "";
+				console.log('%coldUser:',color.yellow, oldUser);
+				if (loggedIn?.name === undefined) {console.log('');return ;}
 				oldUser =  loggedIn.name || "undefined";
 				const res = await client.guestLogin();
 				let user = await updateUser();
+				console.log('%User?name:',color.yellow, user?.name);
 				localStorage.setItem("oldName", oldUser);
 				buddies.textContent = "";
-				if (chatWindow) {
+				// if (chatWindow) {
 					// addMessage('@list - lists all connected users in the chat');
 					socket.emit('list', {
 						oldUser: oldUser,
 						user: user?.name,
 					});
-				}
+				// }
 			
 			});
 
@@ -337,18 +342,16 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			bwhoami?.addEventListener('click', async () => {
 				try {
 					const loggedIn = await isLoggedIn();
-					let oldUser = localStorage.getItem("oldName") || undefined;
-					oldUser =  loggedIn?.name || "undefined";
-					localStorage.setItem("oldName", oldUser);
 					
 					const res = await client.guestLogin();
 					switch (res.kind) {
 						case 'success': {
 							let user = await updateUser();
-							console.log('USER ', user?.name);
+							console.log('%cUSER_NAME ',color.yellow, user?.name);
+							console.log('%cGET_user ',color.yellow, getUser()?.name || null);
 							if (chatWindow) {
 								socket.emit('updateClientName', {
-									oldUser: oldUser,
+									oldUser: '',
 									user: user?.name
 								});
 							}

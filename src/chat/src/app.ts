@@ -237,10 +237,10 @@ function broadcast(data: ClientMessage, sender?: string) {
 
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				console.log(color.red, 'list activated', userFromFrontend.oldUser, color.reset);
-				if (client?.user === null) {					
-					console.log('ERROR: clientName is NULL');
-					return;
-				};
+				// if (client?.user === null) {					
+				// 	console.log('ERROR: clientName is NULL');
+				// 	return;
+				// };
 				if (client) {
   					client.user = userFromFrontend.user;
 				}
@@ -254,12 +254,14 @@ function broadcast(data: ClientMessage, sender?: string) {
 			console.log(color.red, 'whoAMi activated', userFromFrontend, color.reset, socket.id);
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				console.log(color.red, 'whoAMi activated', userFromFrontend.oldUser, color.reset);
-				if (client === null) {
-					console.log('ERROR: clientName is NULL');
-					return;
-				};
+				// if (client === null) {
+				// 	console.log('ERROR: clientName is NULL');
+				// 	return;
+				// };
 				if (client) {
   					client.user = userFromFrontend.user;
+					console.log(color.green, 'client.user is: ', client.user);
+
 				}
 			}
 		});
@@ -328,7 +330,7 @@ function broadcast(data: ClientMessage, sender?: string) {
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
 				};
-				console.log(obj.SenderWindowID);
+				console.log(color.blue, 'BROADCASTS OUT :',obj.SenderWindowID);
 				broadcast(obj, obj.SenderWindowID);
 				//   clientChat.delete(obj.user);
 			}
