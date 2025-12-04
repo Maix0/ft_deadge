@@ -361,7 +361,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     						    bwhoami.click();
     						    break;
     						case '@cls':
-    						    clearText.click();
+    						    chatWindow.innerHTML = '';
     						    break;
 							case '@quit':
     						    bquit.click();
@@ -380,7 +380,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			clearText?.addEventListener("click", () => {
 
 				if (chatWindow) {
-					connected(socket);
 					chatWindow.innerHTML = '';
 				}
 			});
