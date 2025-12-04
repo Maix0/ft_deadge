@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
     "typescript": "~5.9.3",
-    "vite": "^7.2.4",
+    "vite": "^7.2.6",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {

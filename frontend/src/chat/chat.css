@@ -1,39 +1,56 @@
 @import "tailwindcss";
+@font-face {
+  font-family: "Nimbus Mono L";
+  src: url("/fonts/NimbusMonoL.woff2") format("woff2");
+}
 
 .btn-style {
   @apply
-  w-[100px] 
-  h-[32px] 
-  border-2 border-black 
+  w-[100px]
+  h-[32px]
+  border-1 
+  border-gray-500
   rounded-3xl
+  bg-gray-500
+  text-white
+  cursor-pointer
+  shadow-[0_2px_0_0_black]
+  transition-all
   hover:bg-blue-200
-  active:bg-white
-  text-black 
-  cursor-pointer;
+  active:bg-gray-400
+  active:translate-y-[1px]
+  active:shadow-[0_2px_0_0_black];
 }
 
 .send-btn-style {
   @apply 
   w-[50px] 
   h-[50px] 
-  border-2 border-black 
+  border-1 
+  border-gray-500
   rounded-3xl
   hover:bg-blue-200 
-  active:bg-white
-  text-black
-  cursor-pointer;
+  bg-red-100 
+  text-red-700
+  cursor-pointer
+  shadow-[0_2px_0_0_black]
+  transition-all
+  active:bg-gray-400
+  active:translate-y-[1px]
+  active:shadow-[0_2px_0_0_black];;
 }
-
 
 .chatbox-style {
   @apply
-  w-[600px]
-  h-[150px] /* increase height if needed */
-  p-[10px]
-  border-1 border-black
-  shadow-sm
+  w-[650px]
+  h-[300px] /* increase height if needed */
+  p-[8px]
+  border-1
+  border-black
+  shadow-2xl 
   text-left
-  text-gray-800
+  text-gray-700
+  bg-white 
   rounded-3xl
   overflow-y-auto
   whitespace-pre-line
@@ -42,16 +59,43 @@
   mx-auto;
 }
 
+.system-info {
+  @apply
+  h-[40px]
+  bg-gray-200 
+  text-gray-700 
+  p-3 
+  rounded-3xl 
+  mb-2 border 
+  border-gray-200 
+  text-center
+  shadow
+  overflow-y-auto
+  justify-end    /* 👈 forces text to bottom */
+  relative; /* needed for overlay */
+}
+
+
+.text-info {
+  @apply
+  text-blue-800
+
+}
+
+
 .chat-window-style {
   @apply
   w-[400px]
   h-[50px]
   p-[10px]
-  border-1 border-black
+  border-1 
+  border-black
   shadow-sm
+  flex-1
   rounded-3xl
-  focus:bg-gray-300
-  hover:bg-blue-200 
+  focus:bg-blue-300
+  hover:bg-blue-200
+  bg-white 
   text-gray-800;
 }
 
@@ -62,7 +106,8 @@
   flex
   items-center
   justify-center
-  bg-gray-100;
+  bg-[#43536b];
+  
 }
 
 .mainboxDisplay {
@@ -72,7 +117,7 @@
   left-1/2 
   -translate-x-1/2 
   -translate-y-1/2 
-  bg-white w-[650px] 
+  bg-gray-200 w-[850px] 
   p-6 rounded-xl 
   shadow-2xl 
   text-center z-50;
@@ -80,20 +125,59 @@
 
 .mainboxDisplay button {
   @apply
-  cursor-pointer;
+  cursor-pointer
+}
+
+.title {
+  @apply
+  text-6xl 
+  font-bold
+  text-gray-800
+}
+
+.ping-box {
+  @apply
+  w-[150px] 
+  ml-2 border-1
+  border-gray-500 
+  bg-white 
+  rounded-2xl 
+  p-2 
+  shadow-md 
+  flex flex-col 
+  gap-1 
+  h-[350px];
+}
+
+.ping-title {
+  @apply
+  text-sm 
+  font-semibold
+  text-blue-800;
+}
+
+div-buddies-list {
+  @apply
+  text-black
+  whitespace-pre-wrap;
+
 }
 
 p {
   @apply
   text-black
-
-
-
 }
 
-.div-test {
+div-test {
   @apply
-  italic
+  text-red-800
+  text-right;
+  
+}
 
-
+div-notlog {
+  @apply
+  text-red-800
+  text-3xl
+  text-center;
 }

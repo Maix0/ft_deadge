@@ -1,6 +1,17 @@
 import { FastifyPluginAsync } from 'fastify';
 import { MakeStaticResponse, typeResponse } from '@shared/utils';
-import { Type } from '@sinclair/typebox';
+import { Type } from 'typebox';
+// import { UserId } from '@shared/database/mixin/user';
+// import { Server } from 'socket.io';
+
+// colors for console.log
+export const color = {
+	red: '\x1b[31m',
+	green: '\x1b[32m',
+	yellow: '\x1b[33m',
+	blue: '\x1b[34m',
+	reset: '\x1b[0m',
+};
 
 export const ChatRes = {
 	200: typeResponse('success', 'chat.success', {
@@ -23,8 +34,19 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 			config: { requireAuth: true },
 		},
 		async (req, res) => {
-			// console.log('/api/chat/test called =================>');
-			res.makeResponse(200, 'success', 'CCChat.success', { name: 'My_namw', 'id': req.authUser!.id, guest: false });
+
+			// const users = fastify.db.getAllUsers();
+			// console.log('ALL USERS EVER CONNECTED:', users);
+			// if (!users) return;
+			// for (const user of users) {
+			// 	console.log(color.yellow, 'USER:', user.name);
+			// }
+			// // const usersBlocked = fastify.db.getAllBlockedUsers();
+			// // console.log(color.red, "ALL BLOCKED USERS:", usersBlocked);
+			// fastify.db.addBlockedUserFor(users[0].id, users[1].id);
+			// const usersBlocked2 = fastify.db.getAllBlockedUsers();
+			// console.log(color.green, 'ALL BLOCKED USERS:', usersBlocked2);
+			res.makeResponse(200, 'success', 'CCChat.success', { name: 'name', 'id': req.authUser!.id, guest: false });
 		},
 	);
 };

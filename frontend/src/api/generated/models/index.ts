@@ -1,7 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './ChatTest200Response';
-export * from './ChatTest500Response';
 export * from './DisableOtp200Response';
 export * from './DisableOtp401Response';
 export * from './DisableOtp500Response';

@@ -122,7 +122,7 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - DATABASE_DIR=/volumes/database
       - PROVIDER_FILE=/extra/providers.toml
-
+      - SESSION_MANAGER=${SESSION_MANAGER}
 
   ###############
   #    USER     #

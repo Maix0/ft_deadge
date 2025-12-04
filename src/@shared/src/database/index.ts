@@ -4,11 +4,13 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { isNullish } from '@shared/utils';
 import { Database as DbImpl } from './mixin/_base';
 import { IUserDb, UserImpl } from './mixin/user';
+import { IBlockedDb, BlockedImpl } from './mixin/blocked';
 
 
 Object.assign(DbImpl.prototype, UserImpl);
+Object.assign(DbImpl.prototype, BlockedImpl);
 
-export interface Database extends DbImpl, IUserDb { }
+export interface Database extends DbImpl, IUserDb, IBlockedDb { }
 
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
