@@ -7,7 +7,6 @@ import fastify, { FastifyInstance } from 'fastify';
 import app from './app';
 // TODO: Import the microservice app
 
-
 // @brief Entrypoint for the microservice's backend.
 const start = async () => {
 	// TODO: Thingies to send to log service (if I understood that correctly from /src/chat/src/run.ts)
