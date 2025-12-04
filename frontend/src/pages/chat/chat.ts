@@ -35,8 +35,8 @@ document.addEventListener('ft:pageChange', () => {
 })
 
 function getSocket(): Socket {
-	// let addressHost = `wss://${machineHostName}:8888`;
-	let addressHost = `wss://localhost:8888`;
+	let addressHost = `wss://${machineHostName}:8888`;
+	// let addressHost = `wss://localhost:8888`;
 	if (__socket === undefined)
 
 		__socket = io(addressHost, {
@@ -137,6 +137,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		// Ensure we have a user AND socket is connected
 		if (!user || !socket.connected) return;
 		const message = {
+			destination: 'system-info',
 			type: "chat",
 			user,
 			token: document.cookie ?? "",
