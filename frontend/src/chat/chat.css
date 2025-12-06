@@ -4,6 +4,8 @@
   src: url("/fonts/NimbusMonoL.woff2") format("woff2");
 }
 
+@tailwind utilities;
+
 .btn-style {
   @apply
   w-[100px]
@@ -189,4 +191,31 @@ div-private {
   @apply
   text-blue-800;
 
+}
+
+.popUpBox {
+  @apply
+  bg-white 
+  p-6 rounded-xl 
+  shadow-xl 
+  w-[800px]
+  h-[350px]
+  p-[10px]
+  border-1 
+  border-black
+
+}
+
+.profilPopup {
+  @apply 
+  fixed 
+  inset-0 
+  bg-black/50 
+  flex
+  justify-center 
+  items-center;
+}
+
+.hidden{
+    display: none;
 }

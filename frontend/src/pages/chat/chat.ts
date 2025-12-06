@@ -110,13 +110,23 @@ function parseCmdMsg(msgText: string): string[] | undefined {
         command[1] = msgText;
         return command;
     }
-    const noArgCommands = ['@quit', '@cls', '@profile'];
+    const noArgCommands = ['@quit', '@who', '@cls'];
     if (noArgCommands.includes(msgText)) {
         command[0] = msgText;
         command[1] = '';
         return command;
     }
-    const colonIndex = msgText.indexOf(":");
+
+	const ArgCommands = ['@profil', '@block'];
+	const userName = msgText.indexOf(" ");
+	const cmd2 = msgText.slice(0, userName).trim() ?? "";        
+	const user = msgText.slice(userName + 1).trim();
+	if (ArgCommands.includes(cmd2)) {
+    	    command[0] = cmd2;
+    	    command[1] = user;
+    	    return command;
+	}
+	const colonIndex = msgText.indexOf(":");
     if (colonIndex === -1) {
         command[0] = msgText;
         command[1] = '';
@@ -146,6 +156,12 @@ async function listBuddies(buddies: HTMLDivElement, listBuddies: string) {
 			sendtextbox.focus();
 		} 
 	});
+
+	buddiesElement.addEventListener("dblclick", () => {
+        console.log("Open profile:", listBuddies);
+    	openProfilePopup(`Profil: ${listBuddies}`);
+
+    });
 
 	buddies.appendChild(buddiesElement);
 	buddies.scrollTop = buddies.scrollHeight;
@@ -244,7 +260,7 @@ async function connected(socket: Socket): Promise<void> {
 async function whoami(socket: Socket) {
 	try {
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		const loggedIn = await isLoggedIn();
+		const loggedIn = isLoggedIn();
 
 		const res = await client.guestLogin();
 		switch (res.kind) {
@@ -271,6 +287,15 @@ async function whoami(socket: Socket) {
 	}
 };
 
+async function openProfilePopup(profil: string) {
+
+	const modalname = document.getElementById("modal-name") ?? null;
+	if (modalname)
+		modalname.innerHTML = profil;
+			const profilList = document.getElementById("profile-modal") ?? null;
+	if (profilList)
+		profilList.classList.remove("hidden");
+}
 
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
@@ -438,6 +463,16 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
                 console.log('unknown response: ', value);
             }
 
+
+
+			const buttonPro = document.getElementById("close-modal") ?? null;
+
+			if (buttonPro)
+				buttonPro.addEventListener("click", () => {
+  				const profilList = document.getElementById("profile-modal") ?? null;
+				if (profilList) profilList.classList.add("hidden");
+			});
+
 			// Send button
 			sendButton?.addEventListener("click", () => {
 				if (sendtextbox && sendtextbox.value.trim()) {
@@ -451,6 +486,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								break;
     						case '@who':
 								whoami(socket);
+								break;
+							case '@profil':
+								if (`${msgCommand[1]}`)
+									openProfilePopup(`Profil: ${msgCommand[1]}`);
 								break;
     						case '@cls':
     						    chatWindow.innerHTML = '';
@@ -501,7 +540,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				}
 			});
 
-			// Whoami button to display user name
+			// Whoami button to display user name					addMessage(msgCommand[0]);
+
 			bwhoami?.addEventListener('click', async () => {
 				whoami(socket);
 			});

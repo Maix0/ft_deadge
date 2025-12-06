@@ -144,43 +144,32 @@ async function onReady(fastify: FastifyInstance) {
 				// );
 				continue;
 			}
-
 			// If no io provided, assume entries in the map are valid and count them.
 			count++;
-			console.log(
-				color.red,
-				'Client (unverified):',
-				color.reset,
-				username,
-			);
-			console.log(
-				color.red,
-				'Chat Socket ID (unverified):',
-				color.reset,
-				socketId,
-			);
+			console.log(color.red, 'DEBUG LOG: - Client (unverified):', color.reset, username );
+			console.log(color.red, 'DEBUG LOG: - Chat Socket ID (unverified):', color.reset, socketId);
 		}
 		return count;
 	}
 
 	function broadcast(data: ClientMessage, sender?: string) {
 		fastify.io.fetchSockets().then((sockets) => {
-			for (const s of sockets) {
+			for (const socket of sockets) {
 				// Skip sender's own socket
-				if (s.id === sender) continue;
+				if (socket.id === sender) continue;
 				// Get client name from map
-				const clientInfo = clientChat.get(s.id);
+				const clientInfo = clientChat.get(socket.id);
 				if (!clientInfo?.user) {
-					console.log(color.yellow, `Skipping socket ${s.id} (no user found)`);
+					console.log(color.yellow, `Skipping socket ${socket.id} (no user found)`);
 					continue;
 				}
 				// Emit structured JSON object
-				s.emit('MsgObjectServer', { message: data });
+				socket.emit('MsgObjectServer', { message: data });
 				// Debug logs
-				console.log(color.green, 'Broadcast to:', clientInfo.user);
-				console.log(' Target socket ID:', s.id);
-				console.log(' Target rooms:', [...s.rooms]);
-				console.log(' Sender socket ID:', sender ?? 'none');
+				console.log(color.green, `'Broadcast to:', ${data.command} message: ${data.text}`);
+				// console.log('DEBUG - Target socket ID:', s.id);
+				// console.log('DEBUG - Target rooms:', [...s.rooms]);
+				// console.log('DEBUG - Sender socket ID:', sender ?? 'none');
 			}
 		});
 	}
@@ -200,16 +189,17 @@ async function onReady(fastify: FastifyInstance) {
 				let user: string = clientChat.get(s.id)?.user ?? "";
 				const atUser = `@${user}`;
 				if (atUser !== data.command || atUser === "") {
-					console.log(color.yellow, `User: '${atUser}' (No user the same is found): '${data.command}' `);
+					console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command NOT FOUND: '${data.command[0]}' `);
 					continue;
 				}
 				if (data.text !== "") {
 					s.emit('MsgObjectServer', { message: data });
+					console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command FOUND: '${data.command}' `);
 					if (senderSocket)
 						senderSocket.emit('privMessageCopy',`${data.command}: ${data.text}🔒`);
 					// Debug logs
 				}
-				console.log(color.green, 'Priv to:', data.text);
+				console.log(color.green, `'Priv to:', ${data.command} message: ${data.text}`);
 			}
 		});
 	}
@@ -244,12 +234,7 @@ async function onReady(fastify: FastifyInstance) {
 
 			// Send object directly — DO NOT wrap it in a string
 			broadcast(obj, obj.SenderWindowID);
-			console.log(
-				color.red,
-				'connected in the Chat :',
-				connectedUser(fastify.io),
-				color.reset,
-			);
+			console.log(color.red, 'DEBUG LOG: connected in the Chat :', connectedUser(fastify.io), color.reset);
 		});
 
 		socket.on('testend', (sock_id_cl: string) => {
@@ -288,8 +273,7 @@ async function onReady(fastify: FastifyInstance) {
 				// };
 				if (client) {
   					client.user = userFromFrontend.user;
-					console.log(color.green, 'client.user is: ', client.user);
-
+					console.log(color.green, `'DEBUG LOG: client.user is, '${client.user}'`);
 				}
 			}
 		});
