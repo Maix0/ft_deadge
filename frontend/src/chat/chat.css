@@ -1,8 +1,8 @@
 @import "tailwindcss";
-@font-face {
+/* @font-face {
   font-family: "Nimbus Mono L";
   src: url("/fonts/NimbusMonoL.woff2") format("woff2");
-}
+} */
 
 @tailwind utilities;
 

@@ -58,9 +58,19 @@ function addMessage(text: string) {
 	return ;
 };
 
+function clearText() {
+	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+	if (!chatWindow) return;
+	chatWindow.innerHTML = "";
+}
+
 function isLoggedIn() {
 	return getUser() || null;
 };
+
+function getProfil(user: string): string {
+	return `Profil: ${user} </br> <button id="popup-b-clear" class="btn-style">Clear Text</button>`
+}
 
 async function windowStateHidden() {		
 	const socketId = __socket || undefined;
@@ -159,8 +169,14 @@ async function listBuddies(buddies: HTMLDivElement, listBuddies: string) {
 
 	buddiesElement.addEventListener("dblclick", () => {
         console.log("Open profile:", listBuddies);
-    	openProfilePopup(`Profil: ${listBuddies}`);
-
+		const profile: string = getProfil(listBuddies);
+    	openProfilePopup(`${profile}`);
+		setTimeout(() => {
+			const clearTextBtn = document.querySelector("#popup-b-clear");        		
+			clearTextBtn?.addEventListener("click", () => {
+				clearText();
+			});
+    	}, 0)
     });
 
 	buddies.appendChild(buddiesElement);
@@ -289,12 +305,15 @@ async function whoami(socket: Socket) {
 
 async function openProfilePopup(profil: string) {
 
+	
 	const modalname = document.getElementById("modal-name") ?? null;
 	if (modalname)
-		modalname.innerHTML = profil;
+		modalname.innerHTML = `${profil}`;
 			const profilList = document.getElementById("profile-modal") ?? null;
 	if (profilList)
 		profilList.classList.remove("hidden");
+	 // The popup now exists → attach the event
+   
 }
 
 
