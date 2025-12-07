@@ -75,6 +75,12 @@ class TTC {
         return 'ongoing';
     }
 
+    public reset(): void {
+      this.board = [null,null,null,null,null,null,null,null,null];
+      this.currentPlayer = 'X';
+      this.isGameOver = false;
+    };
+
     // Attempts to place the current player's mark on the specified cell.
     // @param idx - The index of the board (0-8) to place the mark.
     // @returns The resulting game state, or `invalidMove` if the move is illegal.
@@ -119,13 +125,24 @@ async function handleTTT(): Promise<RouteHandlerReturn>
     return {
         html: tttPage,
         postInsert: async (app) => {
-            let cells = app?.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
+            if (!app) {
+                return;
+            }
+
+            const cells = app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
+            const restartBtn = app.querySelector<HTMLButtonElement>("#ttt-restart-btn");
+
+            const updateUI = () => {
+              const board_state = board.getBoard();
+              board_state.forEach((cell_state, cell_idx) => {
+                 cells[cell_idx].innerText = cell_state !== null ? cell_state : " ";
+              });
+            };
 
             console.log(cells);
 
             cells?.forEach(function (c, idx) {
-                c.addEventListener('click', () => 
-                {
+                c.addEventListener('click', () => {
                     const result = board.makeMove(idx);
                     switch(result)
                     {
@@ -140,6 +157,7 @@ async function handleTTT(): Promise<RouteHandlerReturn>
 
                         case ('winX'): {
                             showSuccess('X won');
+                            app?.querySelector('.ttt-grid')?.classList.add('pointer-events-none');
                             break;
                         }
                         case ('winO'): {
@@ -152,9 +170,16 @@ async function handleTTT(): Promise<RouteHandlerReturn>
                     const board_state = board.getBoard();
                     board_state.forEach( function (cell_state, cell_idx) {
                         cells[cell_idx].innerText = cell_state !== null ? cell_state : " ";
-                    })
-                })
-            })
+                    });
+
+                    updateUI();
+                });
+            });
+            restartBtn?.addEventListener('click', () => {
+               board.reset();
+               updateUI();
+               showInfo('Game Restarted');
+            });
         }
     }
 }
