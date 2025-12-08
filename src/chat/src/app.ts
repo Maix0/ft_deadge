@@ -176,10 +176,10 @@ async function onReady(fastify: FastifyInstance) {
 		});
 	}
 
-	function formatTimestamp(ms: number) {
-    	const d = new Date(ms);
-    	return d.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
-	}
+	// function formatTimestamp(ms: number) {
+	// const d = new Date(ms);
+	// return d.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+	// }
 
 	function getUserByName(users: User[], name: string) {
     	return users.find(u => u.name === name) || null;
@@ -189,28 +189,20 @@ async function onReady(fastify: FastifyInstance) {
 	// this function returns html the profil pop up in CHAT of a user 'nickname unique' TODO ....
 	async function getProfil(user: string): Promise <string> {
 		let profilHtmlPopup = '404: Error: Profil not found';
-    	const sockets = await fastify.io.fetchSockets();
 		const users: User[] = fastify.db.getAllUsers() ?? [];
+		const allUsers: User | null = getUserByName(users, user);
+		console.log(color.yellow, `'userFound is:'${allUsers?.name}`);
+		if (user === allUsers?.name) {
+			console.log(color.yellow, `'login Name: '${allUsers.login}' user: '${user}'`);
+			profilHtmlPopup = `<div class="profile-info">
+					   <div-profil-name id="profilName"> Profil of ${allUsers.name} </div> 
+					   <div-login-name id="loginName"> Login Name: '${allUsers?.login ?? 'Guest'}' </div> 
+					   </br>
+					   <button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
+            		   <div id="profile-about">About: No description</div>
+        			  </div>`;
+		}
 
-		// const senderSocket = sockets.find(socket => socket.id === user);
-		for (const socket of sockets) {
-			const clientInfo = clientChat?.get(socket.id);
-			const allUsers: User | null = getUserByName(users, user);
-			if (clientInfo?.user === allUsers?.name) {
-				const lastSeen = formatTimestamp(clientInfo?.lastSeen ?? 0);
-				console.log(color.yellow, `'Clientinfo.user: '${lastSeen}' user: '${user}'`);
-				profilHtmlPopup = `<div class="profile-info">
-						   <div-profil-name id="profilName"> Profil of ${clientInfo?.user} </div> 
-						   <div-login-name id="loginName"> Login Name: '${allUsers?.login ?? 'Guest'}' </div> 
-						   </br>
-						   <button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
-            			   <div id="profile-joined">Joined: xx/xx/xx</div>
-            			   <div id="profile-lastseen">Last connection:  ${lastSeen}</div>
-            			   <div id="profile-about">About: No description</div>
-        				  </div>`;
-				break;
-			}
-		};
 		return profilHtmlPopup;
 	};
 
