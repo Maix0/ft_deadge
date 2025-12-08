@@ -216,6 +216,13 @@ div-private {
   items-center;
 }
 
+.popup-b-clear {
+  @apply
+  absolute 
+  bottom-42 
+  right-12
+}
+
 .hidden{
     display: none;
 }

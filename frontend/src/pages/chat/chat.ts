@@ -68,8 +68,30 @@ function isLoggedIn() {
 	return getUser() || null;
 };
 
-function getProfil(user: string): string {
-	return `Profil: ${user} </br> <button id="popup-b-clear" class="btn-style">Clear Text</button>`
+function actionBtnPopUp() {
+		setTimeout(() => {
+			const clearTextBtn = document.querySelector("#popup-b-clear");        		
+			clearTextBtn?.addEventListener("click", () => {
+				clearText();
+			});
+    	}, 0)
+}
+
+// getProfil get the profil of user
+function getProfil(socket: Socket, user: string) {
+		if (!socket.connected) return;
+		const profil = {
+			command: '@profil',
+			destination: 'profilMessage',
+			type: "chat",
+			user: user,
+			token: document.cookie ?? "",
+			text: user,
+			timestamp: Date.now(),
+			SenderWindowID: socket.id,
+		};
+    	// addMessage(JSON.stringify(profil));
+		socket.emit('profilMessage', JSON.stringify(profil));
 }
 
 async function windowStateHidden() {		
@@ -149,7 +171,7 @@ function parseCmdMsg(msgText: string): string[] | undefined {
     return command;
 }
 
-async function listBuddies(buddies: HTMLDivElement, listBuddies: string) {
+async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies: string) {
 
 	if (!buddies) return;
 	const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
@@ -169,14 +191,15 @@ async function listBuddies(buddies: HTMLDivElement, listBuddies: string) {
 
 	buddiesElement.addEventListener("dblclick", () => {
         console.log("Open profile:", listBuddies);
-		const profile: string = getProfil(listBuddies);
-    	openProfilePopup(`${profile}`);
-		setTimeout(() => {
-			const clearTextBtn = document.querySelector("#popup-b-clear");        		
-			clearTextBtn?.addEventListener("click", () => {
-				clearText();
-			});
-    	}, 0)
+		getProfil(socket, listBuddies);
+    	// openProfilePopup(`${profile}`);
+		// setTimeout(() => {
+		// 	const clearTextBtn = document.querySelector("#popup-b-clear");        		
+		// 	clearTextBtn?.addEventListener("click", () => {
+		// 		clearText();
+		// 	});
+    	// }, 0)
+		// actionBtnPopUp();
     });
 
 	buddies.appendChild(buddiesElement);
@@ -313,7 +336,6 @@ async function openProfilePopup(profil: string) {
 	if (profilList)
 		profilList.classList.remove("hidden");
 	 // The popup now exists → attach the event
-   
 }
 
 
@@ -394,7 +416,12 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		console.log("Getuser():", getUser());
 	});
 
+	socket.on('profilMessage', (profil) => {	
+		openProfilePopup(profil);		
+		actionBtnPopUp();
+	});
 
+	
 	socket.on('logout', () => {	
 		quitChat(socket);
 	});
@@ -437,7 +464,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	socket.on('listBud', async (myBuddies: string)  => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 		console.log('List buddies connected ', myBuddies);
-		listBuddies(buddies,myBuddies);
+		listBuddies(socket, buddies, myBuddies);
 	});
 
 	socket.once('welcome', (data) => {
@@ -507,8 +534,22 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								whoami(socket);
 								break;
 							case '@profil':
-								if (`${msgCommand[1]}`)
-									openProfilePopup(`Profil: ${msgCommand[1]}`);
+								getProfil(socket, msgCommand[1]);
+								// Ensure we have a user AND socket is connected
+								// if (!socket.connected) return;
+								// const profil = {
+								// 	command: msgCommand[0],
+								// 	destination: 'profil',
+								// 	type: "chat",
+								// 	user: msgCommand[1],
+								// 	token: document.cookie ?? "",
+								// 	text: msgCommand[1],
+								// 	timestamp: Date.now(),
+								// 	SenderWindowID: socket.id,
+								// };
+								// //socket.emit('MsgObjectServer', message);
+    							// addMessage(JSON.stringify(profil));
+								// socket.emit('profilMessage', JSON.stringify(profil));
 								break;
     						case '@cls':
     						    chatWindow.innerHTML = '';
@@ -524,7 +565,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									command: msgCommand[0],
 									destination: '',
 									type: "chat",
-									user,
+									user: user,
 									token: document.cookie ?? "",
 									text: msgCommand[1],
 									timestamp: Date.now(),

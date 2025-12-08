@@ -6,6 +6,7 @@ import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
+import type { User } from '@shared/database/mixin/user';
 
 // colors for console.log
 export const color = {
@@ -84,6 +85,7 @@ declare module 'fastify' {
 			hello: (message: string) => string;
 			MsgObjectServer: (data: { message: ClientMessage }) => void;
 			privMessage: (data: string) => void;
+			profilMessage: (data: string) => void;
 			privMessageCopy: (msg: string) => void;
 			message: (msg: string) => void;
 			listBud: (msg: string) => void;
@@ -146,7 +148,7 @@ async function onReady(fastify: FastifyInstance) {
 			}
 			// If no io provided, assume entries in the map are valid and count them.
 			count++;
-			console.log(color.red, 'DEBUG LOG: - Client (unverified):', color.reset, username );
+			console.log(color.red, 'DEBUG LOG: - Client (unverified):', color.reset, username);
 			console.log(color.red, 'DEBUG LOG: - Chat Socket ID (unverified):', color.reset, socketId);
 		}
 		return count;
@@ -174,7 +176,58 @@ async function onReady(fastify: FastifyInstance) {
 		});
 	}
 
+	function formatTimestamp(ms: number) {
+    	const d = new Date(ms);
+    	return d.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+	}
 
+	function getUserByName(users: User[], name: string) {
+    	return users.find(u => u.name === name) || null;
+	}
+
+
+	// this function returns html the profil pop up in CHAT of a user 'nickname unique' TODO ....
+	async function getProfil(user: string): Promise <string> {
+		let profilHtmlPopup = '404: Error: Profil not found';
+    	const sockets = await fastify.io.fetchSockets();
+		const users: User[] = fastify.db.getAllUsers() ?? [];
+
+		// const senderSocket = sockets.find(socket => socket.id === user);
+		for (const socket of sockets) {
+			const clientInfo = clientChat?.get(socket.id);
+			const allUsers: User | null = getUserByName(users, user);
+			if (clientInfo?.user === allUsers?.name) {
+				const lastSeen = formatTimestamp(clientInfo?.lastSeen ?? 0);
+				console.log(color.yellow, `'Clientinfo.user: '${lastSeen}' user: '${user}'`);
+				profilHtmlPopup = `<div class="profile-info">
+						   <div-profil-name id="profilName"> Profil of ${clientInfo?.user} </div> 
+						   <div-login-name id="loginName"> Login Name: '${allUsers?.login ?? 'Guest'}' </div> 
+						   </br>
+						   <button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
+            			   <div id="profile-joined">Joined: xx/xx/xx</div>
+            			   <div id="profile-lastseen">Last connection:  ${lastSeen}</div>
+            			   <div id="profile-about">About: No description</div>
+        				  </div>`;
+				break;
+			}
+		};
+		return profilHtmlPopup;
+	};
+
+	function sendProfil(data: ClientMessage, clientProfil?: string) {
+
+		fastify.io.fetchSockets().then((sockets) => {
+			const senderSocket = sockets.find(socket => socket.id === clientProfil);
+			for (const socket of sockets) {
+				const clientInfo = clientChat.get(socket.id);
+				if (clientInfo?.user === data.user) {
+					if (senderSocket) {
+						socket.emit('profilMessage', `${data.text}`);
+					}
+				}
+			}
+		});
+	}
 
 	function sendPrivMessage(data: ClientMessage, sender?: string) {
 		fastify.io.fetchSockets().then((sockets) => {
@@ -186,20 +239,20 @@ async function onReady(fastify: FastifyInstance) {
 					console.log(color.yellow, `Skipping socket ${s.id} (no user found)`);
 					continue;
 				}
-				let user: string = clientChat.get(s.id)?.user ?? "";
+				const user: string = clientChat.get(s.id)?.user ?? '';
 				const atUser = `@${user}`;
-				if (atUser !== data.command || atUser === "") {
+				if (atUser !== data.command || atUser === '') {
 					console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command NOT FOUND: '${data.command[0]}' `);
 					continue;
 				}
-				if (data.text !== "") {
+				if (data.text !== '') {
 					s.emit('MsgObjectServer', { message: data });
 					console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command FOUND: '${data.command}' `);
-					if (senderSocket)
-						senderSocket.emit('privMessageCopy',`${data.command}: ${data.text}🔒`);
-					// Debug logs
+					if (senderSocket) {
+						senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
+					}
 				}
-				console.log(color.green, `'Priv to:', ${data.command} message: ${data.text}`);
+				console.log(color.green, `DEBUG LOG: 'Priv to:', ${data.command} message: ${data.text}`);
 			}
 		});
 	}
@@ -355,12 +408,12 @@ async function onReady(fastify: FastifyInstance) {
 
 
 		socket.on('privMessage', (data) => {
-			const clientName: string  = clientChat.get(socket.id)?.user || "";
-			const prvMessage: ClientMessage = JSON.parse(data) || "";
+			const clientName: string = clientChat.get(socket.id)?.user || '';
+			const prvMessage: ClientMessage = JSON.parse(data) || '';
 			console.log(
 				color.blue,
 				`DEBUG LOG: ClientName: '${clientName}' id Socket: '${socket.id}' target Name:`,
-				prvMessage.command
+				prvMessage.command,
 			);
 
 			if (clientName !== null) {
@@ -374,8 +427,38 @@ async function onReady(fastify: FastifyInstance) {
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
 				};
-				console.log(color.blue, 'PRIV MESSAGE OUT :', obj.SenderWindowID);
+				console.log(color.blue, 'DEBUG LOG: PRIV MESSAGE OUT :', obj.SenderWindowID);
 				sendPrivMessage(obj, obj.SenderWindowID);
+				//   clientChat.delete(obj.user);
+			}
+		});
+
+		socket.on('profilMessage', async (data) => {
+			const clientName: string = clientChat.get(socket.id)?.user || '';
+			const profilMessage: ClientMessage = JSON.parse(data) || '';
+			const users: User[] = fastify.db.getAllUsers() ?? [];
+			console.log(color.yellow, 'DEBUG LOG: ALL USERS EVER CONNECTED:', users);
+			console.log(
+				color.blue,
+				`DEBUG LOG: ClientName: '${clientName}' id Socket: '${socket.id}' target profil:`,
+				profilMessage.user,
+			);
+			const profileHtml: string = await getProfil(profilMessage.user);
+			if (clientName !== null) {
+				const testuser: User | null = getUserByName(users, profilMessage.user);
+				console.log(color.yellow, 'user:', testuser?.login ?? 'Guest');
+				const obj = {
+					command: profilMessage.command,
+					destination: 'profilMsg',
+					type: 'chat',
+					user: clientName,
+					token: '',
+					text: profileHtml,
+					timestamp: Date.now(),
+					SenderWindowID: socket.id,
+				};
+				console.log(color.blue, 'DEBUG - profil message MESSAGE OUT :', obj.SenderWindowID);
+				sendProfil(obj, obj.SenderWindowID);
 				//   clientChat.delete(obj.user);
 			}
 		});
