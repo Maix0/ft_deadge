@@ -22,6 +22,18 @@ export type ClientMessage = {
 };
 
 
+export type ClientProfil = {
+	command: string,
+	destination: string,
+   	type: string,
+	user: string, 
+	loginName: string,
+	userID: string,
+	text: string,
+	timestamp: number,
+	SenderWindowID:string,
+}; 		
+
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -68,14 +80,28 @@ function isLoggedIn() {
 	return getUser() || null;
 };
 
-function actionBtnPopUp() {
+function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
+
+
+
+};
+
+
+
+function actionBtnPopUp(profil: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
 			const clearTextBtn = document.querySelector("#popup-b-clear");        		
 			clearTextBtn?.addEventListener("click", () => {
 				clearText();
 			});
+			const InvitePongBtn = document.querySelector("#popup-b-invite");        		
+			InvitePongBtn?.addEventListener("click", () => {
+				inviteToPlayPong(profil, senderSocket);
+			});
+			
+
     	}, 0)
-}
+};
 
 // getProfil get the profil of user
 function getProfil(socket: Socket, user: string) {
@@ -192,14 +218,6 @@ async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies:
 	buddiesElement.addEventListener("dblclick", () => {
         console.log("Open profile:", listBuddies);
 		getProfil(socket, listBuddies);
-    	// openProfilePopup(`${profile}`);
-		// setTimeout(() => {
-		// 	const clearTextBtn = document.querySelector("#popup-b-clear");        		
-		// 	clearTextBtn?.addEventListener("click", () => {
-		// 		clearText();
-		// 	});
-    	// }, 0)
-		// actionBtnPopUp();
     });
 
 	buddies.appendChild(buddiesElement);
@@ -326,12 +344,23 @@ async function whoami(socket: Socket) {
 	}
 };
 
-async function openProfilePopup(profil: string) {
+async function openProfilePopup(profil: ClientProfil) {
 
 	
 	const modalname = document.getElementById("modal-name") ?? null;
 	if (modalname)
-		modalname.innerHTML = `${profil}`;
+		modalname.innerHTML = `
+					<div class="profile-info">
+						<div-profil-name id="profilName"> Profil of ${profil.user} </div> 
+						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div> 
+						</br>
+						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div> 
+						</br>
+						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
+						<button id="popup-b-invite" class="btn-style popup-b-invite">Pong Us ?</button>
+            			<div id="profile-about">About: '${profil.text}' </div>
+        			</div>
+	`;
 			const profilList = document.getElementById("profile-modal") ?? null;
 	if (profilList)
 		profilList.classList.remove("hidden");
@@ -416,9 +445,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		console.log("Getuser():", getUser());
 	});
 
-	socket.on('profilMessage', (profil) => {	
+	socket.on('profilMessage', (profil: ClientProfil) => {	
 		openProfilePopup(profil);		
-		actionBtnPopUp();
+		actionBtnPopUp(profil, socket);
 	});
 
 	
@@ -535,21 +564,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								break;
 							case '@profil':
 								getProfil(socket, msgCommand[1]);
-								// Ensure we have a user AND socket is connected
-								// if (!socket.connected) return;
-								// const profil = {
-								// 	command: msgCommand[0],
-								// 	destination: 'profil',
-								// 	type: "chat",
-								// 	user: msgCommand[1],
-								// 	token: document.cookie ?? "",
-								// 	text: msgCommand[1],
-								// 	timestamp: Date.now(),
-								// 	SenderWindowID: socket.id,
-								// };
-								// //socket.emit('MsgObjectServer', message);
-    							// addMessage(JSON.stringify(profil));
-								// socket.emit('profilMessage', JSON.stringify(profil));
 								break;
     						case '@cls':
     						    chatWindow.innerHTML = '';

@@ -42,6 +42,19 @@ export type ClientMessage = {
 	SenderWindowID: string;
 };
 
+
+export type ClientProfil = {
+	command?: string,
+	destination?: string,
+   	type?: string,
+	user?: string, 
+	loginName?: string,
+	userID?: string,
+	text?: string,
+	timestamp?: number,
+	SenderWindowID?:string,
+}; 		
+
 const clientChat = new Map<string, ClientInfo>();
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
@@ -85,7 +98,7 @@ declare module 'fastify' {
 			hello: (message: string) => string;
 			MsgObjectServer: (data: { message: ClientMessage }) => void;
 			privMessage: (data: string) => void;
-			profilMessage: (data: string) => void;
+			profilMessage: (data: ClientProfil) => void;
 			privMessageCopy: (msg: string) => void;
 			message: (msg: string) => void;
 			listBud: (msg: string) => void;
@@ -185,39 +198,42 @@ async function onReady(fastify: FastifyInstance) {
     	return users.find(u => u.name === name) || null;
 	}
 
+	function getAboutPlayer( ): string{
+		const description = 'Player is good Shape this needs to be replaced by a bd.function()';
+		return description;
+	}
 
 	// this function returns html the profil pop up in CHAT of a user 'nickname unique' TODO ....
-	async function getProfil(user: string): Promise <string> {
-		let profilHtmlPopup = '404: Error: Profil not found';
+	async function getProfil(user: string, socket: Socket): Promise <ClientProfil> {
+		
+		let clientProfil: ClientProfil = {};
 		const users: User[] = fastify.db.getAllUsers() ?? [];
 		const allUsers: User | null = getUserByName(users, user);
 		console.log(color.yellow, `'userFound is:'${allUsers?.name}`);
 		if (user === allUsers?.name) {
 			console.log(color.yellow, `'login Name: '${allUsers.login}' user: '${user}'`);
-			profilHtmlPopup = `<div class="profile-info">
-					   <div-profil-name id="profilName"> Profil of ${allUsers.name} </div> 
-					   <div-login-name id="loginName"> Login Name: '${allUsers?.login ?? 'Guest'}' </div> 
-					   </br>
-					   <button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
-					   <button id="popup-b-invite" class="btn-style popup-b-invite">Pong Us ?</button>
-            		   <div id="profile-about">About: No description</div>
-        			  </div>`;
-		}
 
-		return profilHtmlPopup;
+		clientProfil = {
+				command: 'getProfil',
+				destination: 'profilMsg',
+		    	type: 'chat' as const,
+				user: `${allUsers.name}`, 
+				loginName: `${allUsers?.login ?? 'Guest'}`,
+				userID: `${allUsers?.id ?? ''}`,
+				text: getAboutPlayer(),
+				timestamp: Date.now(),
+				SenderWindowID: socket.id,
+			}; 		
+		}
+		return clientProfil;
 	};
 
-	function sendProfil(data: ClientMessage, clientProfil?: string) {
-
+	function sendProfil(data: ClientProfil, clientProfil?: string) {
 		fastify.io.fetchSockets().then((sockets) => {
 			const senderSocket = sockets.find(socket => socket.id === clientProfil);
-			for (const socket of sockets) {
-				const clientInfo = clientChat.get(socket.id);
-				if (clientInfo?.user === data.user) {
-					if (senderSocket) {
-						socket.emit('profilMessage', `${data.text}`);
-					}
-				}
+			if (senderSocket) {
+				console.log(color.yellow, 'user inFO:', data.user);
+				senderSocket.emit('profilMessage', data);
 			}
 		});
 	}
@@ -436,22 +452,12 @@ async function onReady(fastify: FastifyInstance) {
 				`DEBUG LOG: ClientName: '${clientName}' id Socket: '${socket.id}' target profil:`,
 				profilMessage.user,
 			);
-			const profileHtml: string = await getProfil(profilMessage.user);
+			const profileHtml: ClientProfil = await getProfil(profilMessage.user, socket);
 			if (clientName !== null) {
 				const testuser: User | null = getUserByName(users, profilMessage.user);
-				console.log(color.yellow, 'user:', testuser?.login ?? 'Guest');
-				const obj = {
-					command: profilMessage.command,
-					destination: 'profilMsg',
-					type: 'chat',
-					user: clientName,
-					token: '',
-					text: profileHtml,
-					timestamp: Date.now(),
-					SenderWindowID: socket.id,
-				};
-				console.log(color.blue, 'DEBUG - profil message MESSAGE OUT :', obj.SenderWindowID);
-				sendProfil(obj, obj.SenderWindowID);
+				console.log(color.yellow, 'user:', testuser?.name ?? 'Guest');
+				console.log(color.blue, 'DEBUG - profil message MESSAGE OUT :', profileHtml.SenderWindowID);
+				sendProfil(profileHtml, profileHtml.SenderWindowID);
 				//   clientChat.delete(obj.user);
 			}
 		});
