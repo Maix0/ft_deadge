@@ -316,22 +316,24 @@ function broadcastMsg (socket: Socket, msgCommand: string[]): void {
 async function connected(socket: Socket): Promise<void> {
 	
 	try {
-		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-		const loggedIn = await isLoggedIn();
-		console.log('%cloggedIn:',color.blue, loggedIn?.name);
-		let oldUser = localStorage.getItem("oldName") ?? "";
-		console.log('%coldUser:',color.yellow, oldUser);
-		if (loggedIn?.name === undefined) {console.log('');return ;}
-		oldUser =  loggedIn.name ?? "";
-		// const res = await client.guestLogin();
-		let user = await updateUser();
-		console.log('%cUser?name:',color.yellow, user?.name);
-		localStorage.setItem("oldName", oldUser);
-		buddies.textContent = "";
-		socket.emit('list', {
-			oldUser: oldUser,
-			user: user?.name,
-		});
+			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
+			const loggedIn = isLoggedIn();
+			console.log('%cloggedIn:',color.blue, loggedIn?.name);
+			let oldUser = localStorage.getItem("oldName") ?? "";
+			console.log('%coldUser:',color.yellow, oldUser);
+			if (loggedIn?.name === undefined) {console.log('');return ;}
+			setTimeout(() => {
+				oldUser =  loggedIn.name ?? "";
+			}, 0);
+			// const res = await client.guestLogin();
+			let user = await updateUser();
+			console.log('%cUser?name:',color.yellow, user?.name);
+			localStorage.setItem("oldName", oldUser);
+			buddies.textContent = "";
+			socket.emit('list', {
+				oldUser: oldUser,
+				user: user?.name,
+			});
 	} catch (e) {
 		console.error("Login error:", e);
 		showError('Failed to login: Unknown error');
