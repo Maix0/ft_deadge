@@ -230,6 +230,12 @@ div-private {
   right-12
 }
 
+.popup-b-block {
+  @apply
+  absolute 
+  bottom-62 
+  right-12
+}
 
 .popUpMessage {
   @apply

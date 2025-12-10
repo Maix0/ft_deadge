@@ -37,20 +37,6 @@ export type ClientProfil = {
 
 }; 		
 
-// export type inviteGame = {
-// 	command?: string,
-// 	destination?: string,
-//    	type?: string,
-// 	user?: string, 
-// 	loginName?: string,
-// 	userID?: string,
-// 	innerHtml?: string,
-// 	timestamp?: number,
-// 	SenderWindowID?:string,
-// }; 		
-
-
-
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -106,6 +92,16 @@ function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	senderSocket.emit('inviteGame', JSON.stringify(profil));
 };
 
+function blockUser(profil: ClientProfil, senderSocket: Socket) {
+	profil.SenderName = getUser()?.name ?? '';
+	if (profil.SenderName === profil.user) return;
+	addMessage(`You have blocked: ${profil.user}⛔`)
+	senderSocket.emit('blockUser', JSON.stringify(profil));
+};
+
+
+
+
 
 
 function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
@@ -127,6 +123,16 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
     	}, 0)
 };
 
+
+
+function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
+		setTimeout(() => {
+			const blockUserBtn = document.querySelector("#popup-b-block");
+			blockUserBtn?.addEventListener("click", () => {
+				blockUser(block, senderSocket);
+			});
+    	}, 0)
+};
 
 
 // getProfil get the profil of user
@@ -387,6 +393,7 @@ async function openProfilePopup(profil: ClientProfil) {
 						</br>
 						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
 						<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
+						<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
             			<div id="profile-about">About: '${profil.text}' </div>
         			</div>
 	`;
@@ -421,8 +428,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	
 
 	let socket = getSocket();
-	
-
 
 	// Listen for the 'connect' event
 	socket.on("connect", async () => {
@@ -495,6 +500,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		openProfilePopup(profil);		
 		actionBtnPopUpClear(profil, socket);
 		actionBtnPopUpInvite(profil, socket);
+		actionBtnPopUpBlock(profil, socket);
 	});
 
 	socket.on('inviteGame', (invite: ClientProfil) => {	
@@ -502,7 +508,20 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const messageElement = document.createElement("div");
     	messageElement.innerHTML =`🏓${invite.SenderName}:  ${invite.innerHtml}`;
     	chatWindow.appendChild(messageElement);
+		chatWindow.scrollTop = chatWindow.scrollHeight;
 	});
+
+
+	socket.on('blockUser', (blocked: ClientProfil) => {	
+		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+		const messageElement = document.createElement("div");
+    	messageElement.innerText =`⛔${blocked.SenderName}:  ${blocked.text}`;
+    	chatWindow.appendChild(messageElement);
+		chatWindow.scrollTop = chatWindow.scrollHeight;
+	});
+
+
+
 
 	socket.on('logout', () => {	
 		quitChat(socket);
