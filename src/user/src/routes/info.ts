@@ -49,8 +49,6 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			if (isNullish(user)) {
 				return res.makeResponse(404, 'failure', 'userinfo.failure.unknownUser');
 			}
-			console.log(user);
-
 			const payload = {
 				name: user.name,
 				id: user.id,
