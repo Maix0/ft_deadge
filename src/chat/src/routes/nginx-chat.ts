@@ -35,6 +35,7 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 		},
 		async (req, res) => {
 
+
 			// const users = fastify.db.getAllUsers();
 			// console.log('ALL USERS EVER CONNECTED:', users);
 			// if (!users) return;
