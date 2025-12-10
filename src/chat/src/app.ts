@@ -80,6 +80,11 @@ function setGameLink(link: string): string {
 	return link;
 };
 
+function isBlocked(UserAskingToBlock: User, UserToBlock: User, usersBlocked: BlockedData[]): boolean {
+	return usersBlocked.some(blocked => 
+	    blocked.blocked === UserToBlock?.id && 
+	    blocked.user === UserAskingToBlock?.id);
+}
 
 const clientChat = new Map<string, ClientInfo>();
 
@@ -525,16 +530,14 @@ async function onReady(fastify: FastifyInstance) {
 			}
 		});
 		
-		function isBlocked(user: string, blocked: string, userToFind: string, userBlocked: string): boolean {
-			  return user === userToFind && blocked === userBlocked;
-		}
+
 		
 		socket.on('blockUser', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilBlock: ClientProfil = JSON.parse(data) || '';
 			const users: User[] = fastify.db.getAllUsers() ?? [];
 			const UserToBlock: User | null = getUserByName(users, `${profilBlock.user}`);
-			const UserAskingToBlock: User | null = getUserByName(users, `${profilBlock.SenderName}`);
+			const UserAskingToBlock: User | null  = getUserByName(users, `${profilBlock.SenderName}`);
 
 			console.log(color.yellow, `user to block: ${profilBlock.user}`);
 			console.log(color.yellow, UserToBlock);
@@ -542,13 +545,10 @@ async function onReady(fastify: FastifyInstance) {
 			console.log(color.yellow, UserAskingToBlock);
 
 			const usersBlocked: BlockedData[]  = fastify.db.getAllBlockedUsers() ?? [];
+			if (!UserAskingToBlock || !UserToBlock || !usersBlocked) return;
+			const userAreBlocked: boolean = isBlocked(UserAskingToBlock, UserToBlock, usersBlocked);
 
-			const isBlocked = usersBlocked.some(blocked => 
-			    blocked.blocked === UserToBlock?.id && 
-			    blocked.user === UserAskingToBlock?.id 
-			);
-
-			if (isBlocked) {
+			if (userAreBlocked) {
 			    console.log(color.green, 'Both users are blocked as requested');
 			    return true;  // or any other action you need to take
 			} else {
