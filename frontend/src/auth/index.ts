@@ -7,8 +7,8 @@ export type User = {
 	name: string;
 	selfInfo?: {
 		loginName?: string;
-		provider_id?: string;
-		provider_user?: string;
+		providerId?: string;
+		providerUser?: string;
 	}
 };
 

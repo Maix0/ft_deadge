@@ -352,6 +352,20 @@
     "/api/auth/guest": {
       "post": {
         "operationId": "guestLogin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Default Response",
@@ -386,6 +400,32 @@
                           "description": "JWT that represent a logged in user"
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failed"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "guestLogin.failed.invalid"
+                      ]
                     }
                   }
                 }
@@ -1044,6 +1084,117 @@
                     "msg": {
                       "enum": [
                         "statusOtp.failure.generic"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
+    "/api/user/changeDisplayName": {
+      "put": {
+        "operationId": "changeDisplayName",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "New Display Name"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "changeDisplayName.success"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "changeDisplayName.alreadyExist",
+                        "changeDisplayName.invalid"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "notLoggedIn"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "auth.noCookie",
+                        "auth.invalidKind",
+                        "auth.noUser",
+                        "auth.invalid"
                       ]
                     }
                   }

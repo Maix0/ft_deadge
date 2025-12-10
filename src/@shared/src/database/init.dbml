@@ -18,7 +18,7 @@ Project Transcendance {
 Table user {
   id text [PK, not null]
   login text [unique]
-  name text [not null]
+  name text [not null, unique]
   password text [null, Note: "If password is NULL, this means that the user is created through OAUTH2 or guest login"]
   otp text [null, Note: "If otp is NULL, then the user didn't configure 2FA"]
   guest integer [not null, default: 0]

@@ -209,7 +209,7 @@ async function handleLogin(
 				document.querySelector<HTMLButtonElement>("#bGuestLogin");
 			bLoginAsGuest?.addEventListener("click", async () => {
 				try {
-					const res = await client.guestLogin();
+					const res = await client.guestLogin({ guestLoginRequest: { name: undefined } });
 					switch (res.kind) {
 						case "success": {
 							Cookie.set("token", res.payload.token, {

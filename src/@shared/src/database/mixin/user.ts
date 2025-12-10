@@ -3,6 +3,7 @@ import { Otp } from '@shared/auth';
 import { isNullish } from '@shared/utils';
 import * as bcrypt from 'bcrypt';
 import { UUID, newUUID } from '@shared/utils/uuid';
+import { SqliteError } from 'better-sqlite3';
 
 // never use this directly
 
@@ -20,6 +21,10 @@ export interface IUserDb extends Database {
 	getAllUserFromProvider(provider: string): User[] | undefined,
     getAllUsers(this: IUserDb): User[] | undefined,
 
+
+	updateDisplayName(id: UserId, new_name: string): boolean,
+
+	getUserFromDisplayName(name: string): User | undefined,
 };
 
 export const UserImpl: Omit<IUserDb, keyof Database> = {
@@ -159,6 +164,24 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 		const req = this.prepare('SELECT * FROM user WHERE oauth2 = @oauth2').get({ oauth2: `${provider}:${unique}` }) as Partial<User> | undefined;
 		return userFromRow(req);
 	},
+
+	updateDisplayName(this: IUserDb, id: UserId, new_name: string): boolean {
+		try {
+			this.prepare('UPDATE OR FAIL user SET name = @new_name WHERE id = @id').run({ id, new_name });
+			return true;
+		}
+		catch (e) {
+			if (e instanceof SqliteError) {
+				if (e.code === 'SQLITE_CONSTRAINT_UNIQUE') return false;
+			}
+			throw e;
+		}
+	},
+
+	getUserFromDisplayName(this: IUserDb, name: string) {
+		const res = this.prepare('SELECT * FROM user WHERE name = @name LIMIT 1').get({ name }) as User | undefined;
+		return userFromRow(res);
+	},
 };
 
 export type UserId = UUID;
@@ -170,7 +193,7 @@ export type User = {
 	readonly password?: string;
 	readonly otp?: string;
 	readonly guest: boolean;
-	// will be split/merged from the `provider` column
+	// will be split/merged from the `oauth2` column
 	readonly provider_name?: string;
 	readonly provider_unique?: string;
 };
@@ -207,7 +230,7 @@ async function hashPassword(
  *
  * @returns The user if it exists, undefined otherwise
  */
-export function userFromRow(row?: Partial<Omit<User, 'provider_name' | 'provider_unique'> & { provider?: string }>): User | undefined {
+export function userFromRow(row?: Partial<Omit<User, 'provider_name' | 'provider_unique'> & { oauth2?: string }>): User | undefined {
 	if (isNullish(row)) return undefined;
 	if (isNullish(row.id)) return undefined;
 	if (isNullish(row.name)) return undefined;
@@ -216,9 +239,9 @@ export function userFromRow(row?: Partial<Omit<User, 'provider_name' | 'provider
 	let provider_name = undefined;
 	let provider_unique = undefined;
 
-	if (row.provider) {
-		const splitted = row.provider.split(':', 1);
-		if (splitted.length != 2) { return undefined; }
+	if (row.oauth2) {
+		const splitted = row.oauth2.split(/:(.*)/);
+		if (splitted.length != 3) { return undefined; }
 		provider_name = splitted[0];
 		provider_unique = splitted[1];
 	}

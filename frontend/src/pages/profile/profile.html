@@ -7,12 +7,33 @@
 			<span class="text-red-600"> You can't change anything here </span>
 		</div>
 
+		<div class="mb-1 text-gray-700 rounded-sm border-2 outline-lime-100">
+			<label class="inline font-medium mb-1 text-gray-700">AccountType: </label>
+			<span id="accountType" class="font-medium"></span>
+		</div>
+
+
 		<!-- Login Name -->
-		<div id="loginNameWrapper" class="py-2">
+		<div id="loginNameWrapper" class="py-2" hidden>
 			<label class="block font-medium mb-1 text-gray-700">Login Name</label>
 			<div id="loginNameBox" class="font-medium mb-1 text-gray-700 rounded-sm border-2 outline-lime-100"></div>
 		</div>
-
+		<!-- Login Name -->
+		<div id="providerWrapper" class="py-2 mb-1 border-2 border-green-400 rounded-sm" hidden>
+			<span class="py-2 mb-1 text-gray-700 text-lg">Provider</span>
+			<div class="flex items-center justify-center gap-4">
+				<div>
+					<label class="block font-medium mb-1 text-gray-700">Name</label>
+					<div id="providerNameBox"
+						class="font-medium mb-1 text-gray-700"></div>
+				</div>
+				<div>
+					<label class="block font-medium mb-1 text-gray-700">User</label>
+					<div id="providerUserBox"
+						class="font-medium mb-1 text-gray-700"></div>
+				</div>
+			</div>
+		</div>
 		<!-- Display Name -->
 		<div id="displayNameWrapper" class="py-2">
 			<label class="block font-medium mb-1 text-gray-700">Display Name</label>
@@ -35,7 +56,7 @@
 		</div>
 
 		<!-- TOTP -->
-		<div class="border rounded p-4">
+		<div class="border rounded p-4" id="totpWrapper">
 			<h2 class="font-semibold text-lg mb-2">Two-Factor Authentication (TOTP)</h2>
 
 			<div class="flex items-center justify-between">

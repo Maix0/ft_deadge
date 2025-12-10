@@ -1,5 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './ChangeDisplayName200Response';
+export * from './ChangeDisplayName400Response';
+export * from './ChangeDisplayNameRequest';
 export * from './ChatTest200Response';
 export * from './ChatTest200ResponsePayload';
 export * from './DisableOtp200Response';
@@ -19,7 +22,9 @@ export * from './GetUser404Response';
 export * from './GetUserUserParameter';
 export * from './GuestLogin200Response';
 export * from './GuestLogin200ResponsePayload';
+export * from './GuestLogin400Response';
 export * from './GuestLogin500Response';
+export * from './GuestLoginRequest';
 export * from './Login200Response';
 export * from './Login202Response';
 export * from './Login202ResponsePayload';

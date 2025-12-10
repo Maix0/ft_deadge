@@ -8,6 +8,114 @@
         "schemas": {}
     },
     "paths": {
+        "/api/user/changeDisplayName": {
+            "put": {
+                "operationId": "changeDisplayName",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "New Display Name"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changeDisplayName.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changeDisplayName.alreadyExist",
+                                                "changeDisplayName.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "notLoggedIn"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "auth.noCookie",
+                                                "auth.invalidKind",
+                                                "auth.noUser",
+                                                "auth.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/info/{user}": {
             "get": {
                 "operationId": "getUser",

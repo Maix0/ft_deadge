@@ -330,6 +330,20 @@
         "/api/auth/guest": {
             "post": {
                 "operationId": "guestLogin",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Default Response",
@@ -364,6 +378,32 @@
                                                     "description": "JWT that represent a logged in user"
                                                 }
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failed"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "guestLogin.failed.invalid"
+                                            ]
                                         }
                                     }
                                 }
