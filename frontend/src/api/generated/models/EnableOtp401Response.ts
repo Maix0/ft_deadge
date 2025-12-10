@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { DisableOtp401Response } from './DisableOtp401Response';
-import {
-    DisableOtp401ResponseFromJSON,
-    DisableOtp401ResponseFromJSONTyped,
-    DisableOtp401ResponseToJSON,
-    DisableOtp401ResponseToJSONTyped,
-} from './DisableOtp401Response';
 import type { EnableOtp401ResponseAnyOf } from './EnableOtp401ResponseAnyOf';
 import {
     EnableOtp401ResponseAnyOfFromJSON,
@@ -27,6 +20,13 @@ import {
     EnableOtp401ResponseAnyOfToJSON,
     EnableOtp401ResponseAnyOfToJSONTyped,
 } from './EnableOtp401ResponseAnyOf';
+import type { ChangePassword401Response } from './ChangePassword401Response';
+import {
+    ChangePassword401ResponseFromJSON,
+    ChangePassword401ResponseFromJSONTyped,
+    ChangePassword401ResponseToJSON,
+    ChangePassword401ResponseToJSONTyped,
+} from './ChangePassword401Response';
 
 /**
  * 

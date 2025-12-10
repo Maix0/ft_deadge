@@ -1,4 +1,4 @@
-import { addRoute, handleRoute, navigateTo, setTitle } from "@app/routing";
+import { addRoute, getRoute, handleRoute, navigateTo, setTitle } from "@app/routing";
 import { showError, showSuccess } from "@app/toast";
 import page from "./profile.html?raw";
 import { updateUser } from "@app/auth";
@@ -159,7 +159,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 			} else if (!isNullish(user.selfInfo?.loginName)) {
 				loginNameWrapper.hidden = false;
 				loginNameBox.innerText = user.selfInfo.loginName;
-				totpWrapper.hidden =false;
+				totpWrapper.hidden = false;
 				passwordWrapper.hidden = false;
 
 				accountTypeBox.innerText = "Normal";
@@ -239,6 +239,19 @@ async function route(url: string, _args: { [k: string]: string }) {
 				});
 				if (req.kind === "success") {
 					showSuccess("Successfully changed display name");
+					handleRoute();
+				} else {
+					showError(`Failed to update: ${req.msg}`);
+				}
+			};
+			passwordButton.onclick = async () => {
+				let req = await client.changePassword({
+					changePasswordRequest: {
+						newPassword: passwordBox.value,
+					},
+				});
+				if (req.kind === "success") {
+					showSuccess("Successfully changed password");
 					handleRoute();
 				} else {
 					showError(`Failed to update: ${req.msg}`);

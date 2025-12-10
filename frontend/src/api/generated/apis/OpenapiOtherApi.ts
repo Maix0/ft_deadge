@@ -18,10 +18,14 @@ import type {
   ChangeDisplayName200Response,
   ChangeDisplayName400Response,
   ChangeDisplayNameRequest,
+  ChangePassword200Response,
+  ChangePassword400Response,
+  ChangePassword401Response,
+  ChangePassword500Response,
+  ChangePasswordRequest,
   ChatTest200Response,
   DisableOtp200Response,
   DisableOtp400Response,
-  DisableOtp401Response,
   DisableOtp500Response,
   EnableOtp200Response,
   EnableOtp400Response,
@@ -60,14 +64,22 @@ import {
     ChangeDisplayName400ResponseToJSON,
     ChangeDisplayNameRequestFromJSON,
     ChangeDisplayNameRequestToJSON,
+    ChangePassword200ResponseFromJSON,
+    ChangePassword200ResponseToJSON,
+    ChangePassword400ResponseFromJSON,
+    ChangePassword400ResponseToJSON,
+    ChangePassword401ResponseFromJSON,
+    ChangePassword401ResponseToJSON,
+    ChangePassword500ResponseFromJSON,
+    ChangePassword500ResponseToJSON,
+    ChangePasswordRequestFromJSON,
+    ChangePasswordRequestToJSON,
     ChatTest200ResponseFromJSON,
     ChatTest200ResponseToJSON,
     DisableOtp200ResponseFromJSON,
     DisableOtp200ResponseToJSON,
     DisableOtp400ResponseFromJSON,
     DisableOtp400ResponseToJSON,
-    DisableOtp401ResponseFromJSON,
-    DisableOtp401ResponseToJSON,
     DisableOtp500ResponseFromJSON,
     DisableOtp500ResponseToJSON,
     EnableOtp200ResponseFromJSON,
@@ -134,6 +146,10 @@ export interface ChangeDisplayNameOperationRequest {
     changeDisplayNameRequest: ChangeDisplayNameRequest;
 }
 
+export interface ChangePasswordOperationRequest {
+    changePasswordRequest: ChangePasswordRequest;
+}
+
 export interface GetUserRequest {
     user: GetUserUserParameter;
 }
@@ -161,7 +177,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
-    async changeDisplayNameRaw(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChangeDisplayName200Response | ChangeDisplayName400Response | DisableOtp401Response>> {
+    async changeDisplayNameRaw(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChangeDisplayName200Response | ChangeDisplayName400Response | ChangePassword401Response>> {
         if (requestParameters['changeDisplayNameRequest'] == null) {
             throw new runtime.RequiredError(
                 'changeDisplayNameRequest',
@@ -200,7 +216,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         }
         if (response.status === 401) {
             // Object response for status 401
-            return new runtime.JSONApiResponse(response, (jsonValue) => DisableOtp401ResponseFromJSON(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword401ResponseFromJSON(jsonValue));
         }
         // CHANGED: Throw error if status code is not handled by any of the defined responses
         // This ensures all code paths return a value and provides clear error messages for unexpected status codes
@@ -210,8 +226,68 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
-    async changeDisplayName(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChangeDisplayName200Response | ChangeDisplayName400Response | DisableOtp401Response> {
+    async changeDisplayName(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChangeDisplayName200Response | ChangeDisplayName400Response | ChangePassword401Response> {
         const response = await this.changeDisplayNameRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async changePasswordRaw(requestParameters: ChangePasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChangePassword200Response | ChangePassword400Response | ChangePassword401Response | ChangePassword500Response>> {
+        if (requestParameters['changePasswordRequest'] == null) {
+            throw new runtime.RequiredError(
+                'changePasswordRequest',
+                'Required parameter "changePasswordRequest" was null or undefined when calling changePassword().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/api/auth/changePassword`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ChangePasswordRequestToJSON(requestParameters['changePasswordRequest']),
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 400) {
+            // Object response for status 400
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword400ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 401) {
+            // Object response for status 401
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword401ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 500) {
+            // Object response for status 500
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword500ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 400, 401, 500`);
+    }
+
+    /**
+     */
+    async changePassword(requestParameters: ChangePasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChangePassword200Response | ChangePassword400Response | ChangePassword401Response | ChangePassword500Response> {
+        const response = await this.changePasswordRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -259,7 +335,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
-    async disableOtpRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DisableOtp200Response | DisableOtp400Response | DisableOtp401Response | DisableOtp500Response>> {
+    async disableOtpRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DisableOtp200Response | DisableOtp400Response | ChangePassword401Response | DisableOtp500Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -288,7 +364,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         }
         if (response.status === 401) {
             // Object response for status 401
-            return new runtime.JSONApiResponse(response, (jsonValue) => DisableOtp401ResponseFromJSON(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword401ResponseFromJSON(jsonValue));
         }
         if (response.status === 500) {
             // Object response for status 500
@@ -302,7 +378,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
-    async disableOtp(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DisableOtp200Response | DisableOtp400Response | DisableOtp401Response | DisableOtp500Response> {
+    async disableOtp(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DisableOtp200Response | DisableOtp400Response | ChangePassword401Response | DisableOtp500Response> {
         const response = await this.disableOtpRaw(initOverrides);
         return await response.value();
     }

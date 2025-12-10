@@ -8,6 +8,140 @@
         "schemas": {}
     },
     "paths": {
+        "/api/auth/changePassword": {
+            "post": {
+                "operationId": "changePassword",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "new_password"
+                                ],
+                                "properties": {
+                                    "new_password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changePassword.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failed"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changePassword.failed.toolong",
+                                                "changePassword.failed.tooshort",
+                                                "changePassword.failed.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "notLoggedIn"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "auth.noCookie",
+                                                "auth.invalidKind",
+                                                "auth.noUser",
+                                                "auth.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failed"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changePassword.failed.generic"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/disableOtp": {
             "put": {
                 "operationId": "disableOtp",
