@@ -1,6 +1,9 @@
 apis/OpenapiOtherApi.ts
 apis/index.ts
 index.ts
+models/ChangeDisplayName200Response.ts
+models/ChangeDisplayName400Response.ts
+models/ChangeDisplayNameRequest.ts
 models/ChatTest200Response.ts
 models/ChatTest200ResponsePayload.ts
 models/DisableOtp200Response.ts
@@ -20,7 +23,9 @@ models/GetUser404Response.ts
 models/GetUserUserParameter.ts
 models/GuestLogin200Response.ts
 models/GuestLogin200ResponsePayload.ts
+models/GuestLogin400Response.ts
 models/GuestLogin500Response.ts
+models/GuestLoginRequest.ts
 models/Login200Response.ts
 models/Login202Response.ts
 models/Login202ResponsePayload.ts

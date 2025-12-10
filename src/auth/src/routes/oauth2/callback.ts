@@ -30,9 +30,23 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			const result = await creq.getCode();
 
 			const userinfo = await provider.getUserInfo(result);
+
+
 			let u = this.db.getOauth2User(provider.display_name, userinfo.unique_id);
 			if (isNullish(u)) {
-				u = await this.db.createOauth2User(userinfo.name, provider.display_name, userinfo.unique_id);
+				let user_name = userinfo.name;
+				const orig = user_name;
+				let i = 0;
+				while (
+					this.db.getUserFromDisplayName(user_name) !== undefined &&
+					i++ < 100
+				) {
+					user_name = `${orig}${Date.now() % 1000}`;
+				}
+				if (this.db.getUserFromDisplayName(user_name) !== undefined) {
+					user_name = `${orig}${Date.now()}`;
+				}
+				u = await this.db.createOauth2User(user_name, provider.display_name, userinfo.unique_id);
 			}
 			if (isNullish(u)) {
 				return res.code(500).send('failed to fetch or create user...');

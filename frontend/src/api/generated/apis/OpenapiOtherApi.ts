@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import type {
+  ChangeDisplayName200Response,
+  ChangeDisplayName400Response,
+  ChangeDisplayNameRequest,
   ChatTest200Response,
   DisableOtp200Response,
   DisableOtp400Response,
@@ -28,7 +31,9 @@ import type {
   GetUser404Response,
   GetUserUserParameter,
   GuestLogin200Response,
+  GuestLogin400Response,
   GuestLogin500Response,
+  GuestLoginRequest,
   Login200Response,
   Login202Response,
   Login400Response,
@@ -49,6 +54,12 @@ import type {
   StatusOtp500Response,
 } from '../models/index';
 import {
+    ChangeDisplayName200ResponseFromJSON,
+    ChangeDisplayName200ResponseToJSON,
+    ChangeDisplayName400ResponseFromJSON,
+    ChangeDisplayName400ResponseToJSON,
+    ChangeDisplayNameRequestFromJSON,
+    ChangeDisplayNameRequestToJSON,
     ChatTest200ResponseFromJSON,
     ChatTest200ResponseToJSON,
     DisableOtp200ResponseFromJSON,
@@ -75,8 +86,12 @@ import {
     GetUserUserParameterToJSON,
     GuestLogin200ResponseFromJSON,
     GuestLogin200ResponseToJSON,
+    GuestLogin400ResponseFromJSON,
+    GuestLogin400ResponseToJSON,
     GuestLogin500ResponseFromJSON,
     GuestLogin500ResponseToJSON,
+    GuestLoginRequestFromJSON,
+    GuestLoginRequestToJSON,
     Login200ResponseFromJSON,
     Login200ResponseToJSON,
     Login202ResponseFromJSON,
@@ -115,8 +130,16 @@ import {
     StatusOtp500ResponseToJSON,
 } from '../models/index';
 
+export interface ChangeDisplayNameOperationRequest {
+    changeDisplayNameRequest: ChangeDisplayNameRequest;
+}
+
 export interface GetUserRequest {
     user: GetUserUserParameter;
+}
+
+export interface GuestLoginOperationRequest {
+    guestLoginRequest?: GuestLoginRequest;
 }
 
 export interface LoginOperationRequest {
@@ -135,6 +158,62 @@ export interface SigninRequest {
  * 
  */
 export class OpenapiOtherApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async changeDisplayNameRaw(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChangeDisplayName200Response | ChangeDisplayName400Response | DisableOtp401Response>> {
+        if (requestParameters['changeDisplayNameRequest'] == null) {
+            throw new runtime.RequiredError(
+                'changeDisplayNameRequest',
+                'Required parameter "changeDisplayNameRequest" was null or undefined when calling changeDisplayName().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/api/user/changeDisplayName`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ChangeDisplayNameRequestToJSON(requestParameters['changeDisplayNameRequest']),
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangeDisplayName200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 400) {
+            // Object response for status 400
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangeDisplayName400ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 401) {
+            // Object response for status 401
+            return new runtime.JSONApiResponse(response, (jsonValue) => DisableOtp401ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 400, 401`);
+    }
+
+    /**
+     */
+    async changeDisplayName(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChangeDisplayName200Response | ChangeDisplayName400Response | DisableOtp401Response> {
+        const response = await this.changeDisplayNameRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      */
@@ -334,10 +413,12 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
-    async guestLoginRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GuestLogin200Response | GuestLogin500Response>> {
+    async guestLoginRaw(requestParameters: GuestLoginOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GuestLogin200Response | GuestLogin400Response | GuestLogin500Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
 
         let urlPath = `/api/auth/guest`;
@@ -347,6 +428,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: GuestLoginRequestToJSON(requestParameters['guestLoginRequest']),
         }, initOverrides);
 
         // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
@@ -357,6 +439,10 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
             // Object response for status 200
             return new runtime.JSONApiResponse(response, (jsonValue) => GuestLogin200ResponseFromJSON(jsonValue));
         }
+        if (response.status === 400) {
+            // Object response for status 400
+            return new runtime.JSONApiResponse(response, (jsonValue) => GuestLogin400ResponseFromJSON(jsonValue));
+        }
         if (response.status === 500) {
             // Object response for status 500
             return new runtime.JSONApiResponse(response, (jsonValue) => GuestLogin500ResponseFromJSON(jsonValue));
@@ -364,13 +450,13 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         // CHANGED: Throw error if status code is not handled by any of the defined responses
         // This ensures all code paths return a value and provides clear error messages for unexpected status codes
         // Only throw if responses were defined but none matched the actual status code
-        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 500`);
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 400, 500`);
     }
 
     /**
      */
-    async guestLogin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GuestLogin200Response | GuestLogin500Response> {
-        const response = await this.guestLoginRaw(initOverrides);
+    async guestLogin(requestParameters: GuestLoginOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GuestLogin200Response | GuestLogin400Response | GuestLogin500Response> {
+        const response = await this.guestLoginRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
