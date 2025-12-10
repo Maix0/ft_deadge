@@ -8,7 +8,7 @@ import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
 import type { User } from '@shared/database/mixin/user';
 import { sendGameLinkToChatService } from '../../@shared/src/utils/index';
-import { UserId } from '@shared/database/mixin/user';
+import type { BlockedData } from '@shared/database/mixin/blocked';
 
 // colors for console.log
 export const color = {
@@ -524,7 +524,11 @@ async function onReady(fastify: FastifyInstance) {
 				sendInvite(inviteHtml, profilInvite);
 			}
 		});
-
+		
+		function isBlocked(user: string, blocked: string, userToFind: string, userBlocked: string): boolean {
+			  return user === userToFind && blocked === userBlocked;
+		}
+		
 		socket.on('blockUser', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilBlock: ClientProfil = JSON.parse(data) || '';
@@ -537,23 +541,31 @@ async function onReady(fastify: FastifyInstance) {
 			console.log(color.yellow, `user Asking to block: ${profilBlock.SenderName}`);
 			console.log(color.yellow, UserAskingToBlock);
 
-			const usersBlocked = fastify.db.getAllBlockedUsers();
+			const usersBlocked: BlockedData[]  = fastify.db.getAllBlockedUsers() ?? [];
+
+			const isBlocked = usersBlocked.some(blocked => 
+			    blocked.blocked === UserToBlock?.id && 
+			    blocked.user === UserAskingToBlock?.id 
+			);
+
+			if (isBlocked) {
+			    console.log(color.green, 'Both users are blocked as requested');
+			    return true;  // or any other action you need to take
+			} else {
+			    console.log(color.red, 'The users are not blocked in this way');
+			}
+
+
+
 			console.log(color.red, "ALL BLOCKED USERS:", usersBlocked);
 			fastify.db.addBlockedUserFor(UserAskingToBlock!.id, UserToBlock!.id);
 			const usersBlocked2 = fastify.db.getAllBlockedUsers();
 			console.log(color.green, 'ALL BLOCKED USERS:', usersBlocked2);
-
-
-
 			if (clientName !== null) {
-			
 				const blockedMessage = `'I have blocked you'`;
-			
 				sendBlocked(blockedMessage, profilBlock);
-				
 			}
 		});
-
 		socket.on('client_entered', (data) => {
 
     		// data may be undefined (when frontend calls emit with no payload)
