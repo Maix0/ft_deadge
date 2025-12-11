@@ -33,8 +33,8 @@ export type ClientProfil = {
 	timestamp: number,
 	SenderWindowID:string,
 	SenderName: string,
+	Sendertext: string,
     innerHtml?: string,
-
 }; 		
 
 // get the name of the machine used to connect 
@@ -95,7 +95,7 @@ function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 function blockUser(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
-	addMessage(`${profil.text}: ${profil.user}⛔`)
+	// addMessage(`${profil.Sendertext}: ${profil.user}⛔`)
 	senderSocket.emit('blockUser', JSON.stringify(profil));
 };
 
@@ -129,6 +129,7 @@ function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
 			const blockUserBtn = document.querySelector("#popup-b-block");
 			blockUserBtn?.addEventListener("click", () => {
+				block.text = ''; 
 				blockUser(block, senderSocket);
 			});
     	}, 0)
@@ -513,9 +514,11 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 
 	socket.on('blockUser', (blocked: ClientProfil) => {	
+		let icon = '⛔';
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const messageElement = document.createElement("div");
-    	messageElement.innerText =`⛔${blocked.SenderName}:  ${blocked.text}`;
+		if (`${blocked.text}` === '\'I have un-blocked you\'' ) { icon = '💚'};
+    	messageElement.innerText =`${icon}${blocked.SenderName}:  ${blocked.text}`;
     	chatWindow.appendChild(messageElement);
 		chatWindow.scrollTop = chatWindow.scrollHeight;
 	});
