@@ -550,20 +550,31 @@ async function onReady(fastify: FastifyInstance) {
 
 			if (userAreBlocked) {
 			    console.log(color.green, 'Both users are blocked as requested');
-			    return true;  // or any other action you need to take
+			    // return true;  // or any other action you need to take
+			
+				
+				console.log(color.red, "ALL BLOCKED USERS:", usersBlocked);
+				fastify.db.removeBlockedUserFor(UserAskingToBlock!.id, UserToBlock!.id);
+				const usersBlocked2 = fastify.db.getAllBlockedUsers();
+				console.log(color.green, 'remove ALL BLOCKED USERS:', usersBlocked2);
+				if (clientName !== null) {
+					const blockedMessage = `'I have un-blocked you'`;
+					sendBlocked(blockedMessage, profilBlock);
+				}
+			
 			} else {
 			    console.log(color.red, 'The users are not blocked in this way');
-			}
-
-
-
-			console.log(color.red, "ALL BLOCKED USERS:", usersBlocked);
-			fastify.db.addBlockedUserFor(UserAskingToBlock!.id, UserToBlock!.id);
-			const usersBlocked2 = fastify.db.getAllBlockedUsers();
-			console.log(color.green, 'ALL BLOCKED USERS:', usersBlocked2);
-			if (clientName !== null) {
-				const blockedMessage = `'I have blocked you'`;
-				sendBlocked(blockedMessage, profilBlock);
+				
+				
+				
+				console.log(color.red, "ALL BLOCKED USERS:", usersBlocked);
+				fastify.db.addBlockedUserFor(UserAskingToBlock!.id, UserToBlock!.id);
+				const usersBlocked2 = fastify.db.getAllBlockedUsers();
+				console.log(color.green, 'ALL BLOCKED USERS:', usersBlocked2);
+				if (clientName !== null) {
+					const blockedMessage = `'I have blocked you'`;
+					sendBlocked(blockedMessage, profilBlock);
+				}
 			}
 		});
 		socket.on('client_entered', (data) => {
