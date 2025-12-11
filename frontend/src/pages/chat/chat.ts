@@ -535,7 +535,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	})
 
 	//receives broadcast of the next GAME
-	socket.on('nextGame', (message) => {
+	socket.on('nextGame', (message: string) => {
 		openMessagePopup(message);
 		// addMessage(message);
 	})
