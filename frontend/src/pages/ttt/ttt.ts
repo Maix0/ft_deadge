@@ -37,7 +37,7 @@ class TTC {
         const checkRow = (row: number): ('X' | 'O' | null) =>  {
             if (this.board[row * 3] === null)
                 return null;
-            if (this.board[row * 3] === this.board[row * 3+1] && this.board[row * 3 + 1] === this.board[row * 3 + 2])
+            if (this.board[row * 3] === this.board[row * 3 + 1] && this.board[row * 3 + 1] === this.board[row * 3 + 2])
                 return this.board[row * 3];
             return null;
         }
