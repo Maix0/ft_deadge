@@ -177,6 +177,8 @@ async function handleTTT(): Promise<RouteHandlerReturn>
             });
             restartBtn?.addEventListener('click', () => {
                board.reset();
+               // Remove pointer-events-none to re-enable the board if it was disabled
+               app?.querySelector('.ttt-grid')?.classList.remove('pointer-events-none');
                updateUI();
                showInfo('Game Restarted');
             });
