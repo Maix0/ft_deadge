@@ -95,7 +95,7 @@ function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 function blockUser(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
-	addMessage(`You have blocked: ${profil.user}⛔`)
+	addMessage(`${profil.text}: ${profil.user}⛔`)
 	senderSocket.emit('blockUser', JSON.stringify(profil));
 };
 
