@@ -162,6 +162,7 @@ async function handleTTT(): Promise<RouteHandlerReturn>
                         }
                         case ('winO'): {
                             showSuccess('O won');
+                            app?.querySelector('.ttt-grid')?.classList.add('pointer-events-none');
                             break;
                         }
                     }
