@@ -8,12 +8,13 @@ import { listBuddies } from './listBuddies';
 import { getProfil } from './getProfil';
 import { addMessage } from './addMessage';
 import { broadcastMsg } from './broadcastMsg';
-import { clearChatWindow } from './clearChatWindow';
 import { isLoggedIn } from './isLoggedIn';
 import type { ClientMessage, ClientProfil } from './types_front';
 import { openProfilePopup } from './openProfilePopup';
 import { actionBtnPopUpClear } from './actionBtnPopUpClear';
-
+import { actionBtnPopUpBlock } from './actionBtnPopUpBlock';
+import { windowStateHidden } from './windowStateHidden';
+ 
 export const color = {
 	red: 'color: red;',
 	green: 'color: green;',
@@ -47,30 +48,12 @@ export function getSocket(): Socket {
 	return __socket;
 };
 
-
 function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
 	addMessage(`You invited to play: ${profil.user}🏓`)
 	senderSocket.emit('inviteGame', JSON.stringify(profil));
 };
-
-function blockUser(profil: ClientProfil, senderSocket: Socket) {
-	profil.SenderName = getUser()?.name ?? '';
-	if (profil.SenderName === profil.user) return;
-	// addMessage(`${profil.Sendertext}: ${profil.user}⛔`)
-	senderSocket.emit('blockUser', JSON.stringify(profil));
-};
-
-// function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
-// 		setTimeout(() => {
-// 			const clearTextBtn = document.querySelector("#popup-b-clear");        		
-// 			clearTextBtn?.addEventListener("click", () => {
-// 				clearChatWindow(senderSocket);
-// 			});
-//     	}, 0)
-// };
-
 
 function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
@@ -81,33 +64,21 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
     	}, 0)
 };
 
-
-
-function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
-		setTimeout(() => {
-			const blockUserBtn = document.querySelector("#popup-b-block");
-			blockUserBtn?.addEventListener("click", () => {
-				block.text = ''; 
-				blockUser(block, senderSocket);
-			});
-    	}, 0)
-};
-
-async function windowStateHidden() {		
-	const socketId = __socket || undefined;
-	// let oldName = localStorage.getItem("oldName") ??  undefined;
-	let oldName: string;
-	if (socketId === undefined) return;
-	let userName = await updateUser();
-	oldName =  userName?.name ?? "";
-	if (oldName === "") return;
-	localStorage.setItem('oldName', oldName);
-	socketId.emit('client_left', {
-		user: userName?.name,
-		why: 'tab window hidden - socket not dead',
-	});	
-	return;
-};
+// async function windowStateHidden() {		
+// 	const socketId = __socket || undefined;
+// 	// let oldName = localStorage.getItem("oldName") ??  undefined;
+// 	let oldName: string;
+// 	if (socketId === undefined) return;
+// 	let userName = await updateUser();
+// 	oldName =  userName?.name ?? "";
+// 	if (oldName === "") return;
+// 	localStorage.setItem('oldName', oldName);
+// 	socketId.emit('client_left', {
+// 		user: userName?.name,
+// 		why: 'tab window hidden - socket not dead',
+// 	});	
+// 	return;
+// };
 	
 async function windowStateVisable() {
 
