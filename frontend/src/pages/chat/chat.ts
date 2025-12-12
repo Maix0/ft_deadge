@@ -567,18 +567,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			buddies.textContent = '';
 			buddies.innerHTML = '';
 
-
-			// const value = await client.chatTest();
-            // if (value.kind === "success") {
-            //     console.log(value.payload);
-            // } else if (value.kind === "notLoggedIn") {
-            //     console.log('not logged in');
-            // } else {
-            //     console.log('unknown response: ', value);
-            // }
-
-
-
 			const buttonPro = document.getElementById("close-modal") ?? null;
 
 			if (buttonPro)
