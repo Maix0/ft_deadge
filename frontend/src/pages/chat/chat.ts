@@ -9,8 +9,11 @@ import { getProfil } from './getProfil';
 import { addMessage } from './addMessage';
 import { broadcastMsg } from './broadcastMsg';
 import { clearChatWindow } from './clearChatWindow';
-import { isLoggedIn } from "./isLoggedIn";
- 
+import { isLoggedIn } from './isLoggedIn';
+import type { ClientMessage, ClientProfil } from './types_front';
+import { openProfilePopup } from './openProfilePopup';
+import { actionBtnPopUpClear } from './actionBtnPopUpClear';
+
 export const color = {
 	red: 'color: red;',
 	green: 'color: green;',
@@ -18,30 +21,6 @@ export const color = {
 	blue: 'color: blue;',
 	reset: '', 
 };
-
-export type ClientMessage = {
-	command: string
-	destination: string;
-	user: string;
-	text: string;
-	SenderWindowID: string;
-};
-
-
-export type ClientProfil = {
-	command: string,
-	destination: string,
-   	type: string,
-	user: string, 
-	loginName: string,
-	userID: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID:string,
-	SenderName: string,
-	Sendertext: string,
-    innerHtml?: string,
-}; 		
 
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
@@ -69,11 +48,6 @@ function getSocket(): Socket {
 };
 
 
-
-// function isLoggedIn() {
-// 	return getUser() || null;
-// };
-
 function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
@@ -88,19 +62,14 @@ function blockUser(profil: ClientProfil, senderSocket: Socket) {
 	senderSocket.emit('blockUser', JSON.stringify(profil));
 };
 
-
-
-
-
-
-function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
-		setTimeout(() => {
-			const clearTextBtn = document.querySelector("#popup-b-clear");        		
-			clearTextBtn?.addEventListener("click", () => {
-				clearChatWindow(senderSocket);
-			});
-    	}, 0)
-};
+// function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
+// 		setTimeout(() => {
+// 			const clearTextBtn = document.querySelector("#popup-b-clear");        		
+// 			clearTextBtn?.addEventListener("click", () => {
+// 				clearChatWindow(senderSocket);
+// 			});
+//     	}, 0)
+// };
 
 
 function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
@@ -332,29 +301,29 @@ async function whoami(socket: Socket) {
 	}
 };
 
-async function openProfilePopup(profil: ClientProfil) {
+// async function openProfilePopup(profil: ClientProfil) {
 
 	
-	const modalname = document.getElementById("modal-name") ?? null;
-	if (modalname)
-		modalname.innerHTML = `
-					<div class="profile-info">
-						<div-profil-name id="profilName"> Profil of ${profil.user} </div> 
-						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div> 
-						</br>
-						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div> 
-						</br>
-						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
-						<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
-						<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
-            			<div id="profile-about">About: '${profil.text}' </div>
-        			</div>
-	`;
-	const profilList = document.getElementById("profile-modal") ?? null;
-	if (profilList)
-		profilList.classList.remove("hidden");
-	 // The popup now exists → attach the event
-}
+// 	const modalname = document.getElementById("modal-name") ?? null;
+// 	if (modalname)
+// 		modalname.innerHTML = `
+// 					<div class="profile-info">
+// 						<div-profil-name id="profilName"> Profil of ${profil.user} </div> 
+// 						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div> 
+// 						</br>
+// 						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div> 
+// 						</br>
+// 						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
+// 						<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
+// 						<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
+//             			<div id="profile-about">About: '${profil.text}' </div>
+//         			</div>
+// 	`;
+// 	const profilList = document.getElementById("profile-modal") ?? null;
+// 	if (profilList)
+// 		profilList.classList.remove("hidden");
+// 	 // The popup now exists → attach the event
+// }
 
 let count = 0;
 function incrementCounter(): number {
