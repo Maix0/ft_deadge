@@ -1189,6 +1189,36 @@
           "openapi_other"
         ]
       }
+    },
+    "/api/chat/broadcast": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "nextGame"
+                ],
+                "properties": {
+                  "nextGame": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
     }
   },
   "components": {

@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './ApiChatBroadcastPostRequest';
 export * from './DisableOtp200Response';
 export * from './DisableOtp401Response';
 export * from './DisableOtp500Response';

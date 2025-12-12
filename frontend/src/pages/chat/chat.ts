@@ -4,8 +4,14 @@ import authHtml from './chat.html?raw';
 import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
 import io, { Socket } from 'socket.io-client';
-
-const color = {
+import { listBuddies } from './listBuddies';
+import { getProfil } from './getProfil';
+import { addMessage } from './addMessage';
+import { broadcastMsg } from './broadcastMsg';
+import { clearChatWindow } from './clearChatWindow';
+import { isLoggedIn } from "./isLoggedIn";
+ 
+export const color = {
 	red: 'color: red;',
 	green: 'color: green;',
 	yellow: 'color: orange;',
@@ -62,28 +68,11 @@ function getSocket(): Socket {
 	return __socket;
 };
 
-function addMessage(text: string) {
-	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-	if (!chatWindow) return;
-	const messageElement = document.createElement("div-test");
-	messageElement.textContent = text;
-	chatWindow.appendChild(messageElement);
-	chatWindow.scrollTop = chatWindow.scrollHeight;
-	console.log(`Added new message: ${text}`)
-	return ;
-};
 
-function clear(senderSocket: Socket) {
-	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-	if (!chatWindow) return;
-	chatWindow.innerHTML = "";
-	// senderSocket.emit('nextGame');
 
-}
-
-function isLoggedIn() {
-	return getUser() || null;
-};
+// function isLoggedIn() {
+// 	return getUser() || null;
+// };
 
 function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
@@ -108,7 +97,7 @@ function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
 			const clearTextBtn = document.querySelector("#popup-b-clear");        		
 			clearTextBtn?.addEventListener("click", () => {
-				clear(senderSocket);
+				clearChatWindow(senderSocket);
 			});
     	}, 0)
 };
@@ -134,24 +123,6 @@ function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
 			});
     	}, 0)
 };
-
-
-// getProfil get the profil of user
-function getProfil(socket: Socket, user: string) {
-		if (!socket.connected) return;
-		const profil = {
-			command: '@profil',
-			destination: 'profilMessage',
-			type: "chat",
-			user: user,
-			token: document.cookie ?? "",
-			text: user,
-			timestamp: Date.now(),
-			SenderWindowID: socket.id,
-		};
-    	// addMessage(JSON.stringify(profil));
-		socket.emit('profilMessage', JSON.stringify(profil));
-}
 
 async function windowStateHidden() {		
 	const socketId = __socket || undefined;
@@ -230,34 +201,34 @@ function parseCmdMsg(msgText: string): string[] | undefined {
     return command;
 }
 
-async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies: string) {
+// async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies: string) {
 
-	if (!buddies) return;
-	const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
-	const buddiesElement = document.createElement("div-buddies-list");
-	buddiesElement.textContent = listBuddies + '\n';
-	const user = getUser()?.name ?? ""; 
+// 	if (!buddies) return;
+// 	const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
+// 	const buddiesElement = document.createElement("div-buddies-list");
+// 	buddiesElement.textContent = listBuddies + '\n';
+// 	const user = getUser()?.name ?? ""; 
+// 	buddies.appendChild(buddiesElement);
+// 	buddies.scrollTop = buddies.scrollHeight;
+// 	console.log(`Added buddies: ${listBuddies}`);
 
-	buddiesElement.style.cursor = "pointer";
-	buddiesElement.addEventListener("click", () => {
-		navigator.clipboard.writeText(listBuddies);
-		if (listBuddies !== user && user !== "") {
-			sendtextbox.value = `@${listBuddies}: `;
-			console.log("Copied to clipboard:", listBuddies);
-			sendtextbox.focus();
-		} 
-	});
+// 	buddiesElement.style.cursor = "pointer";
+// 	buddiesElement.addEventListener("click", () => {
+// 		navigator.clipboard.writeText(listBuddies);
+// 		if (listBuddies !== user && user !== "") {
+// 			sendtextbox.value = `@${listBuddies}: `;
+// 			console.log("Copied to clipboard:", listBuddies);
+// 			sendtextbox.focus();
+// 		} 
+// 	});
 
-	buddiesElement.addEventListener("dblclick", () => {
-		console.log("Open profile:", listBuddies);
-		getProfil(socket, listBuddies);
-        sendtextbox.value = "";
-    });
+// 	buddiesElement.addEventListener("dblclick", () => {
+// 		console.log("Open profile:", listBuddies);
+// 		getProfil(socket, listBuddies);
+//         sendtextbox.value = "";
+//     });
 
-	buddies.appendChild(buddiesElement);
-	buddies.scrollTop = buddies.scrollHeight;
-	console.log(`Added buddies: ${listBuddies}`);
-}
+// }
 
 
 function waitSocketConnected(socket: Socket): Promise<void> {
@@ -302,32 +273,13 @@ function logout(socket: Socket) {
 //   window.location.href = "/login";
 };
 
-function broadcastMsg (socket: Socket, msgCommand: string[]): void {
-	let msgText = msgCommand[1] ?? "";					
-	console.log('%cmsgText:', color.red, msgText);
-	addMessage(msgText);
-	const user = getUser();
-	if (user && socket?.connected) {
-		const message = {
-			command: msgCommand,
-			destination: '',
-			type: "chat",
-			user: user.name,
-			token: document.cookie,
-			text: msgText,
-			timestamp: Date.now(),
-			SenderWindowID: socket.id,
-			};
-		socket.emit('message', JSON.stringify(message));
-	}
-};
-
 
 async function connected(socket: Socket): Promise<void> {
 	
 	try {
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 			const loggedIn = isLoggedIn();
+			if (!loggedIn) throw('Not Logged in');
 			console.log('%cloggedIn:',color.blue, loggedIn?.name);
 			let oldUser = localStorage.getItem("oldName") ?? "";
 			console.log('%coldUser:',color.yellow, oldUser);
@@ -404,18 +356,27 @@ async function openProfilePopup(profil: ClientProfil) {
 	 // The popup now exists → attach the event
 }
 
+let count = 0;
+function incrementCounter(): number {
+	count += 1;
+	return count;
+}
+
 async function openMessagePopup(message: string) {
 
-	
 	const modalmessage = document.getElementById("modal-message") ?? null;
 	if(!message) return
 	const obj:any =  JSON.parse(message);
-	if (modalmessage)
-		modalmessage.innerHTML = `
+	if (modalmessage) {
+		const messageElement = document.createElement("div");
+		messageElement.innerHTML = `
 					<div class="profile-info">
-						</br>
-            			<div id="profile-about">Next Game Message: ${obj.link}</div>
+            			<div id="profile-about">Next Game Message ${incrementCounter()}:  ${obj.link}</div>
         			</div>`;
+		modalmessage.appendChild(messageElement);
+		modalmessage.scrollTop = modalmessage.scrollHeight;
+	
+	}
 	const gameMessage = document.getElementById("game-modal") ?? null;
 	if (gameMessage)
 		gameMessage.classList.remove("hidden");
@@ -569,7 +530,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	socket.on('listBud', async (myBuddies: string)  => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-		console.log('List buddies connected ', myBuddies);
+		console.log('%cList buddies connected ',color.yellow, myBuddies);
 		listBuddies(socket, buddies, myBuddies);
 	});
 
@@ -635,6 +596,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				buttonMessage.addEventListener("click", () => {
   				const gameMessage = document.getElementById("game-modal") ?? null;
 				if (gameMessage) gameMessage.classList.add("hidden");
+				const modalmessage = document.getElementById("modal-message") ?? null;
+				if (modalmessage) {modalmessage.innerHTML = "";}
+
 			});
 
 
@@ -691,7 +655,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				if (chatWindow) {
 					chatWindow.innerHTML = '';
 				}
-				clear(socket); //DEV testing broadcastGames
+				//clearChatWindow(socket); //DEV testing broadcastGames
 			});
 
 			// Dev Game message button

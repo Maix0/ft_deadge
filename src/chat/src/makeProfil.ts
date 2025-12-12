@@ -5,7 +5,7 @@ import { getUserByName } from './getUserByName';
 import { Socket } from 'socket.io';
 
 /**
- * function getProfil - translates the Users[] to a one user looking by name 
+ * function makeProfil - translates the Users[] to a one user looking by name 
  * and puts it into ClientProfil format 
  * @param fastify 
  * @param user 
@@ -13,7 +13,7 @@ import { Socket } from 'socket.io';
  * @returns 
  */
 
-export async function getProfil(fastify: FastifyInstance, user: string, socket: Socket): Promise <ClientProfil> {
+export async function makeProfil(fastify: FastifyInstance, user: string, socket: Socket): Promise <ClientProfil> {
 
 	let clientProfil!: ClientProfil;
 	const users: User[] = fastify.db.getAllUsers() ?? [];
@@ -23,7 +23,7 @@ export async function getProfil(fastify: FastifyInstance, user: string, socket: 
 		// console.log(color.yellow, `DEBUG LOG: 'login Name: '${allUsers.login}' user: '${user}'`);
 		clientProfil =
 		{
-			command: 'getProfil',
+			command: 'makeProfil',
 			destination: 'profilMsg',
 			type: 'chat' as const,
 			user: `${allUsers.name}`,

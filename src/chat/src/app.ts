@@ -7,7 +7,6 @@ import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
 import type { User } from '@shared/database/mixin/user';
-import { sendGameLinkToChatService } from '../../@shared/src/utils/index';
 import type { BlockedData } from '@shared/database/mixin/blocked';
 import { broadcast } from './broadcast';
 import type { ClientProfil, ClientMessage } from './chat_types';
@@ -15,12 +14,13 @@ import { sendPrivMessage } from './sendPrivMessage';
 import { sendBlocked } from './sendBlocked';
 import { sendInvite } from './sendInvite';
 import { getUserByName } from './getUserByName';
-import { getProfil } from './getProfil';
+import { makeProfil } from './makeProfil';
 import { isBlocked } from './isBlocked';
 import { sendProfil } from './sendProfil';
-import { broadcastNextGame } from './broadcastNextGame';
 import { setGameLink } from './setGameLink';
- 
+import { nextGame_SocketListener } from './nextGame_SocketListener';
+import { list_SocketListener } from './list_SocketListener';
+
 // colors for console.log
 export const color = {
 	red: '\x1b[31m',
@@ -42,12 +42,7 @@ interface ClientInfo {
 
 
 
-/**
-/* TODO find the description info for profil / or profil game link and return
-**/
-export function createNextGame() {
-	return '<a href=\'https://localhost:8888/app/\' style=\'color: blue; text-decoration: underline; cursor: pointer;\'>The next Game is Starting click here to watch</a>';
-};
+
 
 function setAboutPlayer(about: string): string {
 	if (!about) {
@@ -110,7 +105,7 @@ declare module 'fastify' {
 			inviteGame: (data: ClientProfil) => void;
 			blockUser: (data: ClientProfil) => void;
 			privMessageCopy: (msg: string) => void;
-			nextGame: (msg: string) => void;
+			nextGame: (nextGame: string) => void;
 			message: (msg: string) => void;
 			listBud: (msg: string) => void;
 			client_entered: (userName: string, user: string) => void;
@@ -122,45 +117,7 @@ declare module 'fastify' {
 }
 
 async function onReady(fastify: FastifyInstance) {
-	function connectedUser(io?: Server, target?: string): number {
-		let count = 0;
-		const seen = new Set<string>();
-		// <- only log/count unique usernames
 
-		for (const [socketId, username] of clientChat) {
-			// Basic sanity checks
-			if (typeof socketId !== 'string' || socketId.length === 0) {
-				clientChat.delete(socketId);
-				continue;
-			}
-			if (typeof username.user !== 'string' || username.user.length === 0) {
-				clientChat.delete(socketId);
-				continue;
-			}
-
-			// If we have the io instance, attempt to validate the socket is still connected
-			if (io && typeof io.sockets?.sockets?.get === 'function') {
-				const socket = io.sockets.sockets.get(socketId) as Socket | undefined;
-				// If socket not found or disconnected, remove from map and skip
-				if (!socket || socket.disconnected) {
-					clientChat.delete(socketId);
-					continue;
-				}
-				// Skip duplicates (DO NOT delete them — just don't count)
-				if (seen.has(username.user)) {
-					continue;
-				}
-				// socket exists and is connected
-				seen.add(username.user);
-				count++;
-				const targetSocketId = target;
-				io.to(targetSocketId!).emit('listBud', username.user);
-				continue;
-			}
-			count++;
-		}
-		return count;
-	}
 
 	// shows address for connection au server transcendance
 	const session = process.env.SESSION_MANAGER ?? '';
@@ -185,31 +142,29 @@ async function onReady(fastify: FastifyInstance) {
 			// console.log(color.red, 'DEBUG LOG: connected in the Chat :', connectedUser(fastify.io), color.reset);
 		});
 
-		socket.on('nextGame', () => {
-			const link = createNextGame();
-			const game: Promise<string> = sendGameLinkToChatService(link);
-			broadcastNextGame(fastify, game);
-		});
+		nextGame_SocketListener(fastify, socket);
 
-		socket.on('list', (object) => {
+		list_SocketListener(fastify, socket);
 
-			const userFromFrontend = object || null;
-			const client = clientChat.get(socket.id) || null;
+		// socket.on('list', (object) => {
 
-			//console.log(color.red, 'DEBUG LOG: list activated', userFromFrontend, color.reset, socket.id);
+		// 	const userFromFrontend = object || null;
+		// 	const client = clientChat.get(socket.id) || null;
 
-			if (userFromFrontend.oldUser !== userFromFrontend.user) {
-				//console.log(color.red, 'DEBUG LOG: list activated', userFromFrontend.oldUser, color.reset);
-				// if (client?.user === null) {
-				// 	console.log('ERROR: clientName is NULL');
-				// 	return;
-				// };
-				if (client) {
-  					client.user = userFromFrontend.user;
-				}
-			}
-			connectedUser(fastify.io, socket.id);
-		});
+		// 	//console.log(color.red, 'DEBUG LOG: list activated', userFromFrontend, color.reset, socket.id);
+
+		// 	if (userFromFrontend.oldUser !== userFromFrontend.user) {
+		// 		//console.log(color.red, 'DEBUG LOG: list activated', userFromFrontend.oldUser, color.reset);
+		// 		// if (client?.user === null) {
+		// 		// 	console.log('ERROR: clientName is NULL');
+		// 		// 	return;
+		// 		// };
+		// 		if (client) {
+  		// 			client.user = userFromFrontend.user;
+		// 		}
+		// 	}
+		// 	connectedUser(fastify.io, socket.id);
+		// });
 
 		socket.on('updateClientName', (object) => {
 			const userFromFrontend = object || null;
@@ -336,7 +291,7 @@ async function onReady(fastify: FastifyInstance) {
 			const users: User[] = fastify.db.getAllUsers() ?? [];
 			// console.log(color.yellow, 'DEBUG LOG: ALL USERS EVER CONNECTED:', users);
 			// console.log(color.blue, `DEBUG LOG: ClientName: '${clientName}' id Socket: '${socket.id}' target profil:`, profilMessage.user);
-			const profile: ClientProfil = await getProfil(fastify, profilMessage.user, socket);
+			const profile: ClientProfil = await makeProfil(fastify, profilMessage.user, socket);
 			if (clientName !== null) {
 				const testuser: User | null = getUserByName(users, profilMessage.user);
 				console.log(color.yellow, 'user:', testuser?.name ?? 'Guest');
