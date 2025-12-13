@@ -3,8 +3,8 @@ import { Socket } from 'socket.io-client';
 import { getUser } from "@app/auth";
 
 /**
- * function sends socket.emit to the backend to active and broadcast a message to all sockets
- * echos the message with addMessage to the sender
+ * function sends socket.emit to the backend to active and a broadcast message to all sockets
+ * echos addPongMessage() the message with addMessage to the sender
  * @param socket 
  * @param msgCommand 
  */

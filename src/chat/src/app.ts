@@ -89,7 +89,6 @@ export { app };
 declare module 'fastify' {
 	interface FastifyInstance {
 		io: Server<{
-			hello: (message: string) => string;
 			MsgObjectServer: (data: { message: ClientMessage }) => void;
 			privMessage: (data: string) => void;
 			profilMessage: (data: ClientProfil) => void;
