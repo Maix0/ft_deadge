@@ -81,6 +81,9 @@ async function whoami(socket: Socket) {
 };
 
 
+
+
+
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 	
 	let socket = getSocket();
@@ -114,6 +117,42 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	 * sockets different listeners
 	 * transport different data formats
 	 */
+
+
+
+	
+	
+	const keys: Record<string, boolean> = {};
+	
+	document.addEventListener("keydown", (e) => {
+		keys[e.key.toLowerCase()] = true;
+	});
+	
+	document.addEventListener("keyup", (e) => {
+		keys[e.key.toLowerCase()] = false;
+	});
+	
+	setInterval(() => {
+		if (keys['w']) socket.emit("bat:move", "up");
+		
+		
+		if (keys['s']) { 
+			console.log('s pressed');
+			socket.emit("bat:move", "down");
+			
+		}
+		
+		
+	}, 16);
+	
+	
+	
+	const bat = document.getElementById("pong-bat.left") ;
+	
+	socket.on("bat:update", (y) => {
+		if (bat)	
+	  		bat.style.top = `${y}px`;
+	});
 
 	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
 		console.log('%csocket.on MsgObjectServer', color.yellow );

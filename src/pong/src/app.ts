@@ -76,6 +76,8 @@ declare module 'fastify' {
 		io: Server<{
 			inviteGame: (data: ClientProfil) => void;
 			message: (msg: string) => void;
+			pong_bat_left: (direction: "up" | "down") => void;
+
 		}>;
 	}
 }
@@ -90,8 +92,29 @@ async function onReady(fastify: FastifyInstance) {
 		console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
 	}
 
+	let batY = 185; // shared bat position
+	const SPEED = 10;
 
 	fastify.io.on('connection', (socket: Socket) => {
+
+
+  		socket.emit("bat:update", batY);
+
+  		socket.on('bat:move', (direction: "up" | "down") => {
+  		  if (direction === "up") {  
+			batY -= SPEED; 
+			console.log('w pressed UP');
+		  }
+  		  if (direction === "down") { 
+			console.log('s pressed DOWN');
+
+			batY += SPEED;
+		  }
+  		  // clamp inside field
+  		  batY = Math.max(0, Math.min(370, batY));
+		
+  		  socket.emit("bat:update", batY);
+  		});
 
 		socket.on('message', (message: string) => {
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
