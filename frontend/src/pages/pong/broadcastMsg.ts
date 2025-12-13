@@ -1,4 +1,4 @@
-import { addMessage } from "./addMessage";
+import { addPongMessage } from "./addPongMessage";
 import { Socket } from 'socket.io-client';
 import { getUser } from "@app/auth";
 
@@ -10,7 +10,7 @@ import { getUser } from "@app/auth";
  */
 export function broadcastMsg (socket: Socket, msgCommand: string[]): void {
 	let msgText = msgCommand[1] ?? "";					
-	addMessage(msgText);
+	addPongMessage(msgText);
 	const user = getUser();
 	if (user && socket?.connected) {
 		const message = {
