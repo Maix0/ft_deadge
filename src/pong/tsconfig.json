@@ -1,0 +1,15 @@
+// {
+//   "extends": "../tsconfig.base.json",
+//   "compilerOptions": {
+//     "skipLibCheck": true,    // skips type checking for all .d.ts files
+//     "moduleResolution": "node",
+//     "esModuleInterop": true,
+//     "types": ["node"]  },
+//     "include": ["src/**/*.ts"]
+// }
+
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {},
+  "include": ["src/**/*.ts"]
+}

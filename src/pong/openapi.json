@@ -1,0 +1,21 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "version": "9.6.1",
+        "title": "@fastify/swagger"
+    },
+    "components": {
+        "schemas": {}
+    },
+    "paths": {},
+    "servers": [
+        {
+            "url": "https://local.maix.me:8888",
+            "description": "direct from docker"
+        },
+        {
+            "url": "https://local.maix.me:8000",
+            "description": "using fnginx"
+        }
+    ]
+}
