@@ -80,7 +80,8 @@
   bg-gray-200 w-[850px] 
   p-6 rounded-xl 
   shadow-2xl 
-  text-center z-50;
+  text-center 
+  z-50;
 }
 
 .mainboxDisplay button {
@@ -88,18 +89,49 @@
   cursor-pointer
 }
 
-.title {
+.pongbox-style {
   @apply
-  text-6xl 
-  font-bold
-  text-gray-800
+  h-[450px]
+  w-[800px]
+  bg-gray-400
+  text-6xl
+  flex
+  items-center
+  justify-center;
 }
 
 
-
-
-
-p {
+.text-style {
   @apply
   text-black
+
+}
+
+.pong-field {
+  @apply relative w-[800px] h-[450px] bg-black;
+}
+
+.pong-bat {
+  @apply absolute w-[12px] h-[80px] bg-white;
+}
+
+.pong-bat.left {
+  @apply left-4 top-1/2 -translate-y-1/2;
+}
+
+.pong-bat.right {
+  @apply right-4 top-1/2 -translate-y-1/2;
+}
+
+
+.pong-center-line {
+  @apply
+    absolute
+    left-1/2
+    top-0
+    h-full
+    w-[4px]
+    -translate-x-1/2
+    bg-[linear-gradient(to_bottom,white_50%,transparent_50%)]
+    bg-[length:4px_20px];
 }
