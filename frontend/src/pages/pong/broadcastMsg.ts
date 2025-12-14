@@ -9,7 +9,7 @@ import { getUser } from "@app/auth";
  * @param msgCommand 
  */
 export function broadcastMsg (socket: Socket, msgCommand: string[]): void {
-	let msgText = msgCommand[1] ?? "";					
+	let msgText = msgCommand[1] ?? "";
 	addPongMessage(msgText);
 	const user = getUser();
 	if (user && socket?.connected) {

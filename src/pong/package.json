@@ -30,7 +30,7 @@
 		"typebox": "^1.0.62"
 	},
 	"devDependencies": {
-		"@types/node": "^22.19.2",
+		"@types/node": "^22.19.3",
 		"rollup-plugin-node-externals": "^8.1.2",
 		"vite": "^7.2.7",
 		"vite-tsconfig-paths": "^5.1.4"
