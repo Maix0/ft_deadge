@@ -10,6 +10,9 @@ import { broadcast } from './broadcast';
 import type { ClientProfil, ClientMessage } from './chat_types';
 import { sendInvite } from './sendInvite';
 import { setGameLink } from './setGameLink';
+import { emit } from 'process';
+import { Record } from 'typebox/type';
+import { UserId } from '@shared/database/mixin/user';
 
 
 
@@ -80,7 +83,9 @@ declare module 'fastify' {
 			batmove_Right: (direction: "up" | "down") => void;
 			batLeft_update: (y:number) => void;
 			batRight_update: (y:number) => void;
+			ballPos_update: (x:number, y:number) => void;
 			MsgObjectServer: (data: { message: ClientMessage }) => void;
+			queuJoin: (userID : UserId) => void;
 		}>;
 	}
 }
@@ -96,66 +101,116 @@ async function onReady(fastify: FastifyInstance) {
 	}
 
 	const SPEED = 20; // bat speed
-	const BOTTOM_EDGE = 370; // bottom edge of the field;
-	const TOP_EDGE = 0; // top edge of the field
-	const START_POS_Y = 178; // bat y in the middle of the field
-	let batLeft = START_POS_Y;  //shared bat position
-	let batRight = START_POS_Y;  //shared bat position
-	
-	fastify.io.on('connection', (socket: Socket) => {
 
+	const TOP_EDGE = 0; // top edge of the field
+	const BOTTOM_EDGE = 450; // bottom edge of the field;
+	const LEFT_EDGE = 0;
+	const RIGHT_EDGE = 800;
+
+	const MAX_PADDLE_Y = 370; // BOTTOM_EDGE - padle_height
+	const START_POS_Y = 178; // bat y in the middle of the field
+
+	const START_BALLX = 364; //(RIGHT_EDGE / 2) - (ballradius*2 + ballBorder);
+	const START_BALLY = 189; //(BOTTOM_EDGE / 2) - (ballradius*2 + ballBorder);
+	const ACCELERATION_FACTOR = 1.15;
+
+	let batLeft = START_POS_Y;   //shared start bat position
+	let batRight = START_POS_Y;  //shared start bat position
+
+	let ballPosX = START_BALLX;
+	let ballPosY = START_BALLY;
+	let ballSpeedX = 1;
+	let ballSpeedY = 1;
+
+	let games : Record<UserId, string> = {}; //  uuid, game uid - if not in game empty string
+
+	fastify.io.on('connection', (socket: Socket) => {
   		socket.emit("batLeft_update", batLeft);
   		socket.emit("batRight_update", batRight);
+		socket.emit("ballPos_update", ballPosX, ballPosY);
 
-  		socket.on('batmove_Left', (direction: "up" | "down") => {
-  		  if (direction === "up") {  
-			batLeft -= SPEED; 
-			console.log('w pressed UP');
-		  }
-  		  if (direction === "down") { 
-			console.log('s pressed DOWN');
+		// GAME
+			// paddle handling
+			socket.on('batmove_Left', (direction: "up" | "down") => {
+			if (direction === "up") {
+				batLeft -= SPEED;
+				console.log('w pressed UP');
+			}
+			if (direction === "down") {
+				console.log('s pressed DOWN');
 
-			batLeft += SPEED;
-		  }
-  		  // position of bat leftplokoplpl
-  		  batLeft = Math.max(TOP_EDGE, Math.min(BOTTOM_EDGE, batLeft));
+				batLeft += SPEED;
+			}
+			// position of bat leftplokoplpl
+			batLeft = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, batLeft));
+			console.log('batLeft_update is called y:',batLeft);
+			socket.emit("batLeft_update", batLeft);
+			});
+			socket.on('batmove_Right', (direction: "up" | "down") => {
+			if (direction === "up") {
+				batRight -= SPEED;
+				console.log('p pressed UP');
+			}
+			if (direction === "down") {
+				console.log('l pressed DOWN');
+				batRight += SPEED;
+			}
+			// position of bat left
+			batRight = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, batRight));
+			console.log('batRight_update is called y:',batRight);
+			socket.emit("batRight_update", batRight);
+			});
+			// ball handling:
+			// TODO 1: l/r bat hit
+			// TODO 2: l/r wall hit : score
+			setInterval(async () => {
+				const new_ballPosX = ballPosX + ballSpeedX;
+				const new_ballPosY = ballPosY + ballSpeedY;
+
+				if (new_ballPosX < 0 || new_ballPosX + 36*2 > RIGHT_EDGE) {
+					ballSpeedX *= -1;
+					ballSpeedX *= ACCELERATION_FACTOR;
+					ballSpeedY *= ACCELERATION_FACTOR;
+					// TODO: score point + 	ball reset + spd reset
+
+				}
+				if (new_ballPosY < 0 || new_ballPosY + 36*2 > BOTTOM_EDGE) {
+					ballSpeedY *= -1;
+					ballSpeedX *= ACCELERATION_FACTOR;
+					ballSpeedY *= ACCELERATION_FACTOR;
+				}
+				ballSpeedX = Math.max(-10, Math.min(ballSpeedX, 10));
+				ballSpeedY = Math.max(-10, Math.min(ballSpeedY, 10));
+
+				ballPosX += ballSpeedX;
+				ballPosY += ballSpeedY;
+
+				socket.emit("ballPos_update", ballPosX, ballPosY);
+			}, 1024)
 		
-		  console.log('batLeft_update is called y:',batLeft);
+		// QUEU HANDL
+			socket.on('queuJoin', async (uuid: UserId) => {
+				console.log('queu join recieved for : ', uuid);
+				if (!games.hasOwnProperty(uuid)) {
+					console.log("new user in game search queu");
+					games[uuid] = "";
+				} else if (games.hasOwnProperty(uuid) && games[uuid] == "") {
+					console.log('already searching for game');
+				} else { // (games.hasOwnProperty(uuid) && games[uuid] != "") {
+					console.log('user alredy in game');
+					return ;
+				}
+				// TODO: step2 : sesrch in record<> find guid w/ "" &/ pair them up
+				// TODO: step3 : move game logic to lifecycle of queu'ed game
+			})
 
-  		  socket.emit("batLeft_update", batLeft);
-  		});
-
-		socket.on('batmove_Right', (direction: "up" | "down") => {
-  		  if (direction === "up") {  
-			batRight -= SPEED; 
-			console.log('p pressed UP');
-		  }
-  		  if (direction === "down") { 
-			console.log('l pressed DOWN');
-
-			batRight += SPEED;
-		  }
-  		  // position of bat left
-  		  batRight = Math.max(TOP_EDGE, Math.min(BOTTOM_EDGE, batRight));
-		
-		  console.log('batRight_update is called y:',batRight);
-
-  		  socket.emit("batRight_update", batRight);
-  		});
-
-
-
-
-
-
-		
+		// other:
 		socket.on('message', (message: string) => {
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
 			clientChat.set(socket.id, { user: obj.user, lastSeen: Date.now() });
 			socket.emit('welcome', {msg: 'Welcome to the chat! : '});
 			broadcast(fastify, obj, obj.SenderWindowID);
 		});
-
 		socket.on('inviteGame', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilInvite: ClientProfil = JSON.parse(data) || '';
@@ -164,5 +219,6 @@ async function onReady(fastify: FastifyInstance) {
 				sendInvite(fastify, inviteHtml, profilInvite);
 			}
 		});
+
 	});
 }

@@ -6,7 +6,6 @@ export type ClientMessage = {
 	SenderWindowID: string;
 };
 
-
 export type ClientProfil = {
 	command: string,
 	destination: string,
