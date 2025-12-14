@@ -7,17 +7,13 @@
     <!-- Horizontal Message Box -->
     <div id="system-box" class="system-info">System: connecting ... </div>
     <!-- Pong Box -->
-    <p>try this in a terminal</p>
-    </br>
-    <p>curl -k --data-raw '{"message": "Message SENT from the terminal en REMOTE"}' 'https://local.maix.me:8888/api/pong/broadcast' -H "Content-Type: application/json"</p>
     <div class="flex justify-center mt-2">
         <div id="pongspace" class="flex flex-col">
           <div id="pongbox" class="pongbox-style">
             <div class="pong-field">
+              <div id="batleft" class="pong-batleft bg-amber-400 top-0"></div>
               <div class="pong-center-line"></div>
-                <div id="bat-left" class="pong-bat left"></div>
-                <div class="pong-bat right"></div>
-            </div>
+              <div id="batright" class="pong-batright bg-amber-400 top-0"></div>
           </div>
         </div>
     </div>

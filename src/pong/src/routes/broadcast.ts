@@ -22,12 +22,23 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 			config: { requireAuth: false },
 		},
 		async function(req, res) {
-			broadcast(this, { command: '', destination: '', user: 'CMwaLeSever!!', text: req.body.message, SenderWindowID: 'server' });
+			broadcast(this, { command: '', destination: 'system-info', user: 'CMwaLeSever!!', text: req.body.message, SenderWindowID: 'server' });
 			void res;
 		},
 	);
 };
 export default route;
+
+/**
+ * 
+ *  try this in a terminal
+ * 
+ *  curl -k --data-raw '{"message": "Message SENT from the terminal en REMOTE"}' 'https://local.maix.me:8888/api/pong/broadcast' -H "Content-Type: application/json"
+ * 
+ *  send message info to the fronatend via the route '/api/pong/broadcast' 
+ */
+
+
 
 
 // const route: FastifyPluginAsync = async (fastify): Promise<void> => {

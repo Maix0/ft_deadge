@@ -113,14 +113,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		systemWindow.scrollTop = systemWindow.scrollHeight;
 	});
 
-	/**
-	 * sockets different listeners
-	 * transport different data formats
-	 */
-
-
-
-	
 	
 	const keys: Record<string, boolean> = {};
 	
@@ -133,66 +125,91 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	});
 	
 	setInterval(() => {
-		if (keys['w']) socket.emit("bat:move", "up");
-		
-		
-		if (keys['s']) { 
-			console.log('s pressed');
-			socket.emit("bat:move", "down");
-			
+		if (keys['w']) { 
+			socket.emit("batmove_Left", "up");
+			console.log('north key pressed - emit batmove_Left up');
 		}
-		
-		
+		if (keys['s']) { 
+			socket.emit("batmove_Left", "down");
+			console.log('south key pressed - emit batmove_Left down');
+		}
+		if (keys['p']) { 
+			socket.emit("batmove_Right", "up");
+			console.log('north key pressed - emit batmove_Right up');
+		}
+		if (keys['l']) { 
+			socket.emit("batmove_Right", "down");
+			console.log('south key pressed - emit batmove_Right down');
+		}		
 	}, 16);
 	
+
+    
+    // Listen for Left bat updates
+    socket.on("batLeft_update", (y: number) => {
+        console.log('batLeft_update received y: ', y);
+		const bat = document.getElementById("batleft") as HTMLDivElement | null;
+    	if (!bat) {
+        	console.error("FATAL ERROR: Bat element with ID 'bat-left' not found. Check HTML.");
+			return ; 
+    	}        
+        if (typeof y === 'number' && !isNaN(y)) {
+            bat.style.transform = `translateY(${y}px)`;
+        } else {
+             console.warn(`Received invalid Y value: ${y}`);
+        }
+    });
+
+    // Listen for Right bat updates
+    socket.on("batRight_update", (y: number) => {
+        console.log('batRight_update received y: ', y);
+		const bat = document.getElementById("batright") as HTMLDivElement | null;
+    	if (!bat) {
+        	console.error("FATAL ERROR: Bat element with ID 'bat-Right' not found. Check HTML.");
+			return ; 
+    	}        
+        if (typeof y === 'number' && !isNaN(y)) {
+            bat.style.transform = `translateY(${y}px)`;
+        } else {
+             console.warn(`Received invalid Y value: ${y}`);
+        }
+    });
+
+
+
+
 	
-	
-	const bat = document.getElementById("pong-bat.left") ;
-	
-	socket.on("bat:update", (y) => {
-		if (bat)	
-	  		bat.style.top = `${y}px`;
-	});
-
-	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
-		console.log('%csocket.on MsgObjectServer', color.yellow );
-		addPongMessage(`</br>${data.message.text}`);
-	});
-
-	socket.on('profilMessage', (profil: ClientProfil) => {	
-		console.log('%csocket.on profilMessage', color.yellow );
-	});
-
-	socket.on('inviteGame', (invite: ClientProfil) => {	
-		console.log('%csocket.on inviteGame', color.yellow );
-	});
-
-	socket.on('blockUser', (blocked: ClientProfil) => {	
-		console.log('%csocket.on blockUser', color.yellow );
-	});
-
-	socket.on('logout', () => {	
-		console.log('%csocket.on logout', color.yellow );
-	});
-
-	socket.on('privMessageCopy', (message) => {
-		console.log('%csocket.on privMessageCopy', color.yellow );
-	})
-
-	socket.on('nextGame', (message: string) => {
-		console.log('%csocket.on nextGame', color.yellow );
-	})
-
-	socket.on('listBud', async (myBuddies: string)  => {
-		console.log('%csocket.on listBud', color.yellow );
-		addPongMessage('socket.once \'listBud\' called')
-
-	});
-
 	socket.once('welcome', (data) => {
 		console.log('%cWelcome PONG PAGE', color.yellow );
 		addPongMessage('socket.once \'Welcome\' called')
 	});
+
+
+
+			// Listen for messages from the server "MsgObjectServer"
+	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
+		// Display the message in the chat window
+		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
+		
+		
+		const MAX_SYSTEM_MESSAGES = 10;
+
+		if (systemWindow && data.message.destination === "system-info") {
+    		const messageElement = document.createElement("div");
+    		messageElement.textContent = `${data.message.user}: ${data.message.text}`;
+    		systemWindow.appendChild(messageElement);
+
+    		// keep only last 10
+    		while (systemWindow.children.length > MAX_SYSTEM_MESSAGES) {
+    		    systemWindow.removeChild(systemWindow.firstChild!);
+    		}
+    		systemWindow.scrollTop = systemWindow.scrollHeight;
+		}
+		console.log("Getuser():", getUser());
+	});
+
+
+
 
 
 	setTitle('Pong Page');

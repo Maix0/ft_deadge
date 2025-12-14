@@ -76,8 +76,11 @@ declare module 'fastify' {
 		io: Server<{
 			inviteGame: (data: ClientProfil) => void;
 			message: (msg: string) => void;
-			pong_bat_left: (direction: "up" | "down") => void;
-
+			batmove_Left: (direction: "up" | "down") => void;
+			batmove_Right: (direction: "up" | "down") => void;
+			batLeft_update: (y:number) => void;
+			batRight_update: (y:number) => void;
+			MsgObjectServer: (data: { message: ClientMessage }) => void;
 		}>;
 	}
 }
@@ -92,30 +95,60 @@ async function onReady(fastify: FastifyInstance) {
 		console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
 	}
 
-	let batY = 185; // shared bat position
-	const SPEED = 10;
-
+	const SPEED = 20; // bat speed
+	const BOTTOM_EDGE = 370; // bottom edge of the field;
+	const TOP_EDGE = 0; // top edge of the field
+	const START_POS_Y = 178; // bat y in the middle of the field
+	let batLeft = START_POS_Y;  //shared bat position
+	let batRight = START_POS_Y;  //shared bat position
+	
 	fastify.io.on('connection', (socket: Socket) => {
 
+  		socket.emit("batLeft_update", batLeft);
+  		socket.emit("batRight_update", batRight);
 
-  		socket.emit("bat:update", batY);
-
-  		socket.on('bat:move', (direction: "up" | "down") => {
+  		socket.on('batmove_Left', (direction: "up" | "down") => {
   		  if (direction === "up") {  
-			batY -= SPEED; 
+			batLeft -= SPEED; 
 			console.log('w pressed UP');
 		  }
   		  if (direction === "down") { 
 			console.log('s pressed DOWN');
 
-			batY += SPEED;
+			batLeft += SPEED;
 		  }
-  		  // clamp inside field
-  		  batY = Math.max(0, Math.min(370, batY));
+  		  // position of bat leftplokoplpl
+  		  batLeft = Math.max(TOP_EDGE, Math.min(BOTTOM_EDGE, batLeft));
 		
-  		  socket.emit("bat:update", batY);
+		  console.log('batLeft_update is called y:',batLeft);
+
+  		  socket.emit("batLeft_update", batLeft);
   		});
 
+		socket.on('batmove_Right', (direction: "up" | "down") => {
+  		  if (direction === "up") {  
+			batRight -= SPEED; 
+			console.log('p pressed UP');
+		  }
+  		  if (direction === "down") { 
+			console.log('l pressed DOWN');
+
+			batRight += SPEED;
+		  }
+  		  // position of bat left
+  		  batRight = Math.max(TOP_EDGE, Math.min(BOTTOM_EDGE, batRight));
+		
+		  console.log('batRight_update is called y:',batRight);
+
+  		  socket.emit("batRight_update", batRight);
+  		});
+
+
+
+
+
+
+		
 		socket.on('message', (message: string) => {
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
 			clientChat.set(socket.id, { user: obj.user, lastSeen: Date.now() });

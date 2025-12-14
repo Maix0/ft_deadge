@@ -115,12 +115,12 @@
   @apply absolute w-[12px] h-[80px] bg-white;
 }
 
-.pong-bat.left {
-  @apply left-4 top-1/2 -translate-y-1/2;
+.pong-batleft {
+  @apply absolute left-4 w-[12px] h-[80px] top-[0px];
 }
 
-.pong-bat.right {
-  @apply right-4 top-1/2 -translate-y-1/2;
+.pong-batright {
+  @apply absolute right-4 w-[12px] h-[80px] top-[0px];
 }
 
 
