@@ -90,6 +90,16 @@ declare module 'fastify' {
 	}
 }
 
+function batColision(ball_origin_x : number, ball_origin_y : number, ball_height : number, origin_bat_x : number, origin_bat_y : number, bat_w : number, bat_h : number)
+{
+	if (((ball_origin_x >= origin_bat_x && ball_origin_x <= origin_bat_x + bat_w) ||
+			(ball_origin_x + ball_height >= origin_bat_x && ball_origin_x + ball_height <= origin_bat_x + bat_w))
+		&& ((ball_origin_y >= origin_bat_y && ball_origin_y <= origin_bat_y + bat_h) ||
+			(ball_origin_y + ball_height >= origin_bat_y && ball_origin_y + ball_height <= origin_bat_y + bat_h)))
+		return (true);
+	return (false);
+}
+
 async function onReady(fastify: FastifyInstance) {
 
 	// shows address for connection au server transcendance
@@ -100,93 +110,106 @@ async function onReady(fastify: FastifyInstance) {
 		console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
 	}
 
-	const SPEED = 20; // bat speed
-
+	// DRAW AREA
 	const TOP_EDGE = 0; // top edge of the field
 	const BOTTOM_EDGE = 450; // bottom edge of the field;
 	const LEFT_EDGE = 0;
 	const RIGHT_EDGE = 800;
 
-	const MAX_PADDLE_Y = 370; // BOTTOM_EDGE - padle_height
-	const START_POS_Y = 178; // bat y in the middle of the field
+	// PADDLEs
+	const PADDLE_HEIGHT = 80;
+	const PADDLE_WIDTH = 12;
 
-	const START_BALLX = 364; //(RIGHT_EDGE / 2) - (ballradius*2 + ballBorder);
-	const START_BALLY = 189; //(BOTTOM_EDGE / 2) - (ballradius*2 + ballBorder);
-	const ACCELERATION_FACTOR = 1.15;
+	const PADDLE_SPEED = 20;
+	const PADDLE_X_OFFSET = 4;
 
-	let batLeft = START_POS_Y;   //shared start bat position
-	let batRight = START_POS_Y;  //shared start bat position
+	const MAX_PADDLE_Y = BOTTOM_EDGE - PADDLE_HEIGHT; // 370
+	const PADDLE_START = BOTTOM_EDGE / 2 - PADDLE_HEIGHT / 2; // 185
+
+	// BALL
+	const BALL_SIZE = 8 * 2 + 4; // widht times 2 bc rounded on moth sides + 4 for border
+	const START_BALLX = (RIGHT_EDGE / 2) - BALL_SIZE;
+	const START_BALLY = (BOTTOM_EDGE / 2) - BALL_SIZE;
+
+	const ACCELERATION_FACTOR = 1.0001;
+	const ABS_MAX_BALL_SPEED = 10;
+
+	// val inits
+	let paddleLeft = PADDLE_START;   //shared start bat position
+	let paddleRight = PADDLE_START;  //shared start bat position
 
 	let ballPosX = START_BALLX;
 	let ballPosY = START_BALLY;
 	let ballSpeedX = 1;
 	let ballSpeedY = 1;
 
+
 	let games : Record<UserId, string> = {}; //  uuid, game uid - if not in game empty string
 
 	fastify.io.on('connection', (socket: Socket) => {
-  		socket.emit("batLeft_update", batLeft);
-  		socket.emit("batRight_update", batRight);
+  		socket.emit("batLeft_update", paddleLeft);
+  		socket.emit("batRight_update", paddleRight);
 		socket.emit("ballPos_update", ballPosX, ballPosY);
 
 		// GAME
 			// paddle handling
 			socket.on('batmove_Left', (direction: "up" | "down") => {
-			if (direction === "up") {
-				batLeft -= SPEED;
-				console.log('w pressed UP');
-			}
-			if (direction === "down") {
-				console.log('s pressed DOWN');
-
-				batLeft += SPEED;
-			}
-			// position of bat leftplokoplpl
-			batLeft = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, batLeft));
-			console.log('batLeft_update is called y:',batLeft);
-			socket.emit("batLeft_update", batLeft);
+				if (direction === "up") {
+					paddleLeft -= PADDLE_SPEED;
+				}
+				if (direction === "down") {
+					paddleLeft += PADDLE_SPEED;
+				}
+				// position of bat leftplokoplpl
+				paddleLeft = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, paddleLeft));
+				socket.emit("batLeft_update", paddleLeft);
 			});
 			socket.on('batmove_Right', (direction: "up" | "down") => {
-			if (direction === "up") {
-				batRight -= SPEED;
-				console.log('p pressed UP');
-			}
-			if (direction === "down") {
-				console.log('l pressed DOWN');
-				batRight += SPEED;
-			}
-			// position of bat left
-			batRight = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, batRight));
-			console.log('batRight_update is called y:',batRight);
-			socket.emit("batRight_update", batRight);
+				if (direction === "up") {
+					paddleRight -= PADDLE_SPEED;
+				}
+				if (direction === "down") {
+					paddleRight += PADDLE_SPEED;
+				}
+				// position of bat left
+				paddleRight = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, paddleRight));
+				socket.emit("batRight_update", paddleRight);
 			});
 			// ball handling:
 			// TODO 1: l/r bat hit
-			// TODO 2: l/r wall hit : score
+			// TODO 2: l/r wall hit : score 5pt gagne
 			setInterval(async () => {
 				const new_ballPosX = ballPosX + ballSpeedX;
 				const new_ballPosY = ballPosY + ballSpeedY;
 
-				if (new_ballPosX < 0 || new_ballPosX + 36*2 > RIGHT_EDGE) {
+				if (batColision(new_ballPosX, new_ballPosY, BALL_SIZE, PADDLE_X_OFFSET, paddleLeft, PADDLE_WIDTH, PADDLE_HEIGHT) ||
+				batColision(new_ballPosX, new_ballPosY, BALL_SIZE, RIGHT_EDGE - PADDLE_X_OFFSET, paddleRight, PADDLE_WIDTH, PADDLE_HEIGHT))
+				{
 					ballSpeedX *= -1;
 					ballSpeedX *= ACCELERATION_FACTOR;
 					ballSpeedY *= ACCELERATION_FACTOR;
-					// TODO: score point + 	ball reset + spd reset
-
+					console.log('bat colision');
 				}
-				if (new_ballPosY < 0 || new_ballPosY + 36*2 > BOTTOM_EDGE) {
+				else if (new_ballPosX < 0 || new_ballPosX + BALL_SIZE*2 > RIGHT_EDGE) {
+					ballSpeedX *= -1;
+					ballSpeedX *= ACCELERATION_FACTOR;
+					ballSpeedY *= ACCELERATION_FACTOR;
+					console.log('wall colision');
+					// TODO: score point + 	ball reset + spd reset
+				}
+				else if (new_ballPosY < 0 || new_ballPosY + BALL_SIZE*2 > BOTTOM_EDGE) {
 					ballSpeedY *= -1;
 					ballSpeedX *= ACCELERATION_FACTOR;
 					ballSpeedY *= ACCELERATION_FACTOR;
 				}
-				ballSpeedX = Math.max(-10, Math.min(ballSpeedX, 10));
-				ballSpeedY = Math.max(-10, Math.min(ballSpeedY, 10));
+				ballSpeedX = Math.max(-ABS_MAX_BALL_SPEED, Math.min(ballSpeedX, ABS_MAX_BALL_SPEED));
+				ballSpeedY = Math.max(-ABS_MAX_BALL_SPEED, Math.min(ballSpeedY, ABS_MAX_BALL_SPEED));
 
 				ballPosX += ballSpeedX;
 				ballPosY += ballSpeedY;
 
 				socket.emit("ballPos_update", ballPosX, ballPosY);
-			}, 1024)
+			}, 16)
 		
 		// QUEU HANDL
 			socket.on('queuJoin', async (uuid: UserId) => {
