@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
+    "@types/qrcode": "^1.5.6",
     "typescript": "~5.9.3",
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^5.1.4"
