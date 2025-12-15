@@ -1,5 +1,8 @@
 import { showError } from "@app/toast";
 import client from '@app/api';
+import cookie from 'js-cookie';
+
+cookie.remove('pkce');
 
 export type User = {
 	id: string;

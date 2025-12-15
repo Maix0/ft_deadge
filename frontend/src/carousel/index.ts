@@ -7,6 +7,7 @@ const overlay = document.querySelector('#overlay')!;
 menuBtn.addEventListener('click', () => {
 	sidebar.classList.toggle('-translate-x-full')
 	overlay.classList.toggle('opacity-0');
+	overlay.classList.toggle('opacity-40');
 	overlay.classList.toggle('pointer-events-none');
 	menuBtn.classList.toggle('flipped');
 });
@@ -14,4 +15,5 @@ menuBtn.addEventListener('click', () => {
 overlay.addEventListener('click', () => {
 	sidebar.classList.add('-translate-x-full');
 	overlay.classList.add('opacity-0', 'pointer-events-none');
+	overlay.classList.remove('opacity-40');
 });

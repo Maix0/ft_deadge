@@ -17,7 +17,11 @@ import { updateUser } from "@app/auth";
 
 const TOTP_LENGTH = 6;
 
-async function handleOtp(app: HTMLElement, token: string, returnTo: string | null) {
+async function handleOtp(
+	app: HTMLElement,
+	token: string,
+	returnTo: string | null,
+) {
 	app.innerHTML = totpHtml;
 
 	const container = app.querySelector("#totp-container")!;
@@ -76,19 +80,18 @@ async function handleOtp(app: HTMLElement, token: string, returnTo: string | nul
 		if (code.length === TOTP_LENGTH && /^[0-9]+$/.test(code)) {
 			let res = await client.loginOtp({
 				loginOtpRequest: {
-					code, token,
-				}
-			})
+					code,
+					token,
+				},
+			});
 
 			if (res.kind === "success") {
 				Cookie.set("token", res.payload.token, {
 					path: "/",
 					sameSite: "lax",
 				});
-				if (returnTo !== null) navigateTo(returnTo);
-				else navigateTo("/");
-			}
-			else if (res.kind === "failed") {
+				navigateTo(returnTo ?? "/");
+			} else if (res.kind === "failed") {
 				showError(`Failed to authenticate: ${res.msg}`);
 			}
 		}
@@ -96,7 +99,6 @@ async function handleOtp(app: HTMLElement, token: string, returnTo: string | nul
 
 	inputs[0].focus();
 }
-
 
 async function handleLogin(
 	_url: string,
@@ -131,7 +133,7 @@ async function handleLogin(
 				if (returnTo !== null) {
 					bReturnTo.parentElement!.hidden = false;
 					bReturnTo.addEventListener("click", async () => {
-						if (returnTo !== null) navigateTo(returnTo);
+						navigateTo(returnTo ?? "/");
 					});
 				}
 			},
@@ -189,11 +191,15 @@ async function handleLogin(
 							setTitle(
 								`Welcome ${user.guest ? "[GUEST] " : ""}${user.name}`,
 							);
-							if (returnTo !== null) navigateTo(returnTo);
+							navigateTo(returnTo ?? "/");
 							break;
 						}
 						case "otpRequired": {
-							return await handleOtp(app!, res.payload.token, returnTo);
+							return await handleOtp(
+								app!,
+								res.payload.token,
+								returnTo,
+							);
 						}
 						case "failed": {
 							showError(`Failed to login: ${res.msg}`);
@@ -209,7 +215,9 @@ async function handleLogin(
 				document.querySelector<HTMLButtonElement>("#bGuestLogin");
 			bLoginAsGuest?.addEventListener("click", async () => {
 				try {
-					const res = await client.guestLogin({ guestLoginRequest: { name: undefined } });
+					const res = await client.guestLogin({
+						guestLoginRequest: { name: undefined },
+					});
 					switch (res.kind) {
 						case "success": {
 							Cookie.set("token", res.payload.token, {
@@ -224,7 +232,7 @@ async function handleLogin(
 							setTitle(
 								`Welcome ${user.guest ? "[GUEST] " : ""}${user.name}`,
 							);
-							if (returnTo !== null) navigateTo(returnTo);
+							navigateTo(returnTo ?? "/");
 							break;
 						}
 						case "failed": {

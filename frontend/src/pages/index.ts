@@ -5,6 +5,7 @@ import './login/login.ts'
 import './signin/signin.ts'
 import './ttt/ttt.ts'
 import './profile/profile.ts'
+import './logout/logout.ts'
 
 // ---- Initial load ----
 setTitle("");
