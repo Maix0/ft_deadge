@@ -8,7 +8,7 @@ DOCKER_SERVICE=        \
 			  tic-tac-toe \
 			  nginx    \
 			  user     \
-			  
+			  pong     \
 
 all: build
 	docker compose up -d $(DOCKER_SERVICE)

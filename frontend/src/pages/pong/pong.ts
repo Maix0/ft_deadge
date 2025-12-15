@@ -17,6 +17,10 @@ export const color = {
 	reset: '', 
 };
 
+// TODO: local game (2player -> server -> 2player : current setup)
+// TODO: tournament via remote (dedicated queu? idk)
+// 
+
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
