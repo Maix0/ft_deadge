@@ -247,9 +247,9 @@ async function whoami(socket: Socket) {
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const loggedIn = isLoggedIn();
 
-		const res = await client.guestLogin();
-		switch (res.kind) {
-			case 'success': {
+		const res = (getUser());
+		console.log('loginGuest():', res?.name);
+		if (res) {
 				let user = await updateUser();
 				if (chatWindow) {
 					socket.emit('updateClientName', {
@@ -260,12 +260,10 @@ async function whoami(socket: Socket) {
 				if (user === null)
 					return showError('Failed to get user: no user ?');
 				setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
-				break;
+			} else {
+				showError(`Failed to login: ${res}`);
 			}
-			case 'failed': {
-				showError(`Failed to login: ${res.msg}`);
-			}
-		}
+		
 	} catch (e) {
 		console.error("Login error:", e);
 		showError('Failed to login: Unknown error');

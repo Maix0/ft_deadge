@@ -28,21 +28,12 @@
 		"fastify-cli": "^7.4.1",
 		"fastify-plugin": "^5.1.0",
 		"socket.io-client": "^4.8.1",
-<<<<<<< HEAD
 		"typebox": "^1.0.63"
 	},
 	"devDependencies": {
 		"@types/node": "^22.19.3",
 		"rollup-plugin-node-externals": "^8.1.2",
 		"vite": "^7.3.0",
-=======
-		"typebox": "^1.0.61"
-	},
-	"devDependencies": {
-		"@types/node": "^22.19.2",
-		"rollup-plugin-node-externals": "^8.1.2",
-		"vite": "^7.2.7",
->>>>>>> nigel/blockUser
 		"vite-tsconfig-paths": "^5.1.4"
 	}
 }

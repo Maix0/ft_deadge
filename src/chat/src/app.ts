@@ -177,7 +177,7 @@ async function onReady(fastify: FastifyInstance) {
 				// };
 				if (client) {
   					client.user = userFromFrontend.user;
-					console.log(color.green, `'DEBUG LOG: client.user is, '${client.user}'`);
+					console.log(color.yellow, `'DEBUG LOG: client.user is, '${client.user}'`);
 				}
 			}
 		});

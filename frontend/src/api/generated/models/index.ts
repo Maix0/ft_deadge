@@ -1,6 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './ApiChatBroadcastPostRequest';
+export * from './ChangeDisplayName200Response';
+export * from './ChangeDisplayName400Response';
+export * from './ChangeDisplayNameRequest';
+export * from './ChangePassword200Response';
+export * from './ChangePassword400Response';
+export * from './ChangePassword401Response';
+export * from './ChangePassword500Response';
+export * from './ChangePasswordRequest';
 export * from './DisableOtp200Response';
 export * from './DisableOtp400Response';
 export * from './DisableOtp500Response';

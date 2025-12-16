@@ -1543,45 +1543,6 @@
           "openapi_other"
         ]
       }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 80cd016 (cleaning up the code - WIP)
-    },
-    "/api/chat/broadcast": {
-      "post": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "nextGame"
-                ],
-                "properties": {
-                  "nextGame": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Default Response"
-          }
-        },
-        "tags": [
-          "openapi_other"
-        ]
-      }
-<<<<<<< HEAD
->>>>>>> nigel/blockUser
-=======
->>>>>>> 80cd016 (cleaning up the code - WIP)
     }
   },
   "components": {

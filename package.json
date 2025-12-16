@@ -16,8 +16,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10",
   "devDependencies": {
-    "@redocly/cli": "^2.11.1",
+    "@redocly/cli": "^2.12.7",
     "husky": "^9.1.7",
-    "vite": "^7.2.4"
+    "vite": "^7.3.0"
   }
 }
