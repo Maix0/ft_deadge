@@ -20,7 +20,11 @@
     "fastify-plugin": "^5.1.0",
     "joi": "^18.0.2",
     "otp": "^1.1.2",
+<<<<<<< HEAD
     "typebox": "^1.0.64",
+=======
+    "typebox": "^1.0.63",
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
     "uuidv7": "^1.1.0"
   },
   "devDependencies": {
