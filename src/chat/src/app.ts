@@ -8,18 +8,8 @@ import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
 import type { User } from '@shared/database/mixin/user';
 import type { BlockedData } from '@shared/database/mixin/blocked';
-import { broadcast } from './broadcast';
+import { broadcast } from './chat_tools';
 import type { ClientProfil, ClientMessage } from './chat_types';
-import { sendPrivMessage } from './sendPrivMessage';
-import { sendBlocked } from './sendBlocked';
-import { sendInvite } from './sendInvite';
-import { getUserByName } from './getUserByName';
-import { makeProfil } from './makeProfil';
-import { isBlocked } from './isBlocked';
-import { sendProfil } from './sendProfil';
-import { setGameLink } from './setGameLink';
-import { nextGame_SocketListener } from './nextGame_SocketListener';
-import { list_SocketListener } from './list_SocketListener';
 
 // colors for console.log
 export const color = {
@@ -39,7 +29,6 @@ interface ClientInfo {
   user: string;
   lastSeen: number;
 }
-
 
 
 
@@ -127,6 +116,147 @@ async function onReady(fastify: FastifyInstance) {
 		console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
 	}
 
+	
+
+
+	async function broadcastNextGame(gameLink?: Promise<string>) {
+
+		const link = gameLink ? await gameLink : undefined;
+		const sockets = await fastify.io.fetchSockets();
+		// fastify.io.fetchSockets().then((sockets) => {
+		for (const socket of sockets) {
+			// Skip sender's own socket
+			const clientInfo = clientChat.get(socket.id);
+			if (!clientInfo?.user) {
+				console.log(color.yellow, `Skipping socket ${socket.id} (no user found)`);
+				continue;
+			}
+			// Emit structured JSON object
+			if (link) {
+				socket.emit('nextGame', link);
+			}
+			// Debug logs
+			// console.log(color.green, `'DEBUG LOG: Broadcast to:', ${data.command} message: ${data.text}`);
+		}
+	};
+
+	// function formatTimestamp(ms: number) {
+	// const d = new Date(ms);
+	// return d.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+	// }
+
+	function getUserByName(users: User[], name: string) {
+    	return users.find(user => user.name === name) || null;
+	}
+
+	// this function returns html the profil pop up in CHAT of a user 'nickname unique' TODO ....
+	async function getProfil(user: string, socket: Socket): Promise <ClientProfil> {
+
+		let clientProfil!: ClientProfil;
+		const users: User[] = fastify.db.getAllUsers() ?? [];
+		const allUsers: User | null = getUserByName(users, user);
+		// console.log(color.yellow, `DEBUG LOG: 'userFound is:'${allUsers?.name}`);
+		if (user === allUsers?.name) {
+			// console.log(color.yellow, `DEBUG LOG: 'login Name: '${allUsers.login}' user: '${user}'`);
+
+			clientProfil =
+			{
+				command: 'getProfil',
+				destination: 'profilMsg',
+				type: 'chat' as const,
+				user: `${allUsers.name}`,
+				loginName: `${allUsers?.login ?? 'Guest'}`,
+				userID: `${allUsers?.id ?? ''}`,
+				text: '',
+				timestamp: Date.now(),
+				SenderWindowID: socket.id,
+				SenderName: '',
+				Sendertext: '',
+    			innerHtml: '',
+			};
+		}
+		return clientProfil;
+	};
+
+	function sendProfil(data: ClientProfil, clientProfil?: string) {
+		fastify.io.fetchSockets().then((sockets) => {
+			const senderSocket = sockets.find(socket => socket.id === clientProfil);
+			if (senderSocket) {
+				// console.log(color.yellow, 'DEBUG LOG: data.info:', data.user);
+				senderSocket.emit('profilMessage', data);
+			}
+		});
+	}
+
+	function sendInvite(innerHtml: string, data: ClientProfil) {
+		fastify.io.fetchSockets().then((sockets) => {
+
+			let targetSocket;
+			for (const socket of sockets) {
+				const clientInfo: string = clientChat.get(socket.id)?.user || '';
+				if (clientInfo === data.user) {
+					console.log(color.yellow, 'FOUND:', data.user);
+					targetSocket = socket || '';
+					break;
+				}
+			}
+			data.innerHtml = innerHtml ?? '';
+			if (targetSocket) {
+				targetSocket.emit('inviteGame', data);
+			}
+		});
+	}
+
+
+
+	function sendBlocked(blockedMessage: string, data: ClientProfil) {
+		fastify.io.fetchSockets().then((sockets) => {
+
+			let targetSocket;
+			for (const socket of sockets) {
+				const clientInfo: string = clientChat.get(socket.id)?.user || '';
+				if (clientInfo === data.user) {
+					console.log(color.yellow, 'BLOCKED USER ONLINE FOUND:', data.user);
+					targetSocket = socket || '';
+					break;
+				}
+			}
+			data.text = blockedMessage ?? '';
+			console.log(color.red, data.Sendertext);
+			if (targetSocket) {
+				targetSocket.emit('blockUser', data);
+			}
+		});
+	}
+
+
+	function sendPrivMessage(data: ClientMessage, sender?: string) {
+		fastify.io.fetchSockets().then((sockets) => {
+			const senderSocket = sockets.find(s => s.id === sender);
+			for (const s of sockets) {
+				if (s.id === sender) continue;
+				const clientInfo = clientChat.get(s.id);
+				if (!clientInfo?.user) {
+					console.log(color.yellow, `Skipping socket ${s.id} (no user found)`);
+					continue;
+				}
+				const user: string = clientChat.get(s.id)?.user ?? '';
+				const atUser = `@${user}`;
+				if (atUser !== data.command || atUser === '') {
+					console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command NOT FOUND: '${data.command[0]}' `);
+					continue;
+				}
+				if (data.text !== '') {
+					s.emit('MsgObjectServer', { message: data });
+					console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command FOUND: '${data.command}' `);
+					if (senderSocket) {
+						senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
+					}
+				}
+				console.log(color.green, `DEBUG LOG: 'Priv to:', ${data.command} message: ${data.text}`);
+			}
+		});
+	}
 
 	fastify.io.on('connection', (socket: Socket) => {
 
@@ -356,11 +486,11 @@ async function onReady(fastify: FastifyInstance) {
 							Sendertext: 'You have un-blocked',
 						};
 						// console.log(color.blue, 'DEBUG LOG: PRIV MESSAGE OUT :', obj.SenderWindowID);
-						socket.emit('privMessageCopy', `${obj.Sendertext}: ${UserToBlock.name}💚`);
+						socket.emit('privMessageCopy', `${obj.Sendertext}: ${obj.user}💚`);
 						//   clientChat.delete(obj.user);
 					}
 					// profilBlock.Sendertext = `'You have un-blocked '`;
-					sendBlocked(fastify, blockedMessage, profilBlock);
+					sendBlocked(blockedMessage, profilBlock);
 				}
 			} else {
 			    console.log(color.red, 'The users are not blocked in this way');
@@ -384,10 +514,10 @@ async function onReady(fastify: FastifyInstance) {
 							Sendertext: 'You have blocked',
 						};
 						// console.log(color.blue, 'DEBUG LOG: PRIV MESSAGE OUT :', obj.SenderWindowID);
-						socket.emit('privMessageCopy', `${obj.Sendertext}: ${UserToBlock.name}⛔`);
+						socket.emit('privMessageCopy', `${obj.Sendertext}: ${obj.user}⛔`);
 						//   clientChat.delete(obj.user);
 					}
-					sendBlocked(fastify, blockedMessage, profilBlock);
+					sendBlocked(blockedMessage, profilBlock);
 				}
 			}
 		});

@@ -23,6 +23,30 @@ export const color = {
 	reset: '', 
 };
 
+export type ClientMessage = {
+	command: string
+	destination: string;
+	user: string;
+	text: string;
+	SenderWindowID: string;
+};
+
+
+export type ClientProfil = {
+	command: string,
+	destination: string,
+   	type: string,
+	user: string, 
+	loginName: string,
+	userID: string,
+	text: string,
+	timestamp: number,
+	SenderWindowID:string,
+	SenderName: string,
+	Sendertext: string,
+    innerHtml?: string,
+}; 		
+
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -55,6 +79,28 @@ function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	senderSocket.emit('inviteGame', JSON.stringify(profil));
 };
 
+function blockUser(profil: ClientProfil, senderSocket: Socket) {
+	profil.SenderName = getUser()?.name ?? '';
+	if (profil.SenderName === profil.user) return;
+	// addMessage(`${profil.Sendertext}: ${profil.user}⛔`)
+	senderSocket.emit('blockUser', JSON.stringify(profil));
+};
+
+
+
+
+
+
+function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
+		setTimeout(() => {
+			const clearTextBtn = document.querySelector("#popup-b-clear");        		
+			clearTextBtn?.addEventListener("click", () => {
+				clear(senderSocket);
+			});
+    	}, 0)
+};
+
+
 function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
 			const InvitePongBtn = document.querySelector("#popup-b-invite");
@@ -64,21 +110,51 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
     	}, 0)
 };
 
-// async function windowStateHidden() {		
-// 	const socketId = __socket || undefined;
-// 	// let oldName = localStorage.getItem("oldName") ??  undefined;
-// 	let oldName: string;
-// 	if (socketId === undefined) return;
-// 	let userName = await updateUser();
-// 	oldName =  userName?.name ?? "";
-// 	if (oldName === "") return;
-// 	localStorage.setItem('oldName', oldName);
-// 	socketId.emit('client_left', {
-// 		user: userName?.name,
-// 		why: 'tab window hidden - socket not dead',
-// 	});	
-// 	return;
-// };
+
+
+function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
+		setTimeout(() => {
+			const blockUserBtn = document.querySelector("#popup-b-block");
+			blockUserBtn?.addEventListener("click", () => {
+				block.text = ''; 
+				blockUser(block, senderSocket);
+			});
+    	}, 0)
+};
+
+
+// getProfil get the profil of user
+function getProfil(socket: Socket, user: string) {
+		if (!socket.connected) return;
+		const profil = {
+			command: '@profil',
+			destination: 'profilMessage',
+			type: "chat",
+			user: user,
+			token: document.cookie ?? "",
+			text: user,
+			timestamp: Date.now(),
+			SenderWindowID: socket.id,
+		};
+    	// addMessage(JSON.stringify(profil));
+		socket.emit('profilMessage', JSON.stringify(profil));
+}
+
+async function windowStateHidden() {		
+	const socketId = __socket || undefined;
+	// let oldName = localStorage.getItem("oldName") ??  undefined;
+	let oldName: string;
+	if (socketId === undefined) return;
+	let userName = await updateUser();
+	oldName =  userName?.name ?? "";
+	if (oldName === "") return;
+	localStorage.setItem('oldName', oldName);
+	socketId.emit('client_left', {
+		user: userName?.name,
+		why: 'tab window hidden - socket not dead',
+	});	
+	return;
+};
 	
 async function windowStateVisable() {
 
