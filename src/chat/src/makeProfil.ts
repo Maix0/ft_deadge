@@ -5,12 +5,12 @@ import { getUserByName } from './getUserByName';
 import { Socket } from 'socket.io';
 
 /**
- * function makeProfil - translates the Users[] to a one user looking by name 
- * and puts it into ClientProfil format 
- * @param fastify 
- * @param user 
- * @param socket 
- * @returns 
+ * function makeProfil - translates the Users[] to a one user looking by name
+ * and puts it into ClientProfil format
+ * @param fastify
+ * @param user
+ * @param socket
+ * @returns
  */
 
 export async function makeProfil(fastify: FastifyInstance, user: string, socket: Socket): Promise <ClientProfil> {

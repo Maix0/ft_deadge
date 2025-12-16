@@ -5,9 +5,9 @@ import { FastifyInstance } from 'fastify';
 /**
  * function looks up the socket of a user online in the chat and sends a message
  * it also sends a copy of the message to the sender
- * @param fastify 
- * @param data 
- * @param sender 
+ * @param fastify
+ * @param data
+ * @param sender
  */
 
 export function sendPrivMessage(fastify: FastifyInstance, data: ClientMessage, sender?: string) {

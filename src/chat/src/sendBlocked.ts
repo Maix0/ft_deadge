@@ -4,9 +4,9 @@ import { FastifyInstance } from 'fastify';
 
 /**
  * function looks for the online (socket) for user to block, when found send ordre to block or unblock user
- * @param fastify 
- * @param blockedMessage 
- * @param profil 
+ * @param fastify
+ * @param blockedMessage
+ * @param profil
  */
 
 export function sendBlocked(fastify: FastifyInstance, blockedMessage: string, profil: ClientProfil) {

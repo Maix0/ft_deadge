@@ -2,14 +2,11 @@ import { FastifyPluginAsync } from 'fastify';
 import { Static, Type } from 'typebox';
 import { broadcast } from '../broadcast';
 
-
-
 export const ChatReq = Type.Object({
 	message: Type.String(),
 });
 
 export type ChatReq = Static<typeof ChatReq>;
-
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	fastify.post<{ Body: ChatReq }>(
@@ -28,7 +25,6 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	);
 };
 export default route;
-
 
 // const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 // 	fastify.post('/api/chat/broadcast', {

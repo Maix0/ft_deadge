@@ -4,8 +4,8 @@ import type { ClientProfil } from './chat_types';
 /**
  * function takes a user profil and sends it to the asker by window id
  * @param fastify
- * @param profil 
- * @param SenderWindowID 
+ * @param profil
+ * @param SenderWindowID
  */
 
 export function sendProfil(fastify: FastifyInstance, profil: ClientProfil, SenderWindowID?: string) {

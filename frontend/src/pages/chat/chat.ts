@@ -14,16 +14,16 @@ import { openProfilePopup } from './openProfilePopup';
 import { actionBtnPopUpClear } from './actionBtnPopUpClear';
 import { actionBtnPopUpBlock } from './actionBtnPopUpBlock';
 import { windowStateHidden } from './windowStateHidden';
- 
+
 export const color = {
 	red: 'color: red;',
 	green: 'color: green;',
 	yellow: 'color: orange;',
 	blue: 'color: blue;',
-	reset: '', 
+	reset: '',
 };
 
-// get the name of the machine used to connect 
+// get the name of the machine used to connect
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
 
@@ -64,7 +64,7 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
     	}, 0)
 };
 
-// async function windowStateHidden() {		
+// async function windowStateHidden() {
 // 	const socketId = __socket || undefined;
 // 	// let oldName = localStorage.getItem("oldName") ??  undefined;
 // 	let oldName: string;
@@ -76,17 +76,17 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
 // 	socketId.emit('client_left', {
 // 		user: userName?.name,
 // 		why: 'tab window hidden - socket not dead',
-// 	});	
+// 	});
 // 	return;
 // };
-	
+
 async function windowStateVisable() {
 
-	const buddies = document.getElementById('div-buddies') as HTMLDivElement;		
+	const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 	const socketId = __socket || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
 	console.log("%c WINDOW VISIBLE - oldName :'" + oldName + "'", color.green);
-	
+
 	if (socketId === undefined || oldName === undefined) {console.log("%SOCKET ID", color.red); return;}
 	let user = await updateUser();
 	if(user === null) return;
@@ -121,7 +121,7 @@ function parseCmdMsg(msgText: string): string[] | undefined {
 
 	const ArgCommands = ['@profil', '@block'];
 	const userName = msgText.indexOf(" ");
-	const cmd2 = msgText.slice(0, userName).trim() ?? "";        
+	const cmd2 = msgText.slice(0, userName).trim() ?? "";
 	const user = msgText.slice(userName + 1).trim();
 	if (ArgCommands.includes(cmd2)) {
     	    command[0] = cmd2;
@@ -134,8 +134,8 @@ function parseCmdMsg(msgText: string): string[] | undefined {
         command[1] = '';
         return command;
     }
-    const cmd = msgText.slice(0, colonIndex).trim();        
-    const rest = msgText.slice(colonIndex + 1).trim();      
+    const cmd = msgText.slice(0, colonIndex).trim();
+    const rest = msgText.slice(colonIndex + 1).trim();
     command[0] = cmd;
     command[1] = rest;
     return command;
@@ -147,7 +147,7 @@ function parseCmdMsg(msgText: string): string[] | undefined {
 // 	const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
 // 	const buddiesElement = document.createElement("div-buddies-list");
 // 	buddiesElement.textContent = listBuddies + '\n';
-// 	const user = getUser()?.name ?? ""; 
+// 	const user = getUser()?.name ?? "";
 // 	buddies.appendChild(buddiesElement);
 // 	buddies.scrollTop = buddies.scrollHeight;
 // 	console.log(`Added buddies: ${listBuddies}`);
@@ -159,7 +159,7 @@ function parseCmdMsg(msgText: string): string[] | undefined {
 // 			sendtextbox.value = `@${listBuddies}: `;
 // 			console.log("Copied to clipboard:", listBuddies);
 // 			sendtextbox.focus();
-// 		} 
+// 		}
 // 	});
 
 // 	buddiesElement.addEventListener("dblclick", () => {
@@ -196,7 +196,7 @@ function quitChat (socket: Socket) {
 		console.error("Quit Chat error:", e);
 		showError('Failed to Quit Chat: Unknown error');
 	}
- 
+
 };
 
 // const bconnected = document.getElementById('b-help') as HTMLButtonElement;
@@ -215,7 +215,7 @@ function logout(socket: Socket) {
 
 
 async function connected(socket: Socket): Promise<void> {
-	
+
 	try {
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 			const loggedIn = isLoggedIn();
@@ -263,7 +263,7 @@ async function whoami(socket: Socket) {
 			} else {
 				showError(`Failed to login: ${res}`);
 			}
-		
+
 	} catch (e) {
 		console.error("Login error:", e);
 		showError('Failed to login: Unknown error');
@@ -272,15 +272,15 @@ async function whoami(socket: Socket) {
 
 // async function openProfilePopup(profil: ClientProfil) {
 
-	
+
 // 	const modalname = document.getElementById("modal-name") ?? null;
 // 	if (modalname)
 // 		modalname.innerHTML = `
 // 					<div class="profile-info">
-// 						<div-profil-name id="profilName"> Profil of ${profil.user} </div> 
-// 						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div> 
+// 						<div-profil-name id="profilName"> Profil of ${profil.user} </div>
+// 						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div>
 // 						</br>
-// 						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div> 
+// 						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div>
 // 						</br>
 // 						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
 // 						<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
@@ -313,7 +313,7 @@ async function openMessagePopup(message: string) {
         			</div>`;
 		modalmessage.appendChild(messageElement);
 		modalmessage.scrollTop = modalmessage.scrollHeight;
-	
+
 	}
 	const gameMessage = document.getElementById("game-modal") ?? null;
 	if (gameMessage)
@@ -325,7 +325,7 @@ async function openMessagePopup(message: string) {
 
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-	
+
 
 	let socket = getSocket();
 
@@ -363,9 +363,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const bconnected = document.getElementById('b-help') as HTMLButtonElement;
 
 		if (bconnected) {
-			connected(socket);		
+			connected(socket);
 		}
-		
+
 		if (chatWindow && data.message.destination === "") {
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
@@ -379,7 +379,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			chatWindow.scrollTop = chatWindow.scrollHeight;
 		}
 
-		
+
 		const MAX_SYSTEM_MESSAGES = 10;
 
 		if (systemWindow && data.message.destination === "system-info") {
@@ -396,14 +396,14 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		console.log("Getuser():", getUser());
 	});
 
-	socket.on('profilMessage', (profil: ClientProfil) => {	
-		openProfilePopup(profil);		
+	socket.on('profilMessage', (profil: ClientProfil) => {
+		openProfilePopup(profil);
 		actionBtnPopUpClear(profil, socket);
 		actionBtnPopUpInvite(profil, socket);
 		actionBtnPopUpBlock(profil, socket);
 	});
 
-	socket.on('inviteGame', (invite: ClientProfil) => {	
+	socket.on('inviteGame', (invite: ClientProfil) => {
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const messageElement = document.createElement("div");
     	messageElement.innerHTML =`🏓${invite.SenderName}:  ${invite.innerHtml}`;
@@ -412,7 +412,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	});
 
 
-	socket.on('blockUser', (blocked: ClientProfil) => {	
+	socket.on('blockUser', (blocked: ClientProfil) => {
 		let icon = '⛔';
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const messageElement = document.createElement("div");
@@ -425,7 +425,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 
 
-	socket.on('logout', () => {	
+	socket.on('logout', () => {
 		quitChat(socket);
 	});
 
@@ -550,7 +550,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     						    break;
 							case '@quit':
 								quitChat(socket);
-    						    break;	
+    						    break;
     						default:
 								const user = getUser()?.name;
 								// Ensure we have a user AND socket is connected

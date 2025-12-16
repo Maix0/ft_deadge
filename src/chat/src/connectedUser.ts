@@ -4,9 +4,9 @@ import { Server, Socket } from 'socket.io';
 /**
  * function check users connected to the chat with a socket and makes a seen list
  * calls listBud socket listener to update Ping Buddies List and calls listBuddies()
- * @param io 
- * @param target 
- * @returns the number connected 
+ * @param io
+ * @param target
+ * @returns the number connected
  */
 
 export function connectedUser(io?: Server, target?: string): number {
