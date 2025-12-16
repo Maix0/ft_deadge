@@ -9,8 +9,11 @@ import { getProfil } from './getProfil';
 import { addMessage } from './addMessage';
 import { broadcastMsg } from './broadcastMsg';
 import { clearChatWindow } from './clearChatWindow';
-import { isLoggedIn } from "./isLoggedIn";
- 
+import { isLoggedIn } from './isLoggedIn';
+import type { ClientMessage, ClientProfil } from './types_front';
+import { openProfilePopup } from './openProfilePopup';
+import { actionBtnPopUpClear } from './actionBtnPopUpClear';
+
 export const color = {
 	red: 'color: red;',
 	green: 'color: green;',
@@ -18,30 +21,6 @@ export const color = {
 	blue: 'color: blue;',
 	reset: '', 
 };
-
-export type ClientMessage = {
-	command: string
-	destination: string;
-	user: string;
-	text: string;
-	SenderWindowID: string;
-};
-
-
-export type ClientProfil = {
-	command: string,
-	destination: string,
-   	type: string,
-	user: string, 
-	loginName: string,
-	userID: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID:string,
-	SenderName: string,
-	Sendertext: string,
-    innerHtml?: string,
-}; 		
 
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
@@ -69,11 +48,6 @@ export function getSocket(): Socket {
 };
 
 
-
-// function isLoggedIn() {
-// 	return getUser() || null;
-// };
-
 function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
@@ -88,19 +62,14 @@ function blockUser(profil: ClientProfil, senderSocket: Socket) {
 	senderSocket.emit('blockUser', JSON.stringify(profil));
 };
 
-
-
-
-
-
-function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
-		setTimeout(() => {
-			const clearTextBtn = document.querySelector("#popup-b-clear");        		
-			clearTextBtn?.addEventListener("click", () => {
-				clearChatWindow(senderSocket);
-			});
-    	}, 0)
-};
+// function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
+// 		setTimeout(() => {
+// 			const clearTextBtn = document.querySelector("#popup-b-clear");        		
+// 			clearTextBtn?.addEventListener("click", () => {
+// 				clearChatWindow(senderSocket);
+// 			});
+//     	}, 0)
+// };
 
 
 function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
@@ -355,12 +324,6 @@ async function whoami(socket: Socket) {
 // 		profilList.classList.remove("hidden");
 // 	 // The popup now exists → attach the event
 // }
-
-let count = 0;
-function incrementCounter(): number {
-	count += 1;
-	return count;
-}
 
 let count = 0;
 function incrementCounter(): number {
