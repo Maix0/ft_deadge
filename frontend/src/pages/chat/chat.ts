@@ -8,12 +8,8 @@ import { listBuddies } from './listBuddies';
 import { getProfil } from './getProfil';
 import { addMessage } from './addMessage';
 import { broadcastMsg } from './broadcastMsg';
-import { isLoggedIn } from './isLoggedIn';
-import type { ClientMessage, ClientProfil } from './types_front';
-import { openProfilePopup } from './openProfilePopup';
-import { actionBtnPopUpClear } from './actionBtnPopUpClear';
-import { actionBtnPopUpBlock } from './actionBtnPopUpBlock';
-import { windowStateHidden } from './windowStateHidden';
+import { clearChatWindow } from './clearChatWindow';
+import { isLoggedIn } from "./isLoggedIn";
  
 export const color = {
 	red: 'color: red;',
@@ -72,6 +68,12 @@ export function getSocket(): Socket {
 	return __socket;
 };
 
+
+
+// function isLoggedIn() {
+// 	return getUser() || null;
+// };
+
 function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
@@ -95,7 +97,7 @@ function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
 			const clearTextBtn = document.querySelector("#popup-b-clear");        		
 			clearTextBtn?.addEventListener("click", () => {
-				clear(senderSocket);
+				clearChatWindow(senderSocket);
 			});
     	}, 0)
 };
@@ -121,24 +123,6 @@ function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
 			});
     	}, 0)
 };
-
-
-// getProfil get the profil of user
-function getProfil(socket: Socket, user: string) {
-		if (!socket.connected) return;
-		const profil = {
-			command: '@profil',
-			destination: 'profilMessage',
-			type: "chat",
-			user: user,
-			token: document.cookie ?? "",
-			text: user,
-			timestamp: Date.now(),
-			SenderWindowID: socket.id,
-		};
-    	// addMessage(JSON.stringify(profil));
-		socket.emit('profilMessage', JSON.stringify(profil));
-}
 
 async function windowStateHidden() {		
 	const socketId = __socket || undefined;
@@ -371,6 +355,12 @@ async function whoami(socket: Socket) {
 // 		profilList.classList.remove("hidden");
 // 	 // The popup now exists → attach the event
 // }
+
+let count = 0;
+function incrementCounter(): number {
+	count += 1;
+	return count;
+}
 
 let count = 0;
 function incrementCounter(): number {

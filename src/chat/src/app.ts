@@ -14,12 +14,13 @@ import { sendPrivMessage } from './sendPrivMessage';
 import { sendBlocked } from './sendBlocked';
 import { sendInvite } from './sendInvite';
 import { getUserByName } from './getUserByName';
-import { getProfil } from './getProfil';
+import { makeProfil } from './makeProfil';
 import { isBlocked } from './isBlocked';
 import { sendProfil } from './sendProfil';
-import { broadcastNextGame } from './broadcastNextGame';
 import { setGameLink } from './setGameLink';
- 
+import { nextGame_SocketListener } from './nextGame_SocketListener';
+import { list_SocketListener } from './list_SocketListener';
+
 // colors for console.log
 export const color = {
 	red: '\x1b[31m',
@@ -117,30 +118,6 @@ declare module 'fastify' {
 async function onReady(fastify: FastifyInstance) {
 
 
-			// If we have the io instance, attempt to validate the socket is still connected
-			if (io && typeof io.sockets?.sockets?.get === 'function') {
-				const socket = io.sockets.sockets.get(socketId) as Socket | undefined;
-				// If socket not found or disconnected, remove from map and skip
-				if (!socket || socket.disconnected) {
-					clientChat.delete(socketId);
-					continue;
-				}
-				// Skip duplicates (DO NOT delete them — just don't count)
-				if (seen.has(username.user)) {
-					continue;
-				}
-				// socket exists and is connected
-				seen.add(username.user);
-				count++;
-				const targetSocketId = target;
-				io.to(targetSocketId!).emit('listBud', username.user);
-				continue;
-			}
-			count++;
-		}
-		return count;
-	}
-
 	// shows address for connection au server transcendance
 	const session = process.env.SESSION_MANAGER ?? '';
 	if (session) {
@@ -164,11 +141,7 @@ async function onReady(fastify: FastifyInstance) {
 			// console.log(color.red, 'DEBUG LOG: connected in the Chat :', connectedUser(fastify.io), color.reset);
 		});
 
-		socket.on('nextGame', () => {
-			const link = createNextGame();
-			const game: Promise<string> = sendGameLinkToChatService(link);
-			broadcastNextGame(fastify, game);
-		});
+		nextGame_SocketListener(fastify, socket);
 
 		list_SocketListener(fastify, socket);
 
@@ -317,7 +290,7 @@ async function onReady(fastify: FastifyInstance) {
 			const users: User[] = fastify.db.getAllUsers() ?? [];
 			// console.log(color.yellow, 'DEBUG LOG: ALL USERS EVER CONNECTED:', users);
 			// console.log(color.blue, `DEBUG LOG: ClientName: '${clientName}' id Socket: '${socket.id}' target profil:`, profilMessage.user);
-			const profile: ClientProfil = await getProfil(fastify, profilMessage.user, socket);
+			const profile: ClientProfil = await makeProfil(fastify, profilMessage.user, socket);
 			if (clientName !== null) {
 				const testuser: User | null = getUserByName(users, profilMessage.user);
 				console.log(color.yellow, 'user:', testuser?.name ?? 'Guest');

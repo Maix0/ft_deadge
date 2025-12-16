@@ -1544,7 +1544,10 @@
         ]
       }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 80cd016 (cleaning up the code - WIP)
     },
     "/api/chat/broadcast": {
       "post": {
@@ -1575,7 +1578,10 @@
           "openapi_other"
         ]
       }
+<<<<<<< HEAD
 >>>>>>> nigel/blockUser
+=======
+>>>>>>> 80cd016 (cleaning up the code - WIP)
     }
   },
   "components": {

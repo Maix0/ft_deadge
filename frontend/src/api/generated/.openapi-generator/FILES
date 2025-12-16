@@ -2,6 +2,7 @@ apis/OpenapiOtherApi.ts
 apis/index.ts
 index.ts
 <<<<<<< HEAD
+<<<<<<< HEAD
 models/ChangeDisplayName200Response.ts
 models/ChangeDisplayName400Response.ts
 models/ChangeDisplayNameRequest.ts
@@ -13,6 +14,9 @@ models/ChangePasswordRequest.ts
 =======
 models/ApiChatBroadcastPostRequest.ts
 >>>>>>> nigel/blockUser
+=======
+models/ApiChatBroadcastPostRequest.ts
+>>>>>>> 80cd016 (cleaning up the code - WIP)
 models/DisableOtp200Response.ts
 models/DisableOtp400Response.ts
 models/DisableOtp500Response.ts
