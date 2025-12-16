@@ -20,11 +20,11 @@
     "fastify-plugin": "^5.1.0",
     "joi": "^18.0.2",
     "otp": "^1.1.2",
-    "typebox": "^1.0.61",
+    "typebox": "^1.0.63",
     "uuidv7": "^1.1.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.19.2"
+    "@types/node": "^22.19.3"
   }
 }

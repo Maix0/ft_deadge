@@ -8,8 +8,6 @@ export * from './ChangePassword400Response';
 export * from './ChangePassword401Response';
 export * from './ChangePassword500Response';
 export * from './ChangePasswordRequest';
-export * from './ChatTest200Response';
-export * from './ChatTest200ResponsePayload';
 export * from './DisableOtp200Response';
 export * from './DisableOtp400Response';
 export * from './DisableOtp500Response';

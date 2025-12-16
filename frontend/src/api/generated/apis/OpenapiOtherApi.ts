@@ -23,7 +23,6 @@ import type {
   ChangePassword401Response,
   ChangePassword500Response,
   ChangePasswordRequest,
-  ChatTest200Response,
   DisableOtp200Response,
   DisableOtp400Response,
   DisableOtp500Response,
@@ -74,8 +73,6 @@ import {
     ChangePassword500ResponseToJSON,
     ChangePasswordRequestFromJSON,
     ChangePasswordRequestToJSON,
-    ChatTest200ResponseFromJSON,
-    ChatTest200ResponseToJSON,
     DisableOtp200ResponseFromJSON,
     DisableOtp200ResponseToJSON,
     DisableOtp400ResponseFromJSON,
@@ -288,48 +285,6 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
      */
     async changePassword(requestParameters: ChangePasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChangePassword200Response | ChangePassword400Response | ChangePassword401Response | ChangePassword500Response> {
         const response = await this.changePasswordRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async chatTestRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatTest200Response | StatusOtp401Response>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/chat/test`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
-        // This allows typed access to error responses (4xx, 5xx) and other status codes.
-        // The code routes responses based on the actual HTTP status code and returns
-        // appropriately typed ApiResponse wrappers for each status code.
-        if (response.status === 200) {
-            // Object response for status 200
-            return new runtime.JSONApiResponse(response, (jsonValue) => ChatTest200ResponseFromJSON(jsonValue));
-        }
-        if (response.status === 401) {
-            // Object response for status 401
-            return new runtime.JSONApiResponse(response, (jsonValue) => StatusOtp401ResponseFromJSON(jsonValue));
-        }
-        // CHANGED: Throw error if status code is not handled by any of the defined responses
-        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
-        // Only throw if responses were defined but none matched the actual status code
-        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 401`);
-    }
-
-    /**
-     */
-    async chatTest(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatTest200Response | StatusOtp401Response> {
-        const response = await this.chatTestRaw(initOverrides);
         return await response.value();
     }
 

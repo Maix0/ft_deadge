@@ -9,8 +9,6 @@ models/ChangePassword400Response.ts
 models/ChangePassword401Response.ts
 models/ChangePassword500Response.ts
 models/ChangePasswordRequest.ts
-models/ChatTest200Response.ts
-models/ChatTest200ResponsePayload.ts
 models/DisableOtp200Response.ts
 models/DisableOtp400Response.ts
 models/DisableOtp500Response.ts

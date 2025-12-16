@@ -24,7 +24,7 @@ const session = process.env.SESSION_MANAGER ?? '';
 if (session) {
 	const part = session.split('/')[1];
 	const machineName = part.split('.')[0];
-	console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
+	//console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
 }
 
 declare const __SERVICE_NAME: string;
@@ -86,7 +86,7 @@ function isBlocked(UserAskingToBlock: User, UserToBlock: User, usersBlocked: Blo
 	    blocked.user === UserAskingToBlock?.id);
 }
 
-const clientChat = new Map<string, ClientInfo>();
+export const clientChat = new Map<string, ClientInfo>();
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
 const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
