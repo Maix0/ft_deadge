@@ -77,6 +77,23 @@
   relative; /* needed for overlay */
 }
 
+.modal-messages {
+  @apply
+  h-[80px]
+  bg-white 
+  text-gray-700 
+  p-3 
+  rounded-3xl 
+  mb-2 border 
+  border-gray-200 
+  text-center
+  shadow
+  overflow-y-auto
+  justify-end    /* 👈 forces text to bottom */
+  relative; /* needed for overlay */
+}
+
+
 
 .text-info {
   @apply

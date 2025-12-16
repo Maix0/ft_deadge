@@ -25,6 +25,10 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
+<<<<<<< HEAD
     "@types/node": "^22.19.3"
+=======
+    "@types/node": "^22.19.2"
+>>>>>>> nigel/blockUser
   }
 }

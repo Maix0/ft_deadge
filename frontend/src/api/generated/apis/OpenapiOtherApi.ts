@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+<<<<<<< HEAD
   ChangeDisplayName200Response,
   ChangeDisplayName400Response,
   ChangeDisplayNameRequest,
@@ -23,6 +24,9 @@ import type {
   ChangePassword401Response,
   ChangePassword500Response,
   ChangePasswordRequest,
+=======
+  ApiChatBroadcastPostRequest,
+>>>>>>> nigel/blockUser
   DisableOtp200Response,
   DisableOtp400Response,
   DisableOtp500Response,
@@ -57,6 +61,7 @@ import type {
   StatusOtp500Response,
 } from '../models/index';
 import {
+<<<<<<< HEAD
     ChangeDisplayName200ResponseFromJSON,
     ChangeDisplayName200ResponseToJSON,
     ChangeDisplayName400ResponseFromJSON,
@@ -73,6 +78,10 @@ import {
     ChangePassword500ResponseToJSON,
     ChangePasswordRequestFromJSON,
     ChangePasswordRequestToJSON,
+=======
+    ApiChatBroadcastPostRequestFromJSON,
+    ApiChatBroadcastPostRequestToJSON,
+>>>>>>> nigel/blockUser
     DisableOtp200ResponseFromJSON,
     DisableOtp200ResponseToJSON,
     DisableOtp400ResponseFromJSON,
@@ -139,12 +148,17 @@ import {
     StatusOtp500ResponseToJSON,
 } from '../models/index';
 
+<<<<<<< HEAD
 export interface ChangeDisplayNameOperationRequest {
     changeDisplayNameRequest: ChangeDisplayNameRequest;
 }
 
 export interface ChangePasswordOperationRequest {
     changePasswordRequest: ChangePasswordRequest;
+=======
+export interface ApiChatBroadcastPostOperationRequest {
+    apiChatBroadcastPostRequest: ApiChatBroadcastPostRequest;
+>>>>>>> nigel/blockUser
 }
 
 export interface GetUserRequest {
@@ -174,11 +188,19 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
+<<<<<<< HEAD
     async changeDisplayNameRaw(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChangeDisplayName200Response | ChangeDisplayName400Response | ChangePassword401Response>> {
         if (requestParameters['changeDisplayNameRequest'] == null) {
             throw new runtime.RequiredError(
                 'changeDisplayNameRequest',
                 'Required parameter "changeDisplayNameRequest" was null or undefined when calling changeDisplayName().'
+=======
+    async apiChatBroadcastPostRaw(requestParameters: ApiChatBroadcastPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['apiChatBroadcastPostRequest'] == null) {
+            throw new runtime.RequiredError(
+                'apiChatBroadcastPostRequest',
+                'Required parameter "apiChatBroadcastPostRequest" was null or undefined when calling apiChatBroadcastPost().'
+>>>>>>> nigel/blockUser
             );
         }
 
@@ -189,6 +211,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
 
+<<<<<<< HEAD
         let urlPath = `/api/user/changeDisplayName`;
 
         const response = await this.request({
@@ -197,6 +220,16 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
             body: ChangeDisplayNameRequestToJSON(requestParameters['changeDisplayNameRequest']),
+=======
+        let urlPath = `/api/chat/broadcast`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ApiChatBroadcastPostRequestToJSON(requestParameters['apiChatBroadcastPostRequest']),
+>>>>>>> nigel/blockUser
         }, initOverrides);
 
         // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
@@ -204,6 +237,7 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         // The code routes responses based on the actual HTTP status code and returns
         // appropriately typed ApiResponse wrappers for each status code.
         if (response.status === 200) {
+<<<<<<< HEAD
             // Object response for status 200
             return new runtime.JSONApiResponse(response, (jsonValue) => ChangeDisplayName200ResponseFromJSON(jsonValue));
         }
@@ -214,18 +248,31 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
         if (response.status === 401) {
             // Object response for status 401
             return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword401ResponseFromJSON(jsonValue));
+=======
+            // No body response for status 200
+            return new runtime.VoidApiResponse(response);
+>>>>>>> nigel/blockUser
         }
         // CHANGED: Throw error if status code is not handled by any of the defined responses
         // This ensures all code paths return a value and provides clear error messages for unexpected status codes
         // Only throw if responses were defined but none matched the actual status code
+<<<<<<< HEAD
         throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 400, 401`);
+=======
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200`);
+>>>>>>> nigel/blockUser
     }
 
     /**
      */
+<<<<<<< HEAD
     async changeDisplayName(requestParameters: ChangeDisplayNameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChangeDisplayName200Response | ChangeDisplayName400Response | ChangePassword401Response> {
         const response = await this.changeDisplayNameRaw(requestParameters, initOverrides);
         return await response.value();
+=======
+    async apiChatBroadcastPost(requestParameters: ApiChatBroadcastPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiChatBroadcastPostRaw(requestParameters, initOverrides);
+>>>>>>> nigel/blockUser
     }
 
     /**

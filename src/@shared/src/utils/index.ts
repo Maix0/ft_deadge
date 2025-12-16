@@ -142,11 +142,3 @@ export function typeResponse<K extends string, T extends TProperties>(
 export function isNullish<T>(v: T | undefined | null): v is null | undefined {
 	return v === null || v === undefined;
 }
-
-/**
-/* EXPERIMENTAL: how to send a starting game link to chat
-**/
-export async function sendGameLinkToChatService(link: string) :Promise<string> {
-	const payload = { link };
-	return JSON.stringify(payload);
-}
