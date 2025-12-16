@@ -23,33 +23,6 @@ export const color = {
 	reset: '', 
 };
 
-<<<<<<< HEAD
-export type ClientMessage = {
-	command: string
-	destination: string;
-	user: string;
-	text: string;
-	SenderWindowID: string;
-};
-
-
-export type ClientProfil = {
-	command: string,
-	destination: string,
-   	type: string,
-	user: string, 
-	loginName: string,
-	userID: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID:string,
-	SenderName: string,
-    innerHtml?: string,
-
-}; 		
-
-=======
->>>>>>> nigel/blockUser
 // get the name of the machine used to connect 
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -82,31 +55,6 @@ function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	senderSocket.emit('inviteGame', JSON.stringify(profil));
 };
 
-<<<<<<< HEAD
-function blockUser(profil: ClientProfil, senderSocket: Socket) {
-	profil.SenderName = getUser()?.name ?? '';
-	if (profil.SenderName === profil.user) return;
-	addMessage(`${profil.text}: ${profil.user}⛔`)
-	senderSocket.emit('blockUser', JSON.stringify(profil));
-};
-
-
-
-
-
-
-function actionBtnPopUpClear(profil: ClientProfil, senderSocket: Socket) {
-		setTimeout(() => {
-			const clearTextBtn = document.querySelector("#popup-b-clear");        		
-			clearTextBtn?.addEventListener("click", () => {
-				clear(senderSocket);
-			});
-    	}, 0)
-};
-
-
-=======
->>>>>>> nigel/blockUser
 function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
 		setTimeout(() => {
 			const InvitePongBtn = document.querySelector("#popup-b-invite");
@@ -116,52 +64,6 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
     	}, 0)
 };
 
-<<<<<<< HEAD
-
-
-function actionBtnPopUpBlock(block: ClientProfil, senderSocket: Socket) {
-		setTimeout(() => {
-			const blockUserBtn = document.querySelector("#popup-b-block");
-			blockUserBtn?.addEventListener("click", () => {
-				blockUser(block, senderSocket);
-			});
-    	}, 0)
-};
-
-
-// getProfil get the profil of user
-function getProfil(socket: Socket, user: string) {
-		if (!socket.connected) return;
-		const profil = {
-			command: '@profil',
-			destination: 'profilMessage',
-			type: "chat",
-			user: user,
-			token: document.cookie ?? "",
-			text: user,
-			timestamp: Date.now(),
-			SenderWindowID: socket.id,
-		};
-    	// addMessage(JSON.stringify(profil));
-		socket.emit('profilMessage', JSON.stringify(profil));
-}
-
-async function windowStateHidden() {		
-	const socketId = __socket || undefined;
-	// let oldName = localStorage.getItem("oldName") ??  undefined;
-	let oldName: string;
-	if (socketId === undefined) return;
-	let userName = await updateUser();
-	oldName =  userName?.name ?? "";
-	if (oldName === "") return;
-	localStorage.setItem('oldName', oldName);
-	socketId.emit('client_left', {
-		user: userName?.name,
-		why: 'tab window hidden - socket not dead',
-	});	
-	return;
-};
-=======
 // async function windowStateHidden() {		
 // 	const socketId = __socket || undefined;
 // 	// let oldName = localStorage.getItem("oldName") ??  undefined;
@@ -177,7 +79,6 @@ async function windowStateHidden() {
 // 	});	
 // 	return;
 // };
->>>>>>> nigel/blockUser
 	
 async function windowStateVisable() {
 
@@ -374,27 +275,6 @@ async function whoami(socket: Socket) {
 // async function openProfilePopup(profil: ClientProfil) {
 
 	
-<<<<<<< HEAD
-	const modalname = document.getElementById("modal-name") ?? null;
-	if (modalname)
-		modalname.innerHTML = `
-					<div class="profile-info">
-						<div-profil-name id="profilName"> Profil of ${profil.user} </div> 
-						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div> 
-						</br>
-						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div> 
-						</br>
-						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
-						<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
-						<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
-            			<div id="profile-about">About: '${profil.text}' </div>
-        			</div>
-	`;
-	const profilList = document.getElementById("profile-modal") ?? null;
-	if (profilList)
-		profilList.classList.remove("hidden");
-	 // The popup now exists → attach the event
-=======
 // 	const modalname = document.getElementById("modal-name") ?? null;
 // 	if (modalname)
 // 		modalname.innerHTML = `
@@ -420,7 +300,6 @@ let count = 0;
 function incrementCounter(): number {
 	count += 1;
 	return count;
->>>>>>> nigel/blockUser
 }
 
 async function openMessagePopup(message: string) {
@@ -536,17 +415,11 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 
 	socket.on('blockUser', (blocked: ClientProfil) => {	
-<<<<<<< HEAD
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		const messageElement = document.createElement("div");
-    	messageElement.innerText =`⛔${blocked.SenderName}:  ${blocked.text}`;
-=======
 		let icon = '⛔';
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const messageElement = document.createElement("div");
 		if (`${blocked.text}` === '\'I have un-blocked you\'' ) { icon = '💚'};
     	messageElement.innerText =`${icon}${blocked.SenderName}:  ${blocked.text}`;
->>>>>>> nigel/blockUser
     	chatWindow.appendChild(messageElement);
 		chatWindow.scrollTop = chatWindow.scrollHeight;
 	});
@@ -634,21 +507,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			buddies.textContent = '';
 			buddies.innerHTML = '';
 
-<<<<<<< HEAD
-
-			// const value = await client.chatTest();
-            // if (value.kind === "success") {
-            //     console.log(value.payload);
-            // } else if (value.kind === "notLoggedIn") {
-            //     console.log('not logged in');
-            // } else {
-            //     console.log('unknown response: ', value);
-            // }
-
-
-
-=======
->>>>>>> nigel/blockUser
 			const buttonPro = document.getElementById("close-modal") ?? null;
 
 			if (buttonPro)
