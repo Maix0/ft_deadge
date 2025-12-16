@@ -5,8 +5,8 @@ import { getUser } from "@app/auth";
 /**
  * function sends socket.emit to the backend to active and a broadcast message to all sockets
  * echos addPongMessage() the message with addMessage to the sender
- * @param socket 
- * @param msgCommand 
+ * @param socket
+ * @param msgCommand
  */
 export function broadcastMsg (socket: Socket, msgCommand: string[]): void {
 	let msgText = msgCommand[1] ?? "";

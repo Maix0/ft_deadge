@@ -3,12 +3,12 @@ import { clientChat, color } from './app';
 import { FastifyInstance } from 'fastify';
 
 /**
- * function looks for the user online in the chat 
+ * function looks for the user online in the chat
  * and sends emit to invite - format HTML to make clickable
  * message appears in chat window text area
- * @param fastify 
- * @param innerHtml 
- * @param profil 
+ * @param fastify
+ * @param innerHtml
+ * @param profil
  */
 
 export function sendInvite(fastify: FastifyInstance, innerHtml: string, profil: ClientProfil) {

@@ -3,8 +3,8 @@ import { color } from './pong';
 /**
  * function adds a message to the frontend pongMessage
  * ATTENTION send inner HTML ******
- * @param text 
- * @returns 
+ * @param text
+ * @returns
  */
 
 export function addPongMessage(text: string) {

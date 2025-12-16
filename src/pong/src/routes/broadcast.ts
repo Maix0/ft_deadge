@@ -30,12 +30,12 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 export default route;
 
 /**
- * 
+ *
  *  try this in a terminal
- * 
+ *
  *  curl -k --data-raw '{"message": "Message SENT from the terminal en REMOTE"}' 'https://local.maix.me:8888/api/pong/broadcast' -H "Content-Type: application/json"
- * 
- *  send message info to the fronatend via the route '/api/pong/broadcast' 
+ *
+ *  send message info to the fronatend via the route '/api/pong/broadcast'
  */
 
 
