@@ -11,7 +11,7 @@ import type { ClientProfil, ClientMessage } from './chat_types';
 import { sendInvite } from './sendInvite';
 import { setGameLink } from './setGameLink';
 import { emit } from 'process';
-import { Record } from 'typebox/type';
+import { Boolean, Record } from 'typebox/type';
 import { UserId } from '@shared/database/mixin/user';
 
 
@@ -25,7 +25,6 @@ export const color = {
 	reset: '\x1b[0m',
 };
 
-
 declare const __SERVICE_NAME: string;
 
 // Global map of clients
@@ -34,8 +33,6 @@ interface ClientInfo {
   user: string;
   lastSeen: number;
 }
-
-
 
 export const clientChat = new Map<string, ClientInfo>();
 
@@ -90,14 +87,16 @@ declare module 'fastify' {
 	}
 }
 
-function batColision(ball_origin_x : number, ball_origin_y : number, ball_height : number, origin_bat_x : number, origin_bat_y : number, bat_w : number, bat_h : number)
-{
-	if (((ball_origin_x >= origin_bat_x && ball_origin_x <= origin_bat_x + bat_w) ||
-			(ball_origin_x + ball_height >= origin_bat_x && ball_origin_x + ball_height <= origin_bat_x + bat_w))
-		&& ((ball_origin_y >= origin_bat_y && ball_origin_y <= origin_bat_y + bat_h) ||
-			(ball_origin_y + ball_height >= origin_bat_y && ball_origin_y + ball_height <= origin_bat_y + bat_h)))
+function isInRange(x : number, low : number, high : number) {
+	if (x >= low && x <= high)
 		return (true);
 	return (false);
+}
+
+async function sendScore(socket : Socket, scoreLeft : number, scoreRight : number) { // idk why, sometimes... it fails?
+	let msg : ClientMessage = {destination : "score-info", command: "", user:"", text:scoreLeft.toString() + ":" + scoreRight.toString(), SenderWindowID:""};
+
+	socket.emit('MsgObjectServer', {message : msg});
 }
 
 async function onReady(fastify: FastifyInstance) {
@@ -131,8 +130,8 @@ async function onReady(fastify: FastifyInstance) {
 	const START_BALLX = (RIGHT_EDGE / 2) - BALL_SIZE;
 	const START_BALLY = (BOTTOM_EDGE / 2) - BALL_SIZE;
 
-	const ACCELERATION_FACTOR = 1.0001;
-	const ABS_MAX_BALL_SPEED = 10;
+	const ACCELERATION_FACTOR = 1.15;
+	const ABS_MAX_BALL_SPEED = 3;
 
 	// val inits
 	let paddleLeft = PADDLE_START;   //shared start bat position
@@ -140,8 +139,10 @@ async function onReady(fastify: FastifyInstance) {
 
 	let ballPosX = START_BALLX;
 	let ballPosY = START_BALLY;
-	let ballSpeedX = 1;
-	let ballSpeedY = 1;
+	let ballSpeedX = -1;
+	let ballSpeedY = -1;
+	let scoreL = 0;
+	let scoreR = 0;
 
 
 	let games : Record<UserId, string> = {}; //  uuid, game uid - if not in game empty string
@@ -150,6 +151,7 @@ async function onReady(fastify: FastifyInstance) {
   		socket.emit("batLeft_update", paddleLeft);
   		socket.emit("batRight_update", paddleRight);
 		socket.emit("ballPos_update", ballPosX, ballPosY);
+		sendScore(socket, scoreL, scoreR);
 
 		// GAME
 			// paddle handling
@@ -162,6 +164,7 @@ async function onReady(fastify: FastifyInstance) {
 				}
 				// position of bat leftplokoplpl
 				paddleLeft = Math.max(TOP_EDGE, Math.min(MAX_PADDLE_Y, paddleLeft));
+				console.log("batLeft_update:", paddleLeft);
 				socket.emit("batLeft_update", paddleLeft);
 			});
 			socket.on('batmove_Right', (direction: "up" | "down") => {
@@ -176,14 +179,14 @@ async function onReady(fastify: FastifyInstance) {
 				socket.emit("batRight_update", paddleRight);
 			});
 			// ball handling:
-			// TODO 1: l/r bat hit
-			// TODO 2: l/r wall hit : score 5pt gagne
 			setInterval(async () => {
 				const new_ballPosX = ballPosX + ballSpeedX;
 				const new_ballPosY = ballPosY + ballSpeedY;
 
-				if (batColision(new_ballPosX, new_ballPosY, BALL_SIZE, PADDLE_X_OFFSET, paddleLeft, PADDLE_WIDTH, PADDLE_HEIGHT) ||
-				batColision(new_ballPosX, new_ballPosY, BALL_SIZE, RIGHT_EDGE - PADDLE_X_OFFSET, paddleRight, PADDLE_WIDTH, PADDLE_HEIGHT))
+				if (((isInRange(new_ballPosY, paddleLeft, paddleLeft + PADDLE_HEIGHT) || isInRange(new_ballPosY + BALL_SIZE *2, paddleLeft, paddleLeft + PADDLE_HEIGHT)) // y ok ?
+					&& isInRange(new_ballPosX, PADDLE_X_OFFSET, PADDLE_X_OFFSET + PADDLE_WIDTH) && ballSpeedX < 0) || // x ok? && ball going toward paddle?
+					((isInRange(new_ballPosY, paddleRight, paddleRight + PADDLE_HEIGHT) || isInRange(new_ballPosY + BALL_SIZE *2, paddleRight, paddleRight + PADDLE_HEIGHT)) // right side equations
+					&& isInRange(new_ballPosX + BALL_SIZE * 2, RIGHT_EDGE - PADDLE_X_OFFSET - PADDLE_WIDTH, RIGHT_EDGE - PADDLE_X_OFFSET)) && ballSpeedX > 0)
 				{
 					ballSpeedX *= -1;
 					ballSpeedX *= ACCELERATION_FACTOR;
@@ -191,10 +194,26 @@ async function onReady(fastify: FastifyInstance) {
 					console.log('bat colision');
 				}
 				else if (new_ballPosX < 0 || new_ballPosX + BALL_SIZE*2 > RIGHT_EDGE) {
-					ballSpeedX *= -1;
-					ballSpeedX *= ACCELERATION_FACTOR;
-					ballSpeedY *= ACCELERATION_FACTOR;
-					console.log('wall colision');
+					ballPosX = START_BALLX;
+					ballPosY = START_BALLY;
+					ballSpeedX = (Math.random() - .5) < 0 ? -1 : 1;
+
+					if (new_ballPosX < 0) {
+						scoreR += 1;
+						ballSpeedY = -1;
+					} else {
+						scoreL += 1;
+						ballSpeedY = 1;
+					}
+					if (scoreL >= 5 || scoreR >= 5)
+					{
+						console.log('game should stop + board reset');
+						ballSpeedX = 0; // temp solution
+						ballSpeedY = 0;
+						// reset board :D
+					}
+					console.log('point scored');
+					sendScore(socket, scoreL, scoreR);
 					// TODO: score point + 	ball reset + spd reset
 				}
 				else if (new_ballPosY < 0 || new_ballPosY + BALL_SIZE*2 > BOTTOM_EDGE) {
@@ -210,8 +229,8 @@ async function onReady(fastify: FastifyInstance) {
 
 				socket.emit("ballPos_update", ballPosX, ballPosY);
 			}, 16)
-		
-		// QUEU HANDL
+
+		// QUEUE HANDL
 			socket.on('queuJoin', async (uuid: UserId) => {
 				console.log('queu join recieved for : ', uuid);
 				if (!games.hasOwnProperty(uuid)) {

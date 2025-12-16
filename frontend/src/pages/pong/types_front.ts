@@ -10,7 +10,7 @@ export type ClientProfil = {
 	command: string,
 	destination: string,
    	type: string,
-	user: string, 
+	user: string,
 	loginName: string,
 	userID: string,
 	text: string,
@@ -19,4 +19,4 @@ export type ClientProfil = {
 	SenderName: string,
 	Sendertext: string,
     innerHtml?: string,
-}; 	
+};

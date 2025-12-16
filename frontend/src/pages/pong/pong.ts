@@ -8,20 +8,20 @@ import { addPongMessage } from './addPongMessage';
 import { isLoggedIn } from './isLoggedIn';
 import type { ClientMessage, ClientProfil } from './types_front';
 import { isNullish } from "@app/utils";
- 
+
 export const color = {
 	red: 'color: red;',
 	green: 'color: green;',
 	yellow: 'color: orange;',
 	blue: 'color: blue;',
-	reset: '', 
+	reset: '',
 };
 
 // TODO: local game (2player -> server -> 2player : current setup)
 // TODO: tournament via remote (dedicated queu? idk)
-// 
+//
 
-// get the name of the machine used to connect 
+// get the name of the machine used to connect
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
 
@@ -34,6 +34,9 @@ document.addEventListener('ft:pageChange', () => { // dont regen socket on page 
 	console.log("Page changed");
 });
 
+/**
+ * @returns the initialized socket
+ */
 export function getSocket(): Socket {
 	let addressHost = `wss://${machineHostName}:8888`;
 
@@ -46,6 +49,11 @@ export function getSocket(): Socket {
 	return __socket;
 };
 
+/**
+ * 
+ * @param socket The socket to wait for
+ * @returns voir or a promise<void>
+ */
 function waitSocketConnected(socket: Socket): Promise<void> {
 	return new Promise(resolve => {
 		if (socket.connected) return resolve();
@@ -53,6 +61,11 @@ function waitSocketConnected(socket: Socket): Promise<void> {
 	});
 };
 
+/**
+ * 
+ * @param socket The socket to communicat
+ * @returns nothing
+ */
 async function whoami(socket: Socket) {
 	try {
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
@@ -135,7 +148,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	// keys handler
 	const keys: Record<string, boolean> = {};
-	
+
 	document.addEventListener("keydown", (e) => {
 		keys[e.key.toLowerCase()] = true;
 	});
@@ -144,35 +157,35 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	});
 	setInterval(() => { // key sender
 		if ((keys['w'] || keys['s']) && !(keys['w'] && keys['s'])) { // exclusive or to filter requests
-			if (keys['w']) { 
+			if (keys['w']) {
 				socket.emit("batmove_Left", "up");
 				console.log('north key pressed - emit batmove_Left up');
 			}
-			if (keys['s']) { 
+			if (keys['s']) {
 				socket.emit("batmove_Left", "down");
 				console.log('south key pressed - emit batmove_Left down');
 			}
 		}
 		if ((keys['p'] || keys['l']) && !(keys['p'] && keys['l'])) { // exclusive or to filter requests
-			if (keys['p']) { 
+			if (keys['p']) {
 				socket.emit("batmove_Right", "up");
 				console.log('north key pressed - emit batmove_Right up');
 			}
-			if (keys['l']) { 
+			if (keys['l']) {
 				socket.emit("batmove_Right", "down");
 				console.log('south key pressed - emit batmove_Right down');
 			}
 		}
 	}, 16);
-	
+
 	// Pong Objects updators
 	socket.on("batLeft_update", (y: number) => {
 		console.log('batLeft_update received y: ', y);
 		const bat = document.getElementById("batleft") as HTMLDivElement | null;
 		if (!bat) {
 			console.error("FATAL ERROR: Bat element with ID 'bat-left' not found. Check HTML.");
-			return ; 
-		}        
+			return ;
+		}
 		if (typeof y === 'number' && !isNaN(y)) {
 			bat.style.transform = `translateY(${y}px)`;
 		} else {
@@ -184,8 +197,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const bat = document.getElementById("batright") as HTMLDivElement | null;
 		if (!bat) {
 			console.error("FATAL ERROR: Bat element with ID 'bat-Right' not found. Check HTML.");
-			return ; 
-		}        
+			return ;
+		}
 		if (typeof y === 'number' && !isNaN(y)) {
 			bat.style.transform = `translateY(${y}px)`;
 		} else {
@@ -193,7 +206,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		}
 	});
 	socket.on("ballPos_update", (x:number, y : number) => {
-		console.log('ballPos_update recieved: ', x, ' / ', y);
+		console.log('ballPos_update recieved');
 		const ball = document.getElementById("ball") as HTMLDivElement | null;
 
 		if (!ball) {
@@ -202,12 +215,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		}
 		if (typeof y !== 'number' || isNaN(y) || typeof x !== 'number' || isNaN(x)) {
 			console.warn(`Received invalid X/Y value: ${x} / ${y}`);
-			return ; 
+			return ;
 		}
 		ball.style.transform = `translateY(${y}px)`;
 		ball.style.transform += `translateX(${x}px)`;
 	});
-	
+
 	// socket.once('welcome', (data) => {
 	// 	console.log('%cWelcome PONG PAGE', color.yellow );
 	// 	addPongMessage('socket.once \'Welcome\' called')
@@ -216,6 +229,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	// Listen for messages from the server "MsgObjectServer"
 	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
 		// Display the message in the chat window
+		console.log("message recieved : ", data.message.text);
 		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
 		const MAX_SYSTEM_MESSAGES = 10;
 
@@ -230,7 +244,17 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			}
 			systemWindow.scrollTop = systemWindow.scrollHeight;
 		}
-		console.log("Getuser():", getUser());
+		if (systemWindow && data.message.destination === "score-info") {
+			console.log("score update:", data.message.text);
+			const scoreboard = document.getElementById('score-board') as HTMLHeadingElement ;
+
+			if (!scoreboard) {
+				console.log("update score failed :(");
+				return ;
+			}
+			scoreboard.textContent = `${data.message.text}`;
+		}
+		//	console.log("Getuser():", getUser());
 	});
 
 	setTitle('Pong Game Page');
@@ -247,6 +271,22 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				joinQueu(socket);
 			});
 
+			const checkbox = document.getElementById("modeToggle") as HTMLInputElement;
+			const label = document.getElementById("toggleLabel") as HTMLSpanElement;
+			const track = document.getElementById("toggleTrack") as HTMLDivElement;
+			const knob = document.getElementById("toggleKnob") as HTMLSpanElement;
+
+			checkbox.addEventListener("change", () => { // web vs local
+				if (checkbox.checked) {
+					label.textContent = "Web";
+					track.classList.replace("bg-gray-300", "bg-blue-600");
+					knob.classList.add("translate-x-7");
+				} else {
+					label.textContent = "Local";
+					track.classList.replace("bg-blue-600", "bg-gray-300");
+					knob.classList.remove("translate-x-7");
+				}
+			});
 		}
 	}
 };

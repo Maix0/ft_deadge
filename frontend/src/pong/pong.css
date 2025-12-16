@@ -10,7 +10,7 @@
   @apply
   w-[100px]
   h-[32px]
-  border-1 
+  border-1
   border-gray-500
   rounded-3xl
   bg-gray-500
@@ -31,10 +31,10 @@
   p-[8px]
   border-1
   border-black
-  shadow-2xl 
+  shadow-2xl
   text-left
   text-gray-700
-  bg-white 
+  bg-white
   rounded-3xl
   overflow-y-auto
   whitespace-pre-line
@@ -46,12 +46,12 @@
 .system-info {
   @apply
   h-[40px]
-  bg-gray-200 
-  text-gray-700 
-  p-3 
-  rounded-3xl 
-  mb-2 border 
-  border-gray-200 
+  bg-gray-200
+  text-gray-700
+  p-3
+  rounded-3xl
+  mb-2 border
+  border-gray-200
   text-center
   shadow
   overflow-y-auto
@@ -67,20 +67,20 @@
   items-center
   justify-center
   bg-[#43536b];
-  
+
 }
 
 .mainboxDisplay {
   @apply
-  fixed 
-  top-1/2 
-  left-1/2 
-  -translate-x-1/2 
-  -translate-y-1/2 
-  bg-gray-200 w-[850px] 
-  p-6 rounded-xl 
-  shadow-2xl 
-  text-center 
+  fixed
+  top-1/2
+  left-1/2
+  -translate-x-1/2
+  -translate-y-1/2
+  bg-gray-200 w-[850px]
+  p-6 rounded-xl
+  shadow-2xl
+  text-center
   z-50;
 }
 
@@ -103,7 +103,6 @@
 .text-style {
   @apply
   text-black
-
 }
 
 .pong-field {
