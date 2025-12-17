@@ -31,6 +31,21 @@ export type blockedUnBlocked =
 	by: string,
 };
 
+export type obj =
+{
+	command: string,
+	destination: string,
+	type: string,
+	user: string,
+	frontendUserName: string,
+	frontendUser: string,
+	token: string,
+	text: string,
+	timestamp: number,
+	SenderWindowID: string,
+	Sendertext: string,
+};
+
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -242,7 +257,7 @@ async function openMessagePopup(message: string) {
 
 	const modalmessage = document.getElementById("modal-message") ?? null;
 	if(!message) return
-	const obj:any =  JSON.parse(message);
+	const obj:string =  JSON.parse(message);
 	if (modalmessage) {
 		const messageElement = document.createElement("div");
 		messageElement.innerHTML = `
@@ -341,7 +356,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		profil.SenderID = getUser()?.id ?? "";
 		profil.SenderName = getUser()?.name ?? "";
 		openProfilePopup(profil);
-		console.log(`DEBUG LOG: userId:${profil.userID}: senderID ${profil.SenderID}' senderID:${getUser()?.id}`);
+		console.log(`DEBUG LOG: userId:${profil.userID}: senderID${profil.SenderID}' senderID:${getUser()?.id}`);
 		console.log(`DEBUG LOG: user:${profil.user}: sender:${profil.SenderName}' senderID:${getUser()?.name}`);
 		socket.emit('check_Block_button', profil);
 		actionBtnPopUpClear(profil, socket);

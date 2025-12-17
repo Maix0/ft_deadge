@@ -189,7 +189,7 @@ async function onReady(fastify: FastifyInstance) {
 		socket.on('message', (message: string) => {
 			// console.info(color.blue, 'DEBUG LOG: Socket connected!', color.reset, socket.id);
 			// console.log( color.blue, 'DEBUG LOG: Received message from client', color.reset, message);
-			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
+			const obj: obj = JSON.parse(message) as ClientMessage;
 			clientChat.set(socket.id, { user: obj.user, lastSeen: Date.now() });
 			// console.log(color.green, 'DEBUG LOG: Message from client', color.reset, `Sender: login name: ${obj.user} - windowID ${obj.SenderWindowID} - text message: ${obj.text}`);
 			socket.emit('welcome', { msg: 'Welcome to the chat! : ' });
@@ -247,15 +247,18 @@ async function onReady(fastify: FastifyInstance) {
 
 		  if (!clientName) return;
 		  	console.log(color.green, `Client logging out: ${clientName} (${socket.id})`);
-		  	const obj = {
+		  	const obj: obj = {
 				command: '',
 				destination: 'system-info',
 		    	type: 'chat' as const,
 		    	user: clientName,
 		    	token: '',
 		    	text: 'LEFT the chat',
-		    	timestamp: Date.now(),
-		    	SenderWindowID: socket.id,
+		    	frontendUserName: '',
+				frontendUser: '',
+				timestamp: Date.now(),
+				SenderWindowID: socket.id,
+				Sendertext: '',
 			};
 			broadcast(fastify, obj, socket.id);
 			// Optional: remove from map
@@ -274,15 +277,18 @@ async function onReady(fastify: FastifyInstance) {
 			if (reason === 'transport error') return;
 
 			if (clientName !== null) {
-				const obj = {
+				const obj: obj = {
 					command: '',
 					destination: 'system-info',
 					type: 'chat',
 					user: clientName,
 					token: '',
 					text: 'LEFT the chat',
+					frontendUserName: '',
+					frontendUser: '',
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
+					Sendertext: '',
 				};
 
 				broadcast(fastify, obj, obj.SenderWindowID);
@@ -299,15 +305,18 @@ async function onReady(fastify: FastifyInstance) {
 			);
 
 			if (clientName !== null) {
-				const obj = {
+				const obj: obj = {
 					command: '',
 					destination: 'system-info',
 					type: 'chat',
 					user: clientName,
 					token: '',
 					text: 'LEFT the chat but the window is still open',
+					frontendUserName: '',
+					frontendUser: '',
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
+					Sendertext: '',
 				};
 				// console.log(color.blue, 'DEBUG LOG: BROADCASTS OUT :', obj.SenderWindowID);
 
