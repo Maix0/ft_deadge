@@ -1,18 +1,15 @@
 networks:
-  transcendance-network:
+  app:
     driver: bridge
   monitoring:
     driver: bridge
 services:
-  ###############
-  #    USER     #
-  ###############
   frontend:
     build: ./frontend
-    container_name: frontend
+    container_name: app-frontend
     restart: on-failure:3
     networks:
-      - transcendance-network
+      - app
     volumes:
       - static-volume:/volumes/static
     logging:
@@ -21,18 +18,12 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-  # 
-  # The "entry point" as in it does all of this:
-  #  - serve files (images, static files, video)
-  #  - redirect request to appropirate service (reverse proxy)
-  #  - be the one that handles TLS/SSL (basically HTTPS)
-  #  - other stuff I don't know yet
   nginx:
     build: ./nginx
-    container_name: nginx
+    container_name: app-nginx
     restart: always
     networks:
-      - transcendance-network
+      - app
       - monitoring
     ports:
       - '8888:443'
@@ -49,20 +40,20 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
+  ###############
+  #   SERVICE   #
+  ###############
 
-  ###############
-  #    AUTH     #
-  ###############
   auth:
     build:
       context: ./src/
       args:
         - SERVICE=auth
         - EXTRA_FILES=auth/extra
-    container_name: auth 
+    container_name: app-auth 
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
@@ -76,19 +67,15 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-  ###############
-  #    CHAT     #
-  ###############
   chat:
     build:
       context: ./src/
       args:
         - SERVICE=chat
-        - EXTRA_FILES=chat/extra
-    container_name: chat 
+    container_name: app-chat 
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
@@ -103,18 +90,15 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-  ###############
-  #    USER     #
-  ###############
   user:
     build:
       context: ./src/
       args:
         - SERVICE=user
-    container_name: user
+    container_name: app-user
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
@@ -133,11 +117,11 @@ services:
   ###############
 
   grafana:
-    container_name: monitoring-grafana
+    container_name: mon-grafana
     image: grafana/grafana-enterprise
     restart: always
     networks:
-      - transcendance-network
+      - app
       - monitoring
     depends_on:
       - prometheus
@@ -168,9 +152,9 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: monitoring-prometheus
+    container_name: mon-prometheus
     networks:
-      - transcendance-network
+      - app
       - monitoring
     volumes:
       - ./monitoring/prometheus:/etc/prometheus/
@@ -191,7 +175,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     networks:
       - monitoring
-    container_name: monitoring-cadvisor
+    container_name: mon-cadvisor
     command:
       - '-url_base_prefix=/cadvisor'
     environment:
@@ -210,9 +194,9 @@ services:
 
   blackbox:
     image: prom/blackbox-exporter:latest
-    container_name: monitoring-blackbox
+    container_name: mon-blackbox
     networks:
-      - transcendance-network
+      - app
     restart: unless-stopped
     logging:
       driver: gelf
@@ -234,7 +218,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23
-    container_name: logs-elasticsearch
+    container_name: log-elasticsearch
     networks:
       - monitoring
     environment:
@@ -255,7 +239,7 @@ services:
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.17.23
-    container_name: logs-logstash
+    container_name: log-logstash
     depends_on:
       - elasticsearch
     networks:
@@ -274,12 +258,12 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.23
-    container_name: logs-kibana
+    container_name: log-kibana
     depends_on:
       - elasticsearch
     networks:
       - monitoring
-      - transcendance-network
+      - app
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - SERVER_PUBLICBASEURL=https://local.maix.me:9090/kibana
