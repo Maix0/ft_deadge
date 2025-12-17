@@ -23,6 +23,14 @@ export const color = {
 	reset: '',
 };
 
+
+export type blockedUnBlocked = 
+{
+	userState: string,
+	userTarget: string,
+	by: string,
+};
+
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
 console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
@@ -63,22 +71,6 @@ function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
 			});
     	}, 0)
 };
-
-// async function windowStateHidden() {
-// 	const socketId = __socket || undefined;
-// 	// let oldName = localStorage.getItem("oldName") ??  undefined;
-// 	let oldName: string;
-// 	if (socketId === undefined) return;
-// 	let userName = await updateUser();
-// 	oldName =  userName?.name ?? "";
-// 	if (oldName === "") return;
-// 	localStorage.setItem('oldName', oldName);
-// 	socketId.emit('client_left', {
-// 		user: userName?.name,
-// 		why: 'tab window hidden - socket not dead',
-// 	});
-// 	return;
-// };
 
 async function windowStateVisable() {
 
@@ -140,36 +132,6 @@ function parseCmdMsg(msgText: string): string[] | undefined {
     command[1] = rest;
     return command;
 }
-
-// async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies: string) {
-
-// 	if (!buddies) return;
-// 	const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
-// 	const buddiesElement = document.createElement("div-buddies-list");
-// 	buddiesElement.textContent = listBuddies + '\n';
-// 	const user = getUser()?.name ?? "";
-// 	buddies.appendChild(buddiesElement);
-// 	buddies.scrollTop = buddies.scrollHeight;
-// 	console.log(`Added buddies: ${listBuddies}`);
-
-// 	buddiesElement.style.cursor = "pointer";
-// 	buddiesElement.addEventListener("click", () => {
-// 		navigator.clipboard.writeText(listBuddies);
-// 		if (listBuddies !== user && user !== "") {
-// 			sendtextbox.value = `@${listBuddies}: `;
-// 			console.log("Copied to clipboard:", listBuddies);
-// 			sendtextbox.focus();
-// 		}
-// 	});
-
-// 	buddiesElement.addEventListener("dblclick", () => {
-// 		console.log("Open profile:", listBuddies);
-// 		getProfil(socket, listBuddies);
-//         sendtextbox.value = "";
-//     });
-
-// }
-
 
 function waitSocketConnected(socket: Socket): Promise<void> {
     return new Promise(resolve => {
@@ -270,30 +232,6 @@ async function whoami(socket: Socket) {
 	}
 };
 
-// async function openProfilePopup(profil: ClientProfil) {
-
-
-// 	const modalname = document.getElementById("modal-name") ?? null;
-// 	if (modalname)
-// 		modalname.innerHTML = `
-// 					<div class="profile-info">
-// 						<div-profil-name id="profilName"> Profil of ${profil.user} </div>
-// 						<div-login-name id="loginName"> Login Name: '${profil.loginName ?? 'Guest'}' </div>
-// 						</br>
-// 						<div-login-name id="loginName"> Login ID: '${profil.userID ?? ''}' </div>
-// 						</br>
-// 						<button id="popup-b-clear" class="btn-style popup-b-clear">Clear Text</button>
-// 						<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
-// 						<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
-//             			<div id="profile-about">About: '${profil.text}' </div>
-//         			</div>
-// 	`;
-// 	const profilList = document.getElementById("profile-modal") ?? null;
-// 	if (profilList)
-// 		profilList.classList.remove("hidden");
-// 	 // The popup now exists → attach the event
-// }
-
 let count = 0;
 function incrementCounter(): number {
 	count += 1;
@@ -336,6 +274,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		await waitSocketConnected(socket);
 		console.log("I AM Connected to the server:", socket.id);
 		const user = getUser()?.name;
+		const userID = getUser()?.id;
 		// Ensure we have a user AND socket is connected
 		if (!user || !socket.connected) return;
 		const message = {
@@ -347,6 +286,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			text: " has Just ARRIVED in the chat",
 			timestamp: Date.now(),
 			SenderWindowID: socket.id,
+			SenderID: userID,
+
 		};
 		socket.emit('message', JSON.stringify(message));
 		const messageElement = document.createElement("div");
@@ -397,7 +338,12 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	});
 
 	socket.on('profilMessage', (profil: ClientProfil) => {
+		profil.SenderID = getUser()?.id ?? "";
+		profil.SenderName = getUser()?.name ?? "";
 		openProfilePopup(profil);
+		console.log(`DEBUG LOG: userId:${profil.userID}: senderID ${profil.SenderID}' senderID:${getUser()?.id}`);
+		console.log(`DEBUG LOG: user:${profil.user}: sender:${profil.SenderName}' senderID:${getUser()?.name}`);
+		socket.emit('check_Block_button', profil);
 		actionBtnPopUpClear(profil, socket);
 		actionBtnPopUpInvite(profil, socket);
 		actionBtnPopUpBlock(profil, socket);
@@ -416,13 +362,25 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		let icon = '⛔';
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const messageElement = document.createElement("div");
-		if (`${blocked.text}` === '\'I have un-blocked you\'' ) { icon = '💚'};
+		if (`${blocked.text}` === 'I have un-blocked you' ) { icon = '💚'};
     	messageElement.innerText =`${icon}${blocked.SenderName}:  ${blocked.text}`;
     	chatWindow.appendChild(messageElement);
 		chatWindow.scrollTop = chatWindow.scrollHeight;
 	});
 
 
+	socket.on('blockBtn', (data: blockedUnBlocked) => {
+		const blockUserBtn = document.querySelector("#popup-b-block");
+		if (blockUserBtn) {
+
+			console.log(' =================== >>> User State:', data.userState);
+			console.log(' =================== >>> UserTarget:', data.userTarget);
+			console.log(' =================== >>> By:', data.by);
+			let message = "";
+			if (data.userState === "block") {message = "un-block"} else{message = "block"}
+			blockUserBtn.textContent = message;
+		}
+	});
 
 
 	socket.on('logout', () => {
@@ -553,6 +511,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     						    break;
     						default:
 								const user = getUser()?.name;
+								const userID = getUser()?.id;
 								// Ensure we have a user AND socket is connected
 								if (!user || !socket.connected) return;
 								const message = {
@@ -564,6 +523,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									text: msgCommand[1],
 									timestamp: Date.now(),
 									SenderWindowID: socket.id,
+									SenderID: userID,
+
 								};
 								//socket.emit('MsgObjectServer', message);
 								socket.emit('privMessage', JSON.stringify(message));

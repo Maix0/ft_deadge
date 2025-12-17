@@ -17,6 +17,7 @@ export type ClientProfil = {
 	timestamp: number,
 	SenderWindowID:string,
 	SenderName: string,
+	SenderID: string,
     Sendertext: string,
     innerHtml?: string,
 
