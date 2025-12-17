@@ -1,18 +1,15 @@
 networks:
-  transcendance-network:
+  app:
     driver: bridge
   monitoring:
     driver: bridge
 services:
-  ###############
-  #    USER     #
-  ###############
   frontend:
     build: ./frontend
-    container_name: frontend
+    container_name: app-frontend
     restart: on-failure:3
     networks:
-      - transcendance-network
+      - app
     volumes:
       - static-volume:/volumes/static
     logging:
@@ -21,20 +18,16 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-  # 
-  # The "entry point" as in it does all of this:
-  #  - serve files (images, static files, video)
-  #  - redirect request to appropirate service (reverse proxy)
-  #  - be the one that handles TLS/SSL (basically HTTPS)
-  #  - other stuff I don't know yet
   nginx:
     build: ./nginx
-    container_name: nginx
+    container_name: app-nginx
     restart: always
     networks:
-      - transcendance-network
+      - app
+      - monitoring
     ports:
       - '8888:443'
+      - '9090:8443'
     volumes:
       # if you need to share files with nginx, you do it here.
       - static-volume:/volumes/static
@@ -48,18 +41,19 @@ services:
         tag: "{{.Name}}"
 
   ###############
-  #    AUTH     #
+  #   SERVICE   #
   ###############
+
   auth:
     build:
       context: ./src/
       args:
         - SERVICE=auth
         - EXTRA_FILES=auth/extra
-    container_name: auth 
+    container_name: app-auth 
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
@@ -73,39 +67,15 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-  ###############
-  # TIC-TAC-TOE #
-  ###############
-  # tic-tac-toe:
-  #   build:
-  #     context: ./src/
-  #     args:
-  #       - SERVICE=tic-tac-toe
-  #       - EXTRA_FILES=tic-tac-toe/extra
-  #   container_name: tic-tac-toe 
-  #   restart: unless-stopped
-  #   networks:
-  #     - transcendance-network
-  #   volumes:
-  #     - sqlite-volume:/volumes/database
-  #     - static-volume:/volumes/static
-  #   environment:
-  #     - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
-  #     - DATABASE_DIR=/volumes/database
-
-  ###############
-  #    CHAT     #
-  ###############
   chat:
     build:
       context: ./src/
       args:
         - SERVICE=chat
-        - EXTRA_FILES=chat/extra
-    container_name: chat 
+    container_name: app-chat 
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
@@ -114,20 +84,21 @@ services:
       - DATABASE_DIR=/volumes/database
       - PROVIDER_FILE=/extra/providers.toml
       - SESSION_MANAGER=${SESSION_MANAGER}
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
-  ###############
-  #    USER     #
-  ###############
   user:
     build:
       context: ./src/
       args:
         - SERVICE=user
-        # - EXTRA_FILES=user/extra
-    container_name: user
+    container_name: app-user
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
@@ -146,16 +117,14 @@ services:
   ###############
 
   grafana:
-    container_name: monitoring-grafana
+    container_name: mon-grafana
     image: grafana/grafana-enterprise
     restart: always
     networks:
-      - transcendance-network
+      - app
       - monitoring
     depends_on:
       - prometheus
-    ports:
-      - '3000:3000'
     volumes:
       - ./monitoring/grafana/alerting:/etc/grafana/provisioning/alerting
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
@@ -166,7 +135,7 @@ services:
       # this can stay the same for developpement. This is an alias to `localhost`
       - NGINX_DOMAIN=local.maix.me
       - GF_LOG_LEVEL=warn
-      - GF_SERVER_ROOT_URL=http://local.maix.me:3000
+      - GF_SERVER_ROOT_URL=https://local.maix.me:9090/grafana/
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASS}
     logging:
@@ -174,12 +143,18 @@ services:
       options:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -s http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: monitoring-prometheus
+    container_name: mon-prometheus
     networks:
-      - transcendance-network
+      - app
       - monitoring
     volumes:
       - ./monitoring/prometheus:/etc/prometheus/
@@ -189,14 +164,22 @@ services:
       options:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     networks:
       - monitoring
-    container_name: monitoring-cadvisor
-    ports:
-      - '8080:8080'
+    container_name: mon-cadvisor
+    command:
+      - '-url_base_prefix=/cadvisor'
+    environment:
+      - CADVISOR_HEALTHCHECK_URL=http://localhost:8080/cadvisor/healthz
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -209,20 +192,23 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-
   blackbox:
     image: prom/blackbox-exporter:latest
-    container_name: monitoring-blackbox
+    container_name: mon-blackbox
     networks:
-      - transcendance-network
-    ports:
-      - "9115:9115"
+      - app
     restart: unless-stopped
     logging:
       driver: gelf
       options:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://localhost:9115/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 
 
@@ -232,7 +218,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23
-    container_name: logs-elasticsearch
+    container_name: log-elasticsearch
     networks:
       - monitoring
     environment:
@@ -242,14 +228,18 @@ services:
     volumes:
       - elastic-data:/usr/share/elasticsearch/data
       - ./logs/elasticsearch:/setup
-    ports:
-      - "9200:9200"
     command: ["/setup/bootstrap.sh"]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.17.23
-    container_name: logs-logstash
+    container_name: log-logstash
     depends_on:
       - elasticsearch
     networks:
@@ -259,25 +249,38 @@ services:
     ports:
       - "12201:12201/udp"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "localhost:9600"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.23
-    container_name: logs-kibana
+    container_name: log-kibana
     depends_on:
       - elasticsearch
     networks:
       - monitoring
+      - app
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - SERVER_PUBLICBASEURL=http://local.maix.me:5601
+      - SERVER_PUBLICBASEURL=https://local.maix.me:9090/kibana
+      - SERVER_BASEPATH=/kibana
+      - SERVER_REWRITEBASEPATH=true
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-    ports:
-      - "5601:5601"
     volumes:
       - ./logs/kibana:/setup
     command: ["/setup/bootstrap.sh"]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "localhost:5601/kibana/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   sqlite-volume:

@@ -27,3 +27,9 @@ COPY ./15-local-resolvers.envsh  /docker-entrypoint.d/
 COPY ./17-add-template-prefix.sh /docker-entrypoint.d/
 
 COPY ./conf /etc/nginx/templates
+COPY ./monitoring.index.html /var/share/www/monitoring/
+
+RUN chmod -R +r /var/share/www/monitoring/; 
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f -s http://localhost:8080/ok?docker || exit 1;

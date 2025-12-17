@@ -11,7 +11,7 @@ import { FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 
 export const useMonitoring = fp(async (fastify) => {
-	fastify.get('/monitoring', { schema: { hide: true } }, (req, res) => {
+	fastify.get('/monitoring', { schema: { hide: true }, logLevel: 'silent' }, (req, res) => {
 		void req;
 		res.code(200).send('Ok');
 	});

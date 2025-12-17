@@ -4,23 +4,9 @@ import fastify, { FastifyInstance } from 'fastify';
 import app from './app';
 
 const start = async () => {
-	const envToLogger = {
-		development: {
-			transport: {
-				target: 'pino-pretty',
-				options: {
-					translateTime: 'HH:MM:ss Z',
-					ignore: 'pid,hostname',
-				},
-			},
-		},
-		production: true,
-		test: false,
-	};
-
-	const f: FastifyInstance = fastify({ logger: envToLogger.development });
+	const f: FastifyInstance = fastify({ logger: { level: 'info' } });
 	process.on('SIGTERM', () => {
-		f.log.info('Requested to shutdown');
+		f.log.warn('Requested to shutdown');
 		process.exit(134);
 	});
 	try {

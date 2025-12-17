@@ -1,6 +1,7 @@
 FROM node:22-alpine AS pnpm_base
 RUN npm install --global pnpm@10 --no-fund -q;
 RUN apk add make python3 gcc clang build-base musl-dev;
+RUN apk add --no-cache curl
 
 FROM pnpm_base AS deps
 WORKDIR /build
@@ -49,6 +50,9 @@ COPY --from=deps    /build/node_modules  /src/node_modules
 
 COPY ${EXTRA_FILES}       /extra
 ENTRYPOINT [ "/src/entrypoint.sh" ]
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f -s http://localhost/monitoring?docker || exit 1
 
 CMD ["node", "/src/run.cjs"]
 
