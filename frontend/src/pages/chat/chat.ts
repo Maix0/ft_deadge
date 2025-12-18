@@ -31,20 +31,6 @@ export type blockedUnBlocked =
 	by: string,
 };
 
-export type obj =
-{
-	command: string,
-	destination: string,
-	type: string,
-	user: string,
-	frontendUserName: string,
-	frontendUser: string,
-	token: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID: string,
-	Sendertext: string,
-};
 
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
