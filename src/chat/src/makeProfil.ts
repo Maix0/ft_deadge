@@ -35,6 +35,7 @@ export async function makeProfil(fastify: FastifyInstance, user: string, socket:
 			SenderWindowID: socket.id,
 			SenderName: '',
 			Sendertext: '',
+			SenderID: '',
 			innerHtml: '',
 		};
 	}

@@ -32,3 +32,19 @@ export type ClientProfil = {
     innerHtml?: string,
 
 };
+
+
+export type obj =
+{
+	command: string,
+	destination: string,
+	type: string,
+	user: string,
+	frontendUserName: string,
+	frontendUser: string,
+	token: string,
+	text: string,
+	timestamp: number,
+	SenderWindowID: string,
+	Sendertext: string,
+};

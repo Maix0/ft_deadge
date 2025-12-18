@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import type { User } from '@shared/database/mixin/user';
 import type { BlockedData } from '@shared/database/mixin/blocked';
 import { broadcast } from './broadcast';
-import type { ClientProfil, ClientMessage } from './chat_types';
+import type { ClientProfil, ClientMessage, obj } from './chat_types';
 import { sendPrivMessage } from './sendPrivMessage';
 import { sendBlocked } from './sendBlocked';
 import { sendInvite } from './sendInvite';
@@ -37,6 +37,7 @@ declare const __SERVICE_NAME: string;
 // key = socket, value = clientname
 interface ClientInfo {
   user: string;
+  socket: string
   lastSeen: number;
 }
 
@@ -48,37 +49,6 @@ export type blockedUnBlocked =
 	by: string,
 };
 
-
-export type obj =
-{
-	command: string,
-	destination: string,
-	type: string,
-	user: string,
-	frontendUserName: string,
-	frontendUser: string,
-	token: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID: string,
-	Sendertext: string,
-};
-
-
-
-// function setAboutPlayer(about: string): string {
-// 	if (!about) {
-// 		about = 'Player is good Shape - This is a default description';
-// 	}
-// 	return about;
-// };
-
-// function setGameLink(link: string): string {
-// 	if (!link) {
-// 		link = '<a href=\'https://google.com\' style=\'color: blue; text-decoration: underline; cursor: pointer;\'>Click me</a>';
-// 	}
-// 	return link;
-// };
 
 export const clientChat = new Map<string, ClientInfo>();
 
@@ -192,7 +162,7 @@ async function onReady(fastify: FastifyInstance) {
 			// console.info(color.blue, 'DEBUG LOG: Socket connected!', color.reset, socket.id);
 			// console.log( color.blue, 'DEBUG LOG: Received message from client', color.reset, message);
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
-			clientChat.set(socket.id, { user: obj.user, lastSeen: Date.now() });
+			clientChat.set(socket.id, { user: obj.user, socket: socket.id, lastSeen: Date.now() });
 			// console.log(color.green, 'DEBUG LOG: Message from client', color.reset, `Sender: login name: ${obj.user} - windowID ${obj.SenderWindowID} - text message: ${obj.text}`);
 			socket.emit('welcome', { msg: 'Welcome to the chat! : ' });
 			// Send object directly — DO NOT wrap it in a string
@@ -204,21 +174,21 @@ async function onReady(fastify: FastifyInstance) {
 			
 			
 			
-			fastify.io.fetchSockets().then((sockets) => {
-				for (const socket of sockets) {
-					const clientInfo = clientChat.get(socket.id);
-					if (!clientInfo?.user) {
-						console.log(color.yellow, `Skipping socket ${socket.id} (no user found)`);
-						continue;
-					}
-					console.log('DEBUG: UserIDWindow :', getUserByName(users, clientInfo.user)?.id);
-					const IDUser = getUserByName(users, clientInfo.user)?.id;
+	// 		fastify.io.fetchSockets().then((sockets) => {
+	// 			for (const socket of sockets) {
+	// 				const clientInfo = clientChat.get(socket.id);
+	// 				if (!clientInfo?.user) {
+	// 					console.log(color.yellow, `Skipping socket ${socket.id} (no user found)`);
+	// 					continue;
+	// 				}
+	// 				console.log('DEBUG: UserIDWindow :', getUserByName(users, clientInfo.user)?.id);
+	// 				const IDUser = getUserByName(users, clientInfo.user)?.id;
 
-					console.log(filter_Blocked_user(fastify, obj, IDUser?? ""));
+	// 				console.log(filter_Blocked_user(fastify, obj, IDUser?? ""));
 					
 					
-				}
-	});
+	// 			}
+	// });
 
 
 

@@ -9,7 +9,7 @@ import { getProfil } from './getProfil';
 import { addMessage } from './addMessage';
 import { broadcastMsg } from './broadcastMsg';
 import { isLoggedIn } from './isLoggedIn';
-import type { ClientMessage, ClientProfil } from './types_front';
+import type { ClientMessage, ClientProfil, obj } from './types_front';
 import { openProfilePopup } from './openProfilePopup';
 import { actionBtnPopUpClear } from './actionBtnPopUpClear';
 import { actionBtnPopUpBlock } from './actionBtnPopUpBlock';
@@ -31,20 +31,6 @@ export type blockedUnBlocked =
 	by: string,
 };
 
-export type obj =
-{
-	command: string,
-	destination: string,
-	type: string,
-	user: string,
-	frontendUserName: string,
-	frontendUser: string,
-	token: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID: string,
-	Sendertext: string,
-};
 
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
@@ -175,11 +161,6 @@ function quitChat (socket: Socket) {
 	}
 
 };
-
-// const bconnected = document.getElementById('b-help') as HTMLButtonElement;
-// if (bconnected) {
-// 	bconnected.click();
-// }
 
 function logout(socket: Socket) {
   socket.emit("logout");  // notify server
@@ -321,6 +302,11 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 		const bconnected = document.getElementById('b-help') as HTMLButtonElement;
 
+		console.log('UserSender:', data.message.SenderUserID);
+		console.log('User:', getUser()?.id);
+
+
+
 		if (bconnected) {
 			connected(socket);
 		}
@@ -419,7 +405,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	let toggle = false
 	window.addEventListener("focus", async () => {
-		//nst bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
 
 		setTimeout(() => {
 			connected(socket);
@@ -439,10 +424,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			windowStateHidden();
 		toggle = false;
 	});
-
-	// setInterval(async () => {
-	// 	//connected(socket);
-	// },10000); // every 10 sec
 
 	socket.on('listBud', async (myBuddies: string[])  => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
