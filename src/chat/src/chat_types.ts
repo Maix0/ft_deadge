@@ -32,7 +32,6 @@ export type ClientProfil = {
     innerHtml?: string,
 
 };
-<<<<<<< HEAD
 
 
 export type obj =
@@ -49,5 +48,3 @@ export type obj =
 	SenderWindowID: string,
 	Sendertext: string,
 };
-=======
->>>>>>> refs/remotes/origin/nigel/functionBlockMessage
