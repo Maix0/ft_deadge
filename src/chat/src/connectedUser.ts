@@ -13,6 +13,7 @@ export function connectedUser(io?: Server, target?: string): number {
 	let count = 0;
 	const seen = new Set<string>();
 	// <- only log/count unique usernames
+	const listBud: string[] = [];
 	for (const [socketId, username] of clientChat) {
 		// Basic checks
 		if (typeof socketId !== 'string' || socketId.length === 0) {
@@ -38,11 +39,15 @@ export function connectedUser(io?: Server, target?: string): number {
 			// socket exists and is connected
 			seen.add(username.user);
 			count++;
-			const targetSocketId = target;
-			io.to(targetSocketId!).emit('listBud', username.user);
+			// const targetSocketId = target;
+			// io.to(targetSocketId!).emit('listBud', username.user);
+			listBud.push(username.user);
 			continue;
 		}
 		count++;
+	}
+	if (io && typeof io.sockets?.sockets?.get === 'function' && target) {
+		io.to(target).emit('listBud', listBud);
 	}
 	return count;
 }

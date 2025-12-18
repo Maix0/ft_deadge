@@ -466,7 +466,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	// 	//connected(socket);
 	// },10000); // every 10 sec
 
-	socket.on('listBud', async (myBuddies: string)  => {
+	socket.on('listBud', async (myBuddies: string[])  => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 		console.log('%cList buddies connected ',color.yellow, myBuddies);
 		listBuddies(socket, buddies, myBuddies);

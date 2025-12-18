@@ -11,35 +11,38 @@ import { getProfil } from './getProfil';
  * collected in the clipBoard
  * @param socket 
  * @param buddies 
- * @param listBuddies 
+ * @param bud 
  * @returns 
  */
 
-export async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies: string) {
+export async function listBuddies(socket: Socket, buddies: HTMLDivElement, listBuddies: string[]) {
 
-	if (!buddies) return;
-	const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
-	const buddiesElement = document.createElement("div-buddies-list");
-	buddiesElement.textContent = listBuddies + '\n';
-	const user = getUser()?.name ?? ""; 
-	buddies.appendChild(buddiesElement);
-	buddies.scrollTop = buddies.scrollHeight;
-	console.log(`Added buddies: ${listBuddies}`);
+	buddies.innerHTML = "";
+	for (const bud of listBuddies)
+	{
+		if (!buddies) return;
+		const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
+		const buddiesElement = document.createElement("div-buddies-list");
+		buddiesElement.textContent = bud + '\n';
+		const user = getUser()?.name ?? ""; 
+		buddies.appendChild(buddiesElement);
+		buddies.scrollTop = buddies.scrollHeight;
+		console.log(`Added buddies: ${bud}`);
 
-	buddiesElement.style.cursor = "pointer";
-	buddiesElement.addEventListener("click", () => {
-		navigator.clipboard.writeText(listBuddies);
-		if (listBuddies !== user && user !== "") {
-			sendtextbox.value = `@${listBuddies}: `;
-			console.log("Copied to clipboard:", listBuddies);
-			sendtextbox.focus();
-		} 
-	});
+		buddiesElement.style.cursor = "pointer";
+		buddiesElement.addEventListener("click", () => {
+			navigator.clipboard.writeText(bud);
+			if (bud !== user && user !== "") {
+				sendtextbox.value = `@${bud}: `;
+				console.log("Copied to clipboard:", bud);
+				sendtextbox.focus();
+			} 
+		});
 
-	buddiesElement.addEventListener("dblclick", () => {
-		console.log("Open profile:", listBuddies);
-		getProfil(socket, listBuddies);
-        sendtextbox.value = "";
-    });
-
+		buddiesElement.addEventListener("dblclick", () => {
+			console.log("Open profile:", bud);
+			getProfil(socket, bud);
+			sendtextbox.value = "";
+		});
+	}
 }
