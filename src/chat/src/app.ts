@@ -41,6 +41,41 @@ interface ClientInfo {
   lastSeen: number;
 }
 
+<<<<<<< HEAD
+=======
+
+export type blockedUnBlocked = 
+{
+	userState: string,
+	userTarget: string,
+	by: string,
+};
+
+
+export type obj =
+{
+	command: string,
+	destination: string,
+	type: string,
+	user: string,
+	frontendUserName: string,
+	frontendUser: string,
+	token: string,
+	text: string,
+	timestamp: number,
+	SenderWindowID: string,
+	Sendertext: string,
+};
+
+
+
+// function setAboutPlayer(about: string): string {
+// 	if (!about) {
+// 		about = 'Player is good Shape - This is a default description';
+// 	}
+// 	return about;
+// };
+>>>>>>> refs/remotes/origin/nigel/functionBlockMessage
 
 export type blockedUnBlocked = 
 {
@@ -174,6 +209,7 @@ async function onReady(fastify: FastifyInstance) {
 			
 			
 			
+<<<<<<< HEAD
 	// 		fastify.io.fetchSockets().then((sockets) => {
 	// 			for (const socket of sockets) {
 	// 				const clientInfo = clientChat.get(socket.id);
@@ -189,6 +225,23 @@ async function onReady(fastify: FastifyInstance) {
 					
 	// 			}
 	// });
+=======
+			fastify.io.fetchSockets().then((sockets) => {
+				for (const socket of sockets) {
+					const clientInfo = clientChat.get(socket.id);
+					if (!clientInfo?.user) {
+						console.log(color.yellow, `Skipping socket ${socket.id} (no user found)`);
+						continue;
+					}
+					console.log('DEBUG: UserIDWindow :', getUserByName(users, clientInfo.user)?.id);
+					const IDUser = getUserByName(users, clientInfo.user)?.id;
+
+					console.log(filter_Blocked_user(fastify, obj, IDUser?? ""));
+					
+					
+				}
+	});
+>>>>>>> refs/remotes/origin/nigel/functionBlockMessage
 
 
 

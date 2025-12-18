@@ -31,6 +31,23 @@ export type blockedUnBlocked =
 	by: string,
 };
 
+<<<<<<< HEAD
+=======
+export type obj =
+{
+	command: string,
+	destination: string,
+	type: string,
+	user: string,
+	frontendUserName: string,
+	frontendUser: string,
+	token: string,
+	text: string,
+	timestamp: number,
+	SenderWindowID: string,
+	Sendertext: string,
+};
+>>>>>>> refs/remotes/origin/nigel/functionBlockMessage
 
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
