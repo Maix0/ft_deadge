@@ -1,7 +1,6 @@
 import type { ClientMessage } from './chat_types';
 import { clientChat, color } from './app';
 import { FastifyInstance } from 'fastify';
-<<<<<<< HEAD
 import type { BlockedData } from '@shared/database/mixin/blocked';
 import { getUserByName } from './getUserByName';
 import type { User } from '@shared/database/mixin/user';
@@ -31,9 +30,6 @@ function whoBlockedMe(
 
 
 
-=======
-import { getUserById } from './getUserById';
->>>>>>> refs/remotes/origin/nigel/functionBlockMessage
 
 export function broadcast(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
