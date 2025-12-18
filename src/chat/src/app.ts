@@ -384,11 +384,11 @@ async function onReady(fastify: FastifyInstance) {
 			const UserToBlock: User | null = getUserByName(users, `${profilBlock.user}`);
 			const UserAskingToBlock: User | null = getUserByName(users, `${profilBlock.SenderName}`);
 
-			console.log(color.yellow, `user to block: ${profilBlock.user}`);
-			console.log(color.yellow, UserToBlock);
-			console.log(color.yellow, `user Asking to block: ${profilBlock.SenderName}`);
-			console.log(color.yellow, UserAskingToBlock);
-			console.log(color.red, clientName);
+			// console.log(color.yellow, `user to block: ${profilBlock.user}`);
+			// console.log(color.yellow, UserToBlock);
+			// console.log(color.yellow, `user Asking to block: ${profilBlock.SenderName}`);
+			// console.log(color.yellow, UserAskingToBlock);
+			// console.log(color.red, clientName);
 
 			if (!UserAskingToBlock || !UserToBlock) return;
 
