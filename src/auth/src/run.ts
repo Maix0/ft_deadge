@@ -4,7 +4,25 @@ import fastify, { FastifyInstance } from 'fastify';
 import app from './app';
 
 const start = async () => {
+<<<<<<< HEAD
 	const f: FastifyInstance = fastify({ logger: { level: 'info' } });
+=======
+	const envToLogger = {
+		development: {
+			transport: {
+				target: 'pino-pretty',
+				options: {
+					translateTime: 'HH:MM:ss Z',
+					ignore: 'pid,hostname',
+				},
+			},
+		},
+		production: true,
+		test: false,
+	};
+
+	const f: FastifyInstance = fastify({ logger: envToLogger.development });
+>>>>>>> refs/remotes/origin/nigel/functionBlockMessage
 	process.on('SIGTERM', () => {
 		f.log.warn('Requested to shutdown');
 		process.exit(134);
