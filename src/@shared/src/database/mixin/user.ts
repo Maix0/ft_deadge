@@ -19,12 +19,19 @@ export interface IUserDb extends Database {
 	ensureUserOtpSecret(id: UserId): string | undefined,
 	deleteUserOtpSecret(id: UserId): void,
 	getAllUserFromProvider(provider: string): User[] | undefined,
-    getAllUsers(this: IUserDb): User[] | undefined,
+	getAllUsers(this: IUserDb): User[] | undefined,
 
 
 	updateDisplayName(id: UserId, new_name: string): boolean,
-
 	getUserFromDisplayName(name: string): User | undefined,
+
+	setUserDescription(id: UserId, newDescription: string): void,
+	getUserDescription(id: UserId): string | undefined,
+
+	allowGuestMessage(id: UserId): void,
+	denyGuestMessage(id: UserId): void,
+	getGuestMessage(id: UserId): boolean | undefined,
+
 };
 
 export const UserImpl: Omit<IUserDb, keyof Database> = {
@@ -44,11 +51,11 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	},
 
 	getAllUsers(this: IUserDb): User[] {
-    	const rows = this.prepare('SELECT * FROM user').all() as Partial<User>[];
+		const rows = this.prepare('SELECT * FROM user').all() as Partial<User>[];
 
-    	return rows
-        	.map(row => userFromRow(row))
-        	.filter((u): u is User => u !== undefined);
+		return rows
+			.map(row => userFromRow(row))
+			.filter((u): u is User => u !== undefined);
 	},
 
 
@@ -182,6 +189,28 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 		const res = this.prepare('SELECT * FROM user WHERE name = @name LIMIT 1').get({ name }) as User | undefined;
 		return userFromRow(res);
 	},
+
+
+	setUserDescription(this: IUserDb, id: UserId, desc: string): void {
+		this.prepare('UPDATE OR IGNORE user SET desc = @desc WHERE id = @id').run({ id, desc });
+	},
+
+	getUserDescription(this: IUserDb, id: UserId): string | undefined {
+		return this.prepare('SELECT desc FROM user WHERE id = @id').get({ id }) as string | undefined;
+	},
+
+	allowGuestMessage(this: IUserDb, id: UserId): void {
+		this.prepare('UPDATE OR IGNORE user SET allow_guest_message = @allow_guest_message WHERE id = @id').run({ id, allow_guest_message: 1 });
+	},
+
+	denyGuestMessage(this: IUserDb, id: UserId): void {
+		this.prepare('UPDATE OR IGNORE user SET allow_guest_message = @allow_guest_message WHERE id = @id').run({ id, allow_guest_message: 0 });
+
+	},
+
+	getGuestMessage(this: IUserDb, id: UserId): boolean | undefined {
+		return this.prepare('SELECT allow_guest_message FROM user WHERE id = @id').get({ id }) as boolean | undefined;
+	},
 };
 
 export type UserId = UUID;
@@ -196,6 +225,9 @@ export type User = {
 	// will be split/merged from the `oauth2` column
 	readonly provider_name?: string;
 	readonly provider_unique?: string;
+
+	readonly allow_guest_message: boolean,
+	readonly desc: string,
 };
 
 export async function verifyUserPassword(
@@ -235,6 +267,8 @@ export function userFromRow(row?: Partial<Omit<User, 'provider_name' | 'provider
 	if (isNullish(row.id)) return undefined;
 	if (isNullish(row.name)) return undefined;
 	if (isNullish(row.guest)) return undefined;
+	if (isNullish(row.desc)) return undefined;
+	if (isNullish(row.allow_guest_message)) return undefined;
 
 	let provider_name = undefined;
 	let provider_unique = undefined;
@@ -254,5 +288,7 @@ export function userFromRow(row?: Partial<Omit<User, 'provider_name' | 'provider
 		otp: row.otp ?? undefined,
 		guest: !!(row.guest ?? true),
 		provider_name, provider_unique,
+		allow_guest_message: !!(row.allow_guest_message ?? true),
+		desc: row.desc ?? 'NO DESC ????',
 	};
 }

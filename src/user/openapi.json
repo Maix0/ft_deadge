@@ -8,6 +8,366 @@
         "schemas": {}
     },
     "paths": {
+        "/api/user/allowGuestMessage": {
+            "post": {
+                "operationId": "allowGuestMessage",
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "guestMessage.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "guestMessage.failure.notLoggedIn"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/denyGuestMessage": {
+            "post": {
+                "operationId": "denyGuestMessage",
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "guestMessage.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "guestMessage.failure.notLoggedIn"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/changeDesc": {
+            "post": {
+                "operationId": "changeDesc",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "desc"
+                                ],
+                                "properties": {
+                                    "desc": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changedesc.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changedesc.failure.descTooLong"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "notLoggedIn"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "auth.noCookie",
+                                                "auth.invalidKind",
+                                                "auth.noUser",
+                                                "auth.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "changedesc.failure.notLoggedIn"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/changeDisplayName": {
             "put": {
                 "operationId": "changeDisplayName",

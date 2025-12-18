@@ -1,5 +1,11 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AllowGuestMessage200Response';
+export * from './AllowGuestMessage403Response';
+export * from './ChangeDesc200Response';
+export * from './ChangeDesc400Response';
+export * from './ChangeDesc403Response';
+export * from './ChangeDescRequest';
 export * from './ChangeDisplayName200Response';
 export * from './ChangeDisplayName400Response';
 export * from './ChangeDisplayNameRequest';

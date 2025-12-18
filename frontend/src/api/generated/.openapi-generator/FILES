@@ -1,6 +1,12 @@
 apis/OpenapiOtherApi.ts
 apis/index.ts
 index.ts
+models/AllowGuestMessage200Response.ts
+models/AllowGuestMessage403Response.ts
+models/ChangeDesc200Response.ts
+models/ChangeDesc400Response.ts
+models/ChangeDesc403Response.ts
+models/ChangeDescRequest.ts
 models/ChangeDisplayName200Response.ts
 models/ChangeDisplayName400Response.ts
 models/ChangeDisplayNameRequest.ts

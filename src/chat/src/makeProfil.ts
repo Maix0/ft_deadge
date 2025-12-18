@@ -3,6 +3,7 @@ import type { ClientProfil } from './chat_types';
 import type { User } from '@shared/database/mixin/user';
 import { getUserByName } from './getUserByName';
 import { Socket } from 'socket.io';
+import { escape } from '@shared/utils';
 
 /**
  * function makeProfil - translates the Users[] to a one user looking by name
@@ -13,7 +14,7 @@ import { Socket } from 'socket.io';
  * @returns
  */
 
-export async function makeProfil(fastify: FastifyInstance, user: string, socket: Socket): Promise <ClientProfil> {
+export async function makeProfil(fastify: FastifyInstance, user: string, socket: Socket): Promise<ClientProfil> {
 
 	let clientProfil!: ClientProfil;
 	const users: User[] = fastify.db.getAllUsers() ?? [];
@@ -29,7 +30,7 @@ export async function makeProfil(fastify: FastifyInstance, user: string, socket:
 			user: `${allUsers.name}`,
 			loginName: `${allUsers?.login ?? 'Guest'}`,
 			userID: `${allUsers?.id ?? ''}`,
-			text: '',
+			text: escape(allUsers.desc),
 			timestamp: Date.now(),
 			SenderWindowID: socket.id,
 			SenderName: '',
