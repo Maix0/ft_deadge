@@ -388,6 +388,7 @@ async function onReady(fastify: FastifyInstance) {
 			console.log(color.yellow, UserToBlock);
 			console.log(color.yellow, `user Asking to block: ${profilBlock.SenderName}`);
 			console.log(color.yellow, UserAskingToBlock);
+			console.log(color.red, clientName);
 
 			if (!UserAskingToBlock || !UserToBlock) return;
 
