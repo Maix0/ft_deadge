@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS user (
   password TEXT,
   otp TEXT,
   guest INTEGER NOT NULL DEFAULT 0,
-  oauth2 TEXT DEFAULT NULL
+  oauth2 TEXT DEFAULT NULL,
+  desc TEXT NOT NULL DEFAULT "What a good day to be reviewing this project :D",
+  allow_guest_message INTEGER NOT NULL DEFAULT 1
 );
 
 

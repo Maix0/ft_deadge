@@ -142,3 +142,10 @@ export function typeResponse<K extends string, T extends TProperties>(
 export function isNullish<T>(v: T | undefined | null): v is null | undefined {
 	return v === null || v === undefined;
 }
+
+export function escape(s: string): string {
+	return s.replace(
+		/[^0-9A-Za-z ]/g,
+		c => '&#' + c.charCodeAt(0) + ';',
+	);
+}
