@@ -16,6 +16,9 @@
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c741c20 (fixed things)
     "@fastify/autoload": "^6.3.1",
     "@fastify/formbody": "^8.0.2",
     "@fastify/multipart": "^9.3.0",
@@ -32,9 +35,12 @@
     "rollup-plugin-node-externals": "^8.1.2",
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^5.1.4"
+<<<<<<< HEAD
 =======
     "fastify-socket.io": "^5.1.0",
     "socket.io": "^4.8.1"
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
+=======
+>>>>>>> c741c20 (fixed things)
   }
 }

@@ -79,7 +79,11 @@ export class TTC {
 		return result;
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 }
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
+=======
+}
+>>>>>>> c741c20 (fixed things)

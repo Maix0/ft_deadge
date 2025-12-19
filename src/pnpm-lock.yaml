@@ -239,16 +239,56 @@ importers:
 
   tic-tac-toe:
     dependencies:
-      fastify-socket.io:
+      '@fastify/autoload':
+        specifier: ^6.3.1
+        version: 6.3.1
+      '@fastify/formbody':
+        specifier: ^8.0.2
+        version: 8.0.2
+      '@fastify/multipart':
+        specifier: ^9.3.0
+        version: 9.3.0
+      '@fastify/sensible':
+        specifier: ^6.0.4
+        version: 6.0.4
+      '@fastify/static':
+        specifier: ^8.3.0
+        version: 8.3.0
+      '@fastify/websocket':
+        specifier: ^11.2.0
+        version: 11.2.0
+      fastify:
+        specifier: ^5.6.2
+        version: 5.6.2
+      fastify-plugin:
         specifier: ^5.1.0
-        version: 5.1.0(fastify@5.6.2)(socket.io@4.8.1)
+        version: 5.1.0
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
+=======
+      typebox:
+        specifier: ^1.0.63
+        version: 1.0.63
+    devDependencies:
+      '@types/node':
+        specifier: ^22.19.3
+        version: 22.19.3
+      rollup-plugin-node-externals:
+        specifier: ^8.1.2
+        version: 8.1.2(rollup@4.53.5)
+      vite:
+        specifier: ^7.3.0
+        version: 7.3.0(@types/node@22.19.3)(yaml@2.8.2)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(yaml@2.8.2))
+>>>>>>> c741c20 (fixed things)
 
   user:
     dependencies:
@@ -1771,17 +1811,8 @@ packages:
     resolution: {integrity: sha512-7Jsfj2uLuGWvnxjrGDrHWpSm65+OcVx0ZbTD2wwkz6Wt6KjGm6+ZYwwpdXdwAlzbJYq+LCEMNvDJc4485AQ1vQ==}
     hasBin: true
 
-  fastify-plugin@4.5.1:
-    resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
-
   fastify-plugin@5.1.0:
     resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
-
-  fastify-socket.io@5.1.0:
-    resolution: {integrity: sha512-GC1gjrxBGeTbMWV779XHF4uw3AtgKwSQJ9MnjGiMp91ZBuPXEdBYa7NnAMDEl3oZPgK9JO4BlNncTV+UAN+1kg==}
-    peerDependencies:
-      fastify: 4.x.x
-      socket.io: '>=4'
 
   fastify@5.6.2:
     resolution: {integrity: sha512-dPugdGnsvYkBlENLhCgX8yhyGCsCPrpA8lFWbTNU428l+YOnLgYHR69hzV8HWPC79n536EqzqQtvhtdaCE0dKg==}
@@ -4512,16 +4543,7 @@ snapshots:
       semver: 7.7.3
       yargs-parser: 22.0.0
 
-  fastify-plugin@4.5.1: {}
-
   fastify-plugin@5.1.0: {}
-
-  fastify-socket.io@5.1.0(fastify@5.6.2)(socket.io@4.8.1):
-    dependencies:
-      fastify: 5.6.2
-      fastify-plugin: 4.5.1
-      socket.io: 4.8.1
-      tslib: 2.8.1
 
   fastify@5.6.2:
     dependencies:
@@ -5639,12 +5661,15 @@ snapshots:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
   tslib@2.8.1: {}
 
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
+=======
+>>>>>>> c741c20 (fixed things)
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
