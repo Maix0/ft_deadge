@@ -97,93 +97,189 @@ async function onReady(fastify: FastifyInstance, game: TTC) {
 	});
 }
 
-declare const __SERVICE_NAME: string;
+// // TODO: Import the plugins defined for this microservice
+// // TODO: Import the routes defined for this microservice
 
-// @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
-const plugins = import.meta.glob('./plugins/**/*.ts', { eager: true });
-// @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...
-const routes = import.meta.glob('./routes/**/*.ts', { eager: true });
+// // @brief The microservice app (as a plugin for Fastify), kinda like a main function I guess ???
+// // @param fastify
+// // @param opts
+// export const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+// 	// Register all the fastify plugins that this app will use
 
-const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-	void opts;
+// 	// Once it is done:
+// 	fastify.ready((err) => {
+// 		if (err) {
+// 			throw err;
+// 		}
+// 		// TODO: Supposedly, something should be there I guess
+// 	});
+// };
+// // Export it as the default for this file.
+// export default app;
 
-	await fastify.register(utils.useMonitoring);
-	await fastify.register(utils.useMakeResponse);
-	await fastify.register(swagger.useSwagger, { service: __SERVICE_NAME });
-	await fastify.register(db.useDatabase as FastifyPluginAsync, {});
-	await fastify.register(auth.jwtPlugin as FastifyPluginAsync, {});
-	await fastify.register(auth.authPlugin as FastifyPluginAsync, {});
+// // TODO: Understand what is this for in /src/chat/src/app.ts
+// // declare module 'fastify' {
+// // 	interface FastifyInstance {
+// // 		io: Server<{
+// // 			hello: (message: string) => string;
+// // 			MsgObjectServer: (data: { message: ClientMessage }) => void;
+// // 			message: (msg: string) => void;
+// // 			testend: (sock_id_client: string) => void;
+// // 		}>;
+// // 	}
+// // }
 
-	// Place here your custom code!
-	for (const plugin of Object.values(plugins)) {
-		void fastify.register(plugin as FastifyPluginAsync, {});
-	}
-	for (const route of Object.values(routes)) {
-		void fastify.register(route as FastifyPluginAsync, {});
-	}
+// // TODO: Same for this, also in /src/chat/src/app.ts
+// // async function onReady(fastify: FastifyInstance) {
+// // 	function connectedUser(io?: Server, target?: string): number {
+// // 		let count = 0;
+// // 		const seen = new Set<string>();
+// // 		// <- only log/count unique usernames
 
-	void fastify.register(fastifyFormBody, {});
-	void fastify.register(fastifyMultipart, {});
+// // 		for (const [socketId, username] of clientChat) {
+// // 			// Basic sanity checks
+// // 			if (typeof socketId !== 'string' || socketId.length === 0) {
+// // 				clientChat.delete(socketId);
+// // 				continue;
+// // 			}
+// // 			if (typeof username !== 'string' || username.length === 0) {
+// // 				clientChat.delete(socketId);
+// // 				continue;
+// // 			}
 
-	const game = new TTC();
+// // 			// If we have the io instance, attempt to validate the socket is still connected
+// // 			if (io && typeof io.sockets?.sockets?.get === 'function') {
+// // 				const s = io.sockets.sockets.get(socketId) as
+// // 					| Socket
+// // 					| undefined;
+// // 				// If socket not found or disconnected, remove from map and skip
+// // 				if (!s || s.disconnected) {
+// // 					clientChat.delete(socketId);
+// // 					continue;
+// // 				}
 
-	fastify.ready((err) => {
-		if (err) throw err;
-		onReady(fastify, game);
-	});
-};
-export default app;
-export { app };
+// // 				// Skip duplicates (DO NOT delete them — just don't count)
+// // 				if (seen.has(username)) {
+// // 					continue;
+// // 				}
+// // 				// socket exists and is connected
+// // 				seen.add(username);
+// // 				count++;
+// // 				// console.log(color.green,"count: ", count);
+// // 				console.log(color.yellow, 'Client:', color.reset, username);
 
-// When using .decorate you have to specify added properties for Typescript
-declare module 'fastify' {
-	interface FastifyInstance {
-		io: Server<{
-			hello: (message: string) => string;
-			// idk you put something
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			gameState: any;
-			makeMove: (idx: number) => void;
-			resetGame: () => void;
-			error: string,
-		}>;
-	}
-}
+// // 				const targetSocketId = target;
+// // 				io.to(targetSocketId!).emit('listObj', username);
 
-async function onReady(fastify: FastifyInstance, game: TTC) {
-	fastify.io.on('connection', (socket) => {
-		fastify.log.info(`Client connected: ${socket.id}`);
+// // 				console.log(
+// // 					color.yellow,
+// // 					'Chat Socket ID:',
+// // 					color.reset,
+// // 					socketId,
+// // 				);
+// // 				continue;
+// // 			}
 
-		socket.emit('gameState', {
-			board: game.board,
-			turn: game.currentPlayer,
-			gameOver: game.isGameOver,
-		});
+// // 			// If no io provided, assume entries in the map are valid and count them.
+// // 			count++;
+// // 			console.log(
+// // 				color.red,
+// // 				'Client (unverified):',
+// // 				color.reset,
+// // 				username,
+// // 			);
+// // 			console.log(
+// // 				color.red,
+// // 				'Chat Socket ID (unverified):',
+// // 				color.reset,
+// // 				socketId,
+// // 			);
+// // 		}
 
-		socket.on('makeMove', (idx: number) => {
-			const result = game.makeMove(idx);
+// // 		return count;
+// // 	}
 
-			if (result === 'invalidMove') {
-				socket.emit('error', 'Invalid Move');
-			}
-			else {
-				fastify.io.emit('gameState', {
-					board: game.board,
-					turn: game.currentPlayer,
-					lastResult: result,
-				});
-			}
-		});
+// // 	function broadcast(data: ClientMessage, sender?: string) {
+// // 		fastify.io.fetchSockets().then((sockets) => {
+// // 			for (const s of sockets) {
+// // 				if (s.id !== sender) {
+// // 					// Send REAL JSON object
+// // 					const clientName = clientChat.get(s.id) || null;
+// // 					if (clientName !== null) {
+// // 						s.emit('MsgObjectServer', { message: data });
+// // 					}
+// // 					console.log(' Target window socket ID:', s.id);
+// // 					console.log(' Target window ID:', [...s.rooms]);
+// // 					console.log(' Sender window ID:', sender ? sender : 'none');
+// // 				}
+// // 			}
+// // 		});
+// // 	}
 
-		socket.on('resetGame', () => {
-			game.reset();
-			fastify.io.emit('gameState', {
-				board: game.board,
-				turn: game.currentPlayer,
-				reset: true,
-			});
-		});
-	});
-};
+// // 	fastify.io.on('connection', (socket: Socket) => {
+// // 		socket.on('message', (message: string) => {
+// // 			console.info(
+// // 				color.blue,
+// // 				'Socket connected!',
+// // 				color.reset,
+// // 				socket.id,
+// // 			);
+// // 			console.log(
+// // 				color.blue,
+// // 				'Received message from client',
+// // 				color.reset,
+// // 				message,
+// // 			);
 
-export default app;
+// // 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
+// // 			clientChat.set(socket.id, obj.user);
+// // 			console.log(
+// // 				color.green,
+// // 				'Message from client',
+// // 				color.reset,
+// // 				`Sender: login name: "${obj.user}" - windowID "${obj.SenderWindowID}" - text message: "${obj.text}"`,
+// // 			);
+// // 			// Send object directly — DO NOT wrap it in a string
+// // 			broadcast(obj, obj.SenderWindowID);
+// // 			console.log(
+// // 				color.red,
+// // 				'connected in the Chat :',
+// // 				connectedUser(fastify.io),
+// // 				color.reset,
+// // 			);
+// // 		});
+
+// // 		socket.on('testend', (sock_id_cl: string) => {
+// // 			console.log('testend received from client socket id:', sock_id_cl);
+// // 		});
+
+// // 		socket.on('list', () => {
+// // 			console.log(color.red, 'list activated', color.reset, socket.id);
+// // 			connectedUser(fastify.io, socket.id);
+// // 		});
+
+// // 		socket.on('disconnecting', (reason) => {
+// // 			const clientName = clientChat.get(socket.id) || null;
+// // 			console.log(
+// // 				color.green,
+// // 				`Client disconnecting: ${clientName} (${socket.id}) reason:`,
+// // 				reason,
+// // 			);
+// // 			if (reason === 'transport error') return;
+
+// // 			if (clientName !== null) {
+// // 				const obj = {
+// // 					type: 'chat',
+// // 					user: clientName,
+// // 					token: '',
+// // 					text: 'LEFT the chat',
+// // 					timestamp: Date.now(),
+// // 					SenderWindowID: socket.id,
+// // 				};
+
+// // 				broadcast(obj, obj.SenderWindowID);
+// // 				//   clientChat.delete(obj.user);
+// // 			}
+// // 		});
+// // 	});
+// // }
