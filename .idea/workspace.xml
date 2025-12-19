@@ -19,12 +19,12 @@
     &quot;assignee&quot;: &quot;RepentedAlex&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Maix0/ft_deadge.git&quot;,
-    &quot;accountId&quot;: &quot;05fe7ff5-d360-4ad3-b17e-66daa92a5dbb&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:Maix0/ft_deadge.git",
+    "accountId": "05fe7ff5-d360-4ad3-b17e-66daa92a5dbb"
   }
-}</component>
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -41,6 +41,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -60,6 +61,19 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="ft_deadge" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="ft_deadge" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -77,6 +91,7 @@
       <updated>1765884886075</updated>
       <workItem from="1765884888641" duration="1507000" />
       <workItem from="1765886413897" duration="6289000" />
+      <workItem from="1766152868683" duration="417000" />
     </task>
     <task id="LOCAL-00001" summary="(schism): started separating backend from frontend">
       <option name="closed" value="true" />
