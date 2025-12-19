@@ -6,7 +6,7 @@
 #    By: nrobinso <nrobinso@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/11 18:10:26 by maiboyer          #+#    #+#              #
-#    Updated: 2025/12/17 11:34:56 by nrobinso         ###   ########.fr        #
+#    Updated: 2025/12/19 09:19:02 by nrobinso         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,12 +14,12 @@
 
 # TODO: REMOVE THIS BEFORE LAUNCH
 # this allows the us to only start the non-monitoring sercices
-DOCKER_SERVICE=        \
-			  auth     \
-			  chat     \
-			  frontend \
-			  nginx    \
-			  user     \
+# DOCKER_SERVICE=        
+# 			  auth     \
+# 			  chat     \
+# 			  frontend \
+# 			  nginx    \
+# 			  user     \
 
 all: build
 	docker compose up -d $(DOCKER_SERVICE)
