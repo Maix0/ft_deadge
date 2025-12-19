@@ -67,8 +67,6 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-<<<<<<< HEAD
-=======
   ###############
   # TIC-TAC-TOE #
   ###############
@@ -92,7 +90,6 @@ services:
   ###############
   #    CHAT     #
   ###############
->>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
   chat:
     build:
       context: ./src/
