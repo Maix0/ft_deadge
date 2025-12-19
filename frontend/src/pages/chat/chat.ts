@@ -587,4 +587,4 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	}
 	
 };
-addRoute('/chat', handleChat, { bypass_auth: true });
+addRoute('/chat', handleChat);
