@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { TTC } from './game';
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fastifyFormBody from '@fastify/formbody';
@@ -96,6 +97,61 @@ async function onReady(fastify: FastifyInstance, game: TTC) {
 		});
 	});
 }
+=======
+import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import fastifySocketIO from 'fastify-socket.io';
+import { TTC } from './game';
+
+const app: FastifyPluginAsync = async (fastify: FastifyInstance, opts): Promise<void> => {
+	void opts;
+	await fastify.register(fastifySocketIO, {
+		cors: {
+			origin: '*',
+			methods: ['GET', 'POST'],
+		},
+	});
+
+	const game = new TTC();
+
+	fastify.ready().then(() => {
+		fastify.io.on('connection', (socket) => {
+			fastify.log.info(`Client connected: ${socket.id}`);
+
+			socket.emit('gameState', {
+				board: game.board,
+				turn: game.currentPlayer,
+				gameOver: game.isGameOver,
+			});
+
+			socket.on('makeMove', (idx: number) => {
+				const result = game.makeMove(idx);
+
+				if (result === 'invalidMove') {
+					socket.emit('error', 'Invalid Move');
+				}
+				else {
+					fastify.io.emit('gameState', {
+						board: game.board,
+						turn: game.currentPlayer,
+						lastResult: result,
+					});
+				}
+			});
+
+			socket.on('resetGame', () => {
+				game.reset();
+				fastify.io.emit('gameState', {
+					board: game.board,
+					turn: game.currentPlayer,
+					reset: true,
+				});
+			});
+		});
+	});
+};
+
+export default app;
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 
 // // TODO: Import the plugins defined for this microservice
 // // TODO: Import the routes defined for this microservice

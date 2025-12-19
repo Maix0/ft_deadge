@@ -10,8 +10,13 @@ importers:
     dependencies:
       '@redocly/cli':
 <<<<<<< HEAD
+<<<<<<< HEAD
         specifier: ^2.13.0
         version: 2.13.0(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.47.0)
+=======
+        specifier: ^2.12.7
+        version: 2.12.7(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.47.0)
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
         specifier: ^2.12.7
         version: 2.12.7(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.47.0)
@@ -47,7 +52,11 @@ importers:
       vite:
         specifier: ^7.3.0
 <<<<<<< HEAD
+<<<<<<< HEAD
         version: 7.3.0(@types/node@25.0.3)(yaml@2.8.2)
+=======
+        version: 7.3.0(@types/node@25.0.2)(yaml@2.8.2)
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
         version: 7.3.0(@types/node@25.0.2)(yaml@2.8.2)
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -89,8 +98,13 @@ importers:
         version: 1.1.2
       typebox:
 <<<<<<< HEAD
+<<<<<<< HEAD
         specifier: ^1.0.64
         version: 1.0.64
+=======
+        specifier: ^1.0.63
+        version: 1.0.63
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
         specifier: ^1.0.63
         version: 1.0.63
@@ -137,8 +151,13 @@ importers:
         version: 5.1.0
       typebox:
 <<<<<<< HEAD
+<<<<<<< HEAD
         specifier: ^1.0.64
         version: 1.0.64
+=======
+        specifier: ^1.0.63
+        version: 1.0.63
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
         specifier: ^1.0.63
         version: 1.0.63
@@ -188,8 +207,13 @@ importers:
         version: 4.8.1
       typebox:
 <<<<<<< HEAD
+<<<<<<< HEAD
         specifier: ^1.0.64
         version: 1.0.64
+=======
+        specifier: ^1.0.63
+        version: 1.0.63
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
         specifier: ^1.0.63
         version: 1.0.63
@@ -208,7 +232,10 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(yaml@2.8.2))
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 
   tic-tac-toe:
     dependencies:
@@ -218,6 +245,9 @@ importers:
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
+<<<<<<< HEAD
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
+=======
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 
   user:
@@ -248,8 +278,13 @@ importers:
         version: 5.1.0
       typebox:
 <<<<<<< HEAD
+<<<<<<< HEAD
         specifier: ^1.0.64
         version: 1.0.64
+=======
+        specifier: ^1.0.63
+        version: 1.0.63
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
         specifier: ^1.0.63
         version: 1.0.63
@@ -292,8 +327,13 @@ packages:
     resolution: {integrity: sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/aix-ppc64@0.27.2':
     resolution: {integrity: sha512-GZMB+a0mOMZs4MpDbj8RJp4cw+w1WV5NYD6xzgvzUJ5Ek2jerwfO2eADyI6ExDSUED+1X8aMbegahsJi+8mgpw==}
+=======
+  '@esbuild/aix-ppc64@0.27.1':
+    resolution: {integrity: sha512-HHB50pdsBX6k47S4u5g/CaLjqS3qwaOVE5ILsq64jyzgMhLuCuZ8rGzM9yhsAjfjkbgUPMzZEPa7DAp7yz6vuA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/aix-ppc64@0.27.1':
     resolution: {integrity: sha512-HHB50pdsBX6k47S4u5g/CaLjqS3qwaOVE5ILsq64jyzgMhLuCuZ8rGzM9yhsAjfjkbgUPMzZEPa7DAp7yz6vuA==}
@@ -303,8 +343,13 @@ packages:
     os: [aix]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/android-arm64@0.27.2':
     resolution: {integrity: sha512-pvz8ZZ7ot/RBphf8fv60ljmaoydPU12VuXHImtAs0XhLLw+EXBi2BLe3OYSBslR4rryHvweW5gmkKFwTiFy6KA==}
+=======
+  '@esbuild/android-arm64@0.27.1':
+    resolution: {integrity: sha512-45fuKmAJpxnQWixOGCrS+ro4Uvb4Re9+UTieUY2f8AEc+t7d4AaZ6eUJ3Hva7dtrxAAWHtlEFsXFMAgNnGU9uQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/android-arm64@0.27.1':
     resolution: {integrity: sha512-45fuKmAJpxnQWixOGCrS+ro4Uvb4Re9+UTieUY2f8AEc+t7d4AaZ6eUJ3Hva7dtrxAAWHtlEFsXFMAgNnGU9uQ==}
@@ -314,8 +359,13 @@ packages:
     os: [android]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/android-arm@0.27.2':
     resolution: {integrity: sha512-DVNI8jlPa7Ujbr1yjU2PfUSRtAUZPG9I1RwW4F4xFB1Imiu2on0ADiI/c3td+KmDtVKNbi+nffGDQMfcIMkwIA==}
+=======
+  '@esbuild/android-arm@0.27.1':
+    resolution: {integrity: sha512-kFqa6/UcaTbGm/NncN9kzVOODjhZW8e+FRdSeypWe6j33gzclHtwlANs26JrupOntlcWmB0u8+8HZo8s7thHvg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/android-arm@0.27.1':
     resolution: {integrity: sha512-kFqa6/UcaTbGm/NncN9kzVOODjhZW8e+FRdSeypWe6j33gzclHtwlANs26JrupOntlcWmB0u8+8HZo8s7thHvg==}
@@ -325,8 +375,13 @@ packages:
     os: [android]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/android-x64@0.27.2':
     resolution: {integrity: sha512-z8Ank4Byh4TJJOh4wpz8g2vDy75zFL0TlZlkUkEwYXuPSgX8yzep596n6mT7905kA9uHZsf/o2OJZubl2l3M7A==}
+=======
+  '@esbuild/android-x64@0.27.1':
+    resolution: {integrity: sha512-LBEpOz0BsgMEeHgenf5aqmn/lLNTFXVfoWMUox8CtWWYK9X4jmQzWjoGoNb8lmAYml/tQ/Ysvm8q7szu7BoxRQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/android-x64@0.27.1':
     resolution: {integrity: sha512-LBEpOz0BsgMEeHgenf5aqmn/lLNTFXVfoWMUox8CtWWYK9X4jmQzWjoGoNb8lmAYml/tQ/Ysvm8q7szu7BoxRQ==}
@@ -336,8 +391,13 @@ packages:
     os: [android]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/darwin-arm64@0.27.2':
     resolution: {integrity: sha512-davCD2Zc80nzDVRwXTcQP/28fiJbcOwvdolL0sOiOsbwBa72kegmVU0Wrh1MYrbuCL98Omp5dVhQFWRKR2ZAlg==}
+=======
+  '@esbuild/darwin-arm64@0.27.1':
+    resolution: {integrity: sha512-veg7fL8eMSCVKL7IW4pxb54QERtedFDfY/ASrumK/SbFsXnRazxY4YykN/THYqFnFwJ0aVjiUrVG2PwcdAEqQQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/darwin-arm64@0.27.1':
     resolution: {integrity: sha512-veg7fL8eMSCVKL7IW4pxb54QERtedFDfY/ASrumK/SbFsXnRazxY4YykN/THYqFnFwJ0aVjiUrVG2PwcdAEqQQ==}
@@ -347,8 +407,13 @@ packages:
     os: [darwin]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/darwin-x64@0.27.2':
     resolution: {integrity: sha512-ZxtijOmlQCBWGwbVmwOF/UCzuGIbUkqB1faQRf5akQmxRJ1ujusWsb3CVfk/9iZKr2L5SMU5wPBi1UWbvL+VQA==}
+=======
+  '@esbuild/darwin-x64@0.27.1':
+    resolution: {integrity: sha512-+3ELd+nTzhfWb07Vol7EZ+5PTbJ/u74nC6iv4/lwIU99Ip5uuY6QoIf0Hn4m2HoV0qcnRivN3KSqc+FyCHjoVQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/darwin-x64@0.27.1':
     resolution: {integrity: sha512-+3ELd+nTzhfWb07Vol7EZ+5PTbJ/u74nC6iv4/lwIU99Ip5uuY6QoIf0Hn4m2HoV0qcnRivN3KSqc+FyCHjoVQ==}
@@ -358,8 +423,13 @@ packages:
     os: [darwin]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/freebsd-arm64@0.27.2':
     resolution: {integrity: sha512-lS/9CN+rgqQ9czogxlMcBMGd+l8Q3Nj1MFQwBZJyoEKI50XGxwuzznYdwcav6lpOGv5BqaZXqvBSiB/kJ5op+g==}
+=======
+  '@esbuild/freebsd-arm64@0.27.1':
+    resolution: {integrity: sha512-/8Rfgns4XD9XOSXlzUDepG8PX+AVWHliYlUkFI3K3GB6tqbdjYqdhcb4BKRd7C0BhZSoaCxhv8kTcBrcZWP+xg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/freebsd-arm64@0.27.1':
     resolution: {integrity: sha512-/8Rfgns4XD9XOSXlzUDepG8PX+AVWHliYlUkFI3K3GB6tqbdjYqdhcb4BKRd7C0BhZSoaCxhv8kTcBrcZWP+xg==}
@@ -369,8 +439,13 @@ packages:
     os: [freebsd]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/freebsd-x64@0.27.2':
     resolution: {integrity: sha512-tAfqtNYb4YgPnJlEFu4c212HYjQWSO/w/h/lQaBK7RbwGIkBOuNKQI9tqWzx7Wtp7bTPaGC6MJvWI608P3wXYA==}
+=======
+  '@esbuild/freebsd-x64@0.27.1':
+    resolution: {integrity: sha512-GITpD8dK9C+r+5yRT/UKVT36h/DQLOHdwGVwwoHidlnA168oD3uxA878XloXebK4Ul3gDBBIvEdL7go9gCUFzQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/freebsd-x64@0.27.1':
     resolution: {integrity: sha512-GITpD8dK9C+r+5yRT/UKVT36h/DQLOHdwGVwwoHidlnA168oD3uxA878XloXebK4Ul3gDBBIvEdL7go9gCUFzQ==}
@@ -380,8 +455,13 @@ packages:
     os: [freebsd]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-arm64@0.27.2':
     resolution: {integrity: sha512-hYxN8pr66NsCCiRFkHUAsxylNOcAQaxSSkHMMjcpx0si13t1LHFphxJZUiGwojB1a/Hd5OiPIqDdXONia6bhTw==}
+=======
+  '@esbuild/linux-arm64@0.27.1':
+    resolution: {integrity: sha512-W9//kCrh/6in9rWIBdKaMtuTTzNj6jSeG/haWBADqLLa9P8O5YSRDzgD5y9QBok4AYlzS6ARHifAb75V6G670Q==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-arm64@0.27.1':
     resolution: {integrity: sha512-W9//kCrh/6in9rWIBdKaMtuTTzNj6jSeG/haWBADqLLa9P8O5YSRDzgD5y9QBok4AYlzS6ARHifAb75V6G670Q==}
@@ -391,8 +471,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-arm@0.27.2':
     resolution: {integrity: sha512-vWfq4GaIMP9AIe4yj1ZUW18RDhx6EPQKjwe7n8BbIecFtCQG4CfHGaHuh7fdfq+y3LIA2vGS/o9ZBGVxIDi9hw==}
+=======
+  '@esbuild/linux-arm@0.27.1':
+    resolution: {integrity: sha512-ieMID0JRZY/ZeCrsFQ3Y3NlHNCqIhTprJfDgSB3/lv5jJZ8FX3hqPyXWhe+gvS5ARMBJ242PM+VNz/ctNj//eA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-arm@0.27.1':
     resolution: {integrity: sha512-ieMID0JRZY/ZeCrsFQ3Y3NlHNCqIhTprJfDgSB3/lv5jJZ8FX3hqPyXWhe+gvS5ARMBJ242PM+VNz/ctNj//eA==}
@@ -402,8 +487,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-ia32@0.27.2':
     resolution: {integrity: sha512-MJt5BRRSScPDwG2hLelYhAAKh9imjHK5+NE/tvnRLbIqUWa+0E9N4WNMjmp/kXXPHZGqPLxggwVhz7QP8CTR8w==}
+=======
+  '@esbuild/linux-ia32@0.27.1':
+    resolution: {integrity: sha512-VIUV4z8GD8rtSVMfAj1aXFahsi/+tcoXXNYmXgzISL+KB381vbSTNdeZHHHIYqFyXcoEhu9n5cT+05tRv13rlw==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-ia32@0.27.1':
     resolution: {integrity: sha512-VIUV4z8GD8rtSVMfAj1aXFahsi/+tcoXXNYmXgzISL+KB381vbSTNdeZHHHIYqFyXcoEhu9n5cT+05tRv13rlw==}
@@ -413,8 +503,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-loong64@0.27.2':
     resolution: {integrity: sha512-lugyF1atnAT463aO6KPshVCJK5NgRnU4yb3FUumyVz+cGvZbontBgzeGFO1nF+dPueHD367a2ZXe1NtUkAjOtg==}
+=======
+  '@esbuild/linux-loong64@0.27.1':
+    resolution: {integrity: sha512-l4rfiiJRN7sTNI//ff65zJ9z8U+k6zcCg0LALU5iEWzY+a1mVZ8iWC1k5EsNKThZ7XCQ6YWtsZ8EWYm7r1UEsg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-loong64@0.27.1':
     resolution: {integrity: sha512-l4rfiiJRN7sTNI//ff65zJ9z8U+k6zcCg0LALU5iEWzY+a1mVZ8iWC1k5EsNKThZ7XCQ6YWtsZ8EWYm7r1UEsg==}
@@ -424,8 +519,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-mips64el@0.27.2':
     resolution: {integrity: sha512-nlP2I6ArEBewvJ2gjrrkESEZkB5mIoaTswuqNFRv/WYd+ATtUpe9Y09RnJvgvdag7he0OWgEZWhviS1OTOKixw==}
+=======
+  '@esbuild/linux-mips64el@0.27.1':
+    resolution: {integrity: sha512-U0bEuAOLvO/DWFdygTHWY8C067FXz+UbzKgxYhXC0fDieFa0kDIra1FAhsAARRJbvEyso8aAqvPdNxzWuStBnA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-mips64el@0.27.1':
     resolution: {integrity: sha512-U0bEuAOLvO/DWFdygTHWY8C067FXz+UbzKgxYhXC0fDieFa0kDIra1FAhsAARRJbvEyso8aAqvPdNxzWuStBnA==}
@@ -435,8 +535,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-ppc64@0.27.2':
     resolution: {integrity: sha512-C92gnpey7tUQONqg1n6dKVbx3vphKtTHJaNG2Ok9lGwbZil6DrfyecMsp9CrmXGQJmZ7iiVXvvZH6Ml5hL6XdQ==}
+=======
+  '@esbuild/linux-ppc64@0.27.1':
+    resolution: {integrity: sha512-NzdQ/Xwu6vPSf/GkdmRNsOfIeSGnh7muundsWItmBsVpMoNPVpM61qNzAVY3pZ1glzzAxLR40UyYM23eaDDbYQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-ppc64@0.27.1':
     resolution: {integrity: sha512-NzdQ/Xwu6vPSf/GkdmRNsOfIeSGnh7muundsWItmBsVpMoNPVpM61qNzAVY3pZ1glzzAxLR40UyYM23eaDDbYQ==}
@@ -446,8 +551,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-riscv64@0.27.2':
     resolution: {integrity: sha512-B5BOmojNtUyN8AXlK0QJyvjEZkWwy/FKvakkTDCziX95AowLZKR6aCDhG7LeF7uMCXEJqwa8Bejz5LTPYm8AvA==}
+=======
+  '@esbuild/linux-riscv64@0.27.1':
+    resolution: {integrity: sha512-7zlw8p3IApcsN7mFw0O1Z1PyEk6PlKMu18roImfl3iQHTnr/yAfYv6s4hXPidbDoI2Q0pW+5xeoM4eTCC0UdrQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-riscv64@0.27.1':
     resolution: {integrity: sha512-7zlw8p3IApcsN7mFw0O1Z1PyEk6PlKMu18roImfl3iQHTnr/yAfYv6s4hXPidbDoI2Q0pW+5xeoM4eTCC0UdrQ==}
@@ -457,8 +567,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-s390x@0.27.2':
     resolution: {integrity: sha512-p4bm9+wsPwup5Z8f4EpfN63qNagQ47Ua2znaqGH6bqLlmJ4bx97Y9JdqxgGZ6Y8xVTixUnEkoKSHcpRlDnNr5w==}
+=======
+  '@esbuild/linux-s390x@0.27.1':
+    resolution: {integrity: sha512-cGj5wli+G+nkVQdZo3+7FDKC25Uh4ZVwOAK6A06Hsvgr8WqBBuOy/1s+PUEd/6Je+vjfm6stX0kmib5b/O2Ykw==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-s390x@0.27.1':
     resolution: {integrity: sha512-cGj5wli+G+nkVQdZo3+7FDKC25Uh4ZVwOAK6A06Hsvgr8WqBBuOy/1s+PUEd/6Je+vjfm6stX0kmib5b/O2Ykw==}
@@ -468,8 +583,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/linux-x64@0.27.2':
     resolution: {integrity: sha512-uwp2Tip5aPmH+NRUwTcfLb+W32WXjpFejTIOWZFw/v7/KnpCDKG66u4DLcurQpiYTiYwQ9B7KOeMJvLCu/OvbA==}
+=======
+  '@esbuild/linux-x64@0.27.1':
+    resolution: {integrity: sha512-z3H/HYI9MM0HTv3hQZ81f+AKb+yEoCRlUby1F80vbQ5XdzEMyY/9iNlAmhqiBKw4MJXwfgsh7ERGEOhrM1niMA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/linux-x64@0.27.1':
     resolution: {integrity: sha512-z3H/HYI9MM0HTv3hQZ81f+AKb+yEoCRlUby1F80vbQ5XdzEMyY/9iNlAmhqiBKw4MJXwfgsh7ERGEOhrM1niMA==}
@@ -479,8 +599,13 @@ packages:
     os: [linux]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/netbsd-arm64@0.27.2':
     resolution: {integrity: sha512-Kj6DiBlwXrPsCRDeRvGAUb/LNrBASrfqAIok+xB0LxK8CHqxZ037viF13ugfsIpePH93mX7xfJp97cyDuTZ3cw==}
+=======
+  '@esbuild/netbsd-arm64@0.27.1':
+    resolution: {integrity: sha512-wzC24DxAvk8Em01YmVXyjl96Mr+ecTPyOuADAvjGg+fyBpGmxmcr2E5ttf7Im8D0sXZihpxzO1isus8MdjMCXQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/netbsd-arm64@0.27.1':
     resolution: {integrity: sha512-wzC24DxAvk8Em01YmVXyjl96Mr+ecTPyOuADAvjGg+fyBpGmxmcr2E5ttf7Im8D0sXZihpxzO1isus8MdjMCXQ==}
@@ -490,8 +615,13 @@ packages:
     os: [netbsd]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/netbsd-x64@0.27.2':
     resolution: {integrity: sha512-HwGDZ0VLVBY3Y+Nw0JexZy9o/nUAWq9MlV7cahpaXKW6TOzfVno3y3/M8Ga8u8Yr7GldLOov27xiCnqRZf0tCA==}
+=======
+  '@esbuild/netbsd-x64@0.27.1':
+    resolution: {integrity: sha512-1YQ8ybGi2yIXswu6eNzJsrYIGFpnlzEWRl6iR5gMgmsrR0FcNoV1m9k9sc3PuP5rUBLshOZylc9nqSgymI+TYg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/netbsd-x64@0.27.1':
     resolution: {integrity: sha512-1YQ8ybGi2yIXswu6eNzJsrYIGFpnlzEWRl6iR5gMgmsrR0FcNoV1m9k9sc3PuP5rUBLshOZylc9nqSgymI+TYg==}
@@ -501,8 +631,13 @@ packages:
     os: [netbsd]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/openbsd-arm64@0.27.2':
     resolution: {integrity: sha512-DNIHH2BPQ5551A7oSHD0CKbwIA/Ox7+78/AWkbS5QoRzaqlev2uFayfSxq68EkonB+IKjiuxBFoV8ESJy8bOHA==}
+=======
+  '@esbuild/openbsd-arm64@0.27.1':
+    resolution: {integrity: sha512-5Z+DzLCrq5wmU7RDaMDe2DVXMRm2tTDvX2KU14JJVBN2CT/qov7XVix85QoJqHltpvAOZUAc3ndU56HSMWrv8g==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/openbsd-arm64@0.27.1':
     resolution: {integrity: sha512-5Z+DzLCrq5wmU7RDaMDe2DVXMRm2tTDvX2KU14JJVBN2CT/qov7XVix85QoJqHltpvAOZUAc3ndU56HSMWrv8g==}
@@ -512,8 +647,13 @@ packages:
     os: [openbsd]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/openbsd-x64@0.27.2':
     resolution: {integrity: sha512-/it7w9Nb7+0KFIzjalNJVR5bOzA9Vay+yIPLVHfIQYG/j+j9VTH84aNB8ExGKPU4AzfaEvN9/V4HV+F+vo8OEg==}
+=======
+  '@esbuild/openbsd-x64@0.27.1':
+    resolution: {integrity: sha512-Q73ENzIdPF5jap4wqLtsfh8YbYSZ8Q0wnxplOlZUOyZy7B4ZKW8DXGWgTCZmF8VWD7Tciwv5F4NsRf6vYlZtqg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/openbsd-x64@0.27.1':
     resolution: {integrity: sha512-Q73ENzIdPF5jap4wqLtsfh8YbYSZ8Q0wnxplOlZUOyZy7B4ZKW8DXGWgTCZmF8VWD7Tciwv5F4NsRf6vYlZtqg==}
@@ -523,8 +663,13 @@ packages:
     os: [openbsd]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/openharmony-arm64@0.27.2':
     resolution: {integrity: sha512-LRBbCmiU51IXfeXk59csuX/aSaToeG7w48nMwA6049Y4J4+VbWALAuXcs+qcD04rHDuSCSRKdmY63sruDS5qag==}
+=======
+  '@esbuild/openharmony-arm64@0.27.1':
+    resolution: {integrity: sha512-ajbHrGM/XiK+sXM0JzEbJAen+0E+JMQZ2l4RR4VFwvV9JEERx+oxtgkpoKv1SevhjavK2z2ReHk32pjzktWbGg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/openharmony-arm64@0.27.1':
     resolution: {integrity: sha512-ajbHrGM/XiK+sXM0JzEbJAen+0E+JMQZ2l4RR4VFwvV9JEERx+oxtgkpoKv1SevhjavK2z2ReHk32pjzktWbGg==}
@@ -534,8 +679,13 @@ packages:
     os: [openharmony]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/sunos-x64@0.27.2':
     resolution: {integrity: sha512-kMtx1yqJHTmqaqHPAzKCAkDaKsffmXkPHThSfRwZGyuqyIeBvf08KSsYXl+abf5HDAPMJIPnbBfXvP2ZC2TfHg==}
+=======
+  '@esbuild/sunos-x64@0.27.1':
+    resolution: {integrity: sha512-IPUW+y4VIjuDVn+OMzHc5FV4GubIwPnsz6ubkvN8cuhEqH81NovB53IUlrlBkPMEPxvNnf79MGBoz8rZ2iW8HA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/sunos-x64@0.27.1':
     resolution: {integrity: sha512-IPUW+y4VIjuDVn+OMzHc5FV4GubIwPnsz6ubkvN8cuhEqH81NovB53IUlrlBkPMEPxvNnf79MGBoz8rZ2iW8HA==}
@@ -545,8 +695,13 @@ packages:
     os: [sunos]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/win32-arm64@0.27.2':
     resolution: {integrity: sha512-Yaf78O/B3Kkh+nKABUF++bvJv5Ijoy9AN1ww904rOXZFLWVc5OLOfL56W+C8F9xn5JQZa3UX6m+IktJnIb1Jjg==}
+=======
+  '@esbuild/win32-arm64@0.27.1':
+    resolution: {integrity: sha512-RIVRWiljWA6CdVu8zkWcRmGP7iRRIIwvhDKem8UMBjPql2TXM5PkDVvvrzMtj1V+WFPB4K7zkIGM7VzRtFkjdg==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/win32-arm64@0.27.1':
     resolution: {integrity: sha512-RIVRWiljWA6CdVu8zkWcRmGP7iRRIIwvhDKem8UMBjPql2TXM5PkDVvvrzMtj1V+WFPB4K7zkIGM7VzRtFkjdg==}
@@ -556,8 +711,13 @@ packages:
     os: [win32]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/win32-ia32@0.27.2':
     resolution: {integrity: sha512-Iuws0kxo4yusk7sw70Xa2E2imZU5HoixzxfGCdxwBdhiDgt9vX9VUCBhqcwY7/uh//78A1hMkkROMJq9l27oLQ==}
+=======
+  '@esbuild/win32-ia32@0.27.1':
+    resolution: {integrity: sha512-2BR5M8CPbptC1AK5JbJT1fWrHLvejwZidKx3UMSF0ecHMa+smhi16drIrCEggkgviBwLYd5nwrFLSl5Kho96RQ==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/win32-ia32@0.27.1':
     resolution: {integrity: sha512-2BR5M8CPbptC1AK5JbJT1fWrHLvejwZidKx3UMSF0ecHMa+smhi16drIrCEggkgviBwLYd5nwrFLSl5Kho96RQ==}
@@ -567,8 +727,13 @@ packages:
     os: [win32]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/win32-x64@0.27.2':
     resolution: {integrity: sha512-sRdU18mcKf7F+YgheI/zGf5alZatMUTKj/jNS6l744f9u3WFu4v7twcUI9vu4mknF4Y9aDlblIie0IM+5xxaqQ==}
+=======
+  '@esbuild/win32-x64@0.27.1':
+    resolution: {integrity: sha512-d5X6RMYv6taIymSk8JBP+nxv8DQAMY6A51GPgusqLdK9wBz5wWIXy1KjTck6HnjE9hqJzJRdk+1p/t5soSbCtw==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@esbuild/win32-x64@0.27.1':
     resolution: {integrity: sha512-d5X6RMYv6taIymSk8JBP+nxv8DQAMY6A51GPgusqLdK9wBz5wWIXy1KjTck6HnjE9hqJzJRdk+1p/t5soSbCtw==}
@@ -851,8 +1016,13 @@ packages:
     resolution: {integrity: sha512-EDtsGZS964mf9zAUXAl9Ew16eYbeyAFWhsPr0fX6oaJxgd8rApYlPBf0joyhnUHz88WxrigyFtTaqqzXNzPgqw==}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@redocly/cli@2.13.0':
     resolution: {integrity: sha512-VOGh8p5gKy+u94SbvMGaHvDM6TPw668D9iQkNSztoi4T5sj3ZwM7Y8Z3yZnMqC5s5epDcLAMq4jCO8UVn5ZWHg==}
+=======
+  '@redocly/cli@2.12.7':
+    resolution: {integrity: sha512-cevNpojACA3JVUU3fqIzebY1CXipeBl84EMrriAgB4Pi0cHWImf12WkpLN/MCKMlW20/IzBzQ04CVlTyKFXuyw==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@redocly/cli@2.12.7':
     resolution: {integrity: sha512-cevNpojACA3JVUU3fqIzebY1CXipeBl84EMrriAgB4Pi0cHWImf12WkpLN/MCKMlW20/IzBzQ04CVlTyKFXuyw==}
@@ -871,6 +1041,7 @@ packages:
     engines: {node: '>=18.17.0', npm: '>=9.5.0'}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@redocly/openapi-core@2.13.0':
     resolution: {integrity: sha512-xQ4z5tsrXbIa4EfCniHv1zZ4etmQ0lpRcxy750iOamV5A/+19mgbPtD+UQCoT18puDAjcnOgpX7x2ha72qKrnw==}
     engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
@@ -887,6 +1058,16 @@ packages:
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
     engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
 
+=======
+  '@redocly/openapi-core@2.12.7':
+    resolution: {integrity: sha512-b32Pvl4IE2QZFPpPXD7Qciwy1/AZ2EUaYJ++Oyngaz5WlyeGb9HX/fWmf2QO0YvSqNdK7OSY3m8lPBQ+zlNlgw==}
+    engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
+
+  '@redocly/respect-core@2.12.7':
+    resolution: {integrity: sha512-pBm81qeCYkOC0BCAO6lnEDifLChpCUFP6CsBPNXTYgpFa606UjDULYVIcVUOvwZGlqv6euWIHNT8DfkzFGeltQ==}
+    engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
+
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
   '@rollup/rollup-android-arm-eabi@4.53.5':
     resolution: {integrity: sha512-iDGS/h7D8t7tvZ1t6+WPK04KD0MwzLZrG0se1hzBjSi5fyxlsiggoJHwh18PCFNn7tG43OWb6pdZ6Y+rMlmyNQ==}
     cpu: [arm]
@@ -1022,8 +1203,13 @@ packages:
     resolution: {integrity: sha512-1N9SBnWYOJTrNZCdh/yJE+t910Y128BoyY+zBLWhL3r0TYzlTmFdXrPwHL9DyFZmlEXNQQolTZh3KHV31QDhyA==}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@types/node@25.0.3':
     resolution: {integrity: sha512-W609buLVRVmeW693xKfzHeIV6nJGGz98uCPfeXI1ELMLXVeKYZ9m15fAMSaUPBHYLGFsVRcMmSCksQOrZV9BYA==}
+=======
+  '@types/node@25.0.2':
+    resolution: {integrity: sha512-gWEkeiyYE4vqjON/+Obqcoeffmk0NF15WSBwSs7zwVA2bAbTaE0SJ7P0WNGoJn8uE7fiaV5a7dKYIJriEqOrmA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@types/node@25.0.2':
     resolution: {integrity: sha512-gWEkeiyYE4vqjON/+Obqcoeffmk0NF15WSBwSs7zwVA2bAbTaE0SJ7P0WNGoJn8uE7fiaV5a7dKYIJriEqOrmA==}
@@ -1464,8 +1650,13 @@ packages:
     resolution: {integrity: sha512-SOp9Phqvqn7jtEUxPWdWfWoLmyt2VaJ6MpvP9Comy1MceMXqE6bxvaTu4iaxpYYPzhny28Lc+M87/c2cPK6lDg==}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   esbuild@0.27.2:
     resolution: {integrity: sha512-HyNQImnsOC7X9PMNaCIeAm4ISCQXs5a5YasTXVliKv4uuBo1dKrG0A+uQS8M5eXjVMnLg3WgXaKvprHlFJQffw==}
+=======
+  esbuild@0.27.1:
+    resolution: {integrity: sha512-yY35KZckJJuVVPXpvjgxiCuVEJT67F6zDeVTv4rizyPrfGBUpZQsvmxnN+C371c2esD/hNMjj4tpBhuueLN7aA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   esbuild@0.27.1:
     resolution: {integrity: sha512-yY35KZckJJuVVPXpvjgxiCuVEJT67F6zDeVTv4rizyPrfGBUpZQsvmxnN+C371c2esD/hNMjj4tpBhuueLN7aA==}
@@ -2643,8 +2834,13 @@ packages:
     engines: {node: '>= 0.6'}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   typebox@1.0.64:
     resolution: {integrity: sha512-U6quDhQMzQRzBX8jvlE5mZlUnlMRTaZrG/QMAhOYVJ0D0rhq1iOXBQVSzBX0JgAh55jXQ7fWIv24i+lVimXcDw==}
+=======
+  typebox@1.0.63:
+    resolution: {integrity: sha512-qqQ1IePTIL3Illa9C5GToVAUM5qRwOaDN4x/V4jBIt4V0S3lqttJbUNIYm+u+QXvvVxOnTddWxa+6hGuujIEwA==}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   typebox@1.0.63:
     resolution: {integrity: sha512-qqQ1IePTIL3Illa9C5GToVAUM5qRwOaDN4x/V4jBIt4V0S3lqttJbUNIYm+u+QXvvVxOnTddWxa+6hGuujIEwA==}
@@ -2880,6 +3076,7 @@ snapshots:
   '@emotion/unitless@0.8.1': {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@esbuild/aix-ppc64@0.27.2':
     optional: true
 
@@ -3036,6 +3233,86 @@ snapshots:
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
     optional: true
 
+=======
+  '@esbuild/aix-ppc64@0.27.1':
+    optional: true
+
+  '@esbuild/android-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/android-arm@0.27.1':
+    optional: true
+
+  '@esbuild/android-x64@0.27.1':
+    optional: true
+
+  '@esbuild/darwin-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/darwin-x64@0.27.1':
+    optional: true
+
+  '@esbuild/freebsd-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/freebsd-x64@0.27.1':
+    optional: true
+
+  '@esbuild/linux-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/linux-arm@0.27.1':
+    optional: true
+
+  '@esbuild/linux-ia32@0.27.1':
+    optional: true
+
+  '@esbuild/linux-loong64@0.27.1':
+    optional: true
+
+  '@esbuild/linux-mips64el@0.27.1':
+    optional: true
+
+  '@esbuild/linux-ppc64@0.27.1':
+    optional: true
+
+  '@esbuild/linux-riscv64@0.27.1':
+    optional: true
+
+  '@esbuild/linux-s390x@0.27.1':
+    optional: true
+
+  '@esbuild/linux-x64@0.27.1':
+    optional: true
+
+  '@esbuild/netbsd-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/netbsd-x64@0.27.1':
+    optional: true
+
+  '@esbuild/openbsd-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/openbsd-x64@0.27.1':
+    optional: true
+
+  '@esbuild/openharmony-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/sunos-x64@0.27.1':
+    optional: true
+
+  '@esbuild/win32-arm64@0.27.1':
+    optional: true
+
+  '@esbuild/win32-ia32@0.27.1':
+    optional: true
+
+  '@esbuild/win32-x64@0.27.1':
+    optional: true
+
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
   '@eslint-community/eslint-utils@4.9.0(eslint@9.39.2)':
     dependencies:
       eslint: 9.39.2
@@ -3354,7 +3631,11 @@ snapshots:
       require-from-string: 2.0.2
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@redocly/cli@2.13.0(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.47.0)':
+=======
+  '@redocly/cli@2.12.7(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.47.0)':
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@redocly/cli@2.12.7(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.47.0)':
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -3364,8 +3645,13 @@ snapshots:
       '@opentelemetry/sdk-trace-node': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.34.0
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@redocly/openapi-core': 2.13.0(ajv@8.17.1)
       '@redocly/respect-core': 2.13.0(ajv@8.17.1)
+=======
+      '@redocly/openapi-core': 2.12.7(ajv@8.17.1)
+      '@redocly/respect-core': 2.12.7(ajv@8.17.1)
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
       '@redocly/openapi-core': 2.12.7(ajv@8.17.1)
       '@redocly/respect-core': 2.12.7(ajv@8.17.1)
@@ -3422,7 +3708,11 @@ snapshots:
       - supports-color
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@redocly/openapi-core@2.13.0(ajv@8.17.1)':
+=======
+  '@redocly/openapi-core@2.12.7(ajv@8.17.1)':
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@redocly/openapi-core@2.12.7(ajv@8.17.1)':
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -3440,7 +3730,11 @@ snapshots:
       - ajv
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@redocly/respect-core@2.13.0(ajv@8.17.1)':
+=======
+  '@redocly/respect-core@2.12.7(ajv@8.17.1)':
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@redocly/respect-core@2.12.7(ajv@8.17.1)':
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -3449,7 +3743,11 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@redocly/ajv': 8.17.1
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@redocly/openapi-core': 2.13.0(ajv@8.17.1)
+=======
+      '@redocly/openapi-core': 2.12.7(ajv@8.17.1)
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
       '@redocly/openapi-core': 2.12.7(ajv@8.17.1)
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -3553,7 +3851,11 @@ snapshots:
       undici-types: 6.21.0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   '@types/node@25.0.3':
+=======
+  '@types/node@25.0.2':
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   '@types/node@25.0.2':
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -4004,6 +4306,7 @@ snapshots:
   es6-promise@3.3.1: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   esbuild@0.27.2:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.27.2
@@ -4035,6 +4338,10 @@ snapshots:
 =======
   esbuild@0.27.1:
     optionalDependencies:
+=======
+  esbuild@0.27.1:
+    optionalDependencies:
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
       '@esbuild/aix-ppc64': 0.27.1
       '@esbuild/android-arm': 0.27.1
       '@esbuild/android-arm64': 0.27.1
@@ -4061,6 +4368,9 @@ snapshots:
       '@esbuild/win32-arm64': 0.27.1
       '@esbuild/win32-ia32': 0.27.1
       '@esbuild/win32-x64': 0.27.1
+<<<<<<< HEAD
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
+=======
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 
   escalade@3.2.0: {}
@@ -4905,7 +5215,11 @@ snapshots:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@types/node': 25.0.3
+=======
+      '@types/node': 25.0.2
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
       '@types/node': 25.0.2
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -5324,7 +5638,10 @@ snapshots:
   tslib@2.6.2: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
   tslib@2.8.1: {}
 
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -5343,7 +5660,11 @@ snapshots:
       mime-types: 3.0.2
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   typebox@1.0.64: {}
+=======
+  typebox@1.0.63: {}
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   typebox@1.0.63: {}
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -5402,7 +5723,11 @@ snapshots:
   vite@7.3.0(@types/node@22.19.3)(yaml@2.8.2):
     dependencies:
 <<<<<<< HEAD
+<<<<<<< HEAD
       esbuild: 0.27.2
+=======
+      esbuild: 0.27.1
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
       esbuild: 0.27.1
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
@@ -5417,9 +5742,15 @@ snapshots:
       yaml: 2.8.2
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   vite@7.3.0(@types/node@25.0.3)(yaml@2.8.2):
     dependencies:
       esbuild: 0.27.2
+=======
+  vite@7.3.0(@types/node@25.0.2)(yaml@2.8.2):
+    dependencies:
+      esbuild: 0.27.1
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
   vite@7.3.0(@types/node@25.0.2)(yaml@2.8.2):
     dependencies:
@@ -5432,7 +5763,11 @@ snapshots:
       tinyglobby: 0.2.15
     optionalDependencies:
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@types/node': 25.0.3
+=======
+      '@types/node': 25.0.2
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
       '@types/node': 25.0.2
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)

@@ -34,7 +34,11 @@
   },
   "dependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@redocly/cli": "^2.13.0",
+=======
+    "@redocly/cli": "^2.12.7",
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
     "@redocly/cli": "^2.12.7",
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)

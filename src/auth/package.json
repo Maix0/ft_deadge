@@ -28,7 +28,11 @@
 		"fastify-cli": "^7.4.1",
 		"fastify-plugin": "^5.1.0",
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"typebox": "^1.0.64"
+=======
+		"typebox": "^1.0.63"
+>>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
 =======
 		"typebox": "^1.0.63"
 >>>>>>> 16e6ae0 ((schism): started separating backend from frontend)
