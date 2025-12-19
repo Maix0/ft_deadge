@@ -3,6 +3,7 @@ networks:
     driver: bridge
   monitoring:
     driver: bridge
+
 services:
   frontend:
     build: ./frontend
@@ -79,7 +80,7 @@ services:
      container_name: tic-tac-toe
      restart: unless-stopped
      networks:
-       - transcendance-network
+       - app
      volumes:
        - sqlite-volume:/volumes/database
        - static-volume:/volumes/static
