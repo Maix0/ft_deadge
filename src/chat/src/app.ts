@@ -392,8 +392,8 @@ async function onReady(fastify: FastifyInstance) {
 			if (isUser_BlockedBy_me(fastify, UserAskingToBlock!.id, UserToBlock!.id)) {
 				const message: blockedUnBlocked = {
 					userState: 'un-block',
-					userTarget: '',
-					by: '',
+					userTarget: UserToBlock.name,
+					by: UserAskingToBlock.name,
 				};
 				socket.emit('blockBtn', message);
 			}

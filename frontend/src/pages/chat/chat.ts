@@ -325,7 +325,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			connected(socket);
 		}
 		console.log('stahe   eeee  :', blockMessage);
-		if (chatWindow && data.message.destination === "" && !blockMessage) {
+		if (chatWindow && data.message.destination === "") {
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);

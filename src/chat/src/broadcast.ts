@@ -3,11 +3,27 @@ import { clientChat } from './app';
 import { FastifyInstance } from 'fastify';
 import { getUserByName } from './getUserByName';
 import type { User } from '@shared/database/mixin/user';
+import { color } from './app';
 
 type BlockRelation = {
 	blocked: string;
 	blocker: string;
 };
+
+function checkNamePair(list: BlockRelation[], name1: string, name2: string): (boolean) {
+	const matches: BlockRelation[] = [];
+	let exists: boolean = false;
+	for (const item of list) {
+		if (item.blocker === name1) {
+			matches.push(item);
+			if (item.blocked === name2) {
+			  exists = true;
+			  return true;;
+			}
+		}
+	}
+	return exists;
+}
 
 function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] {
 	const usersBlocked =
@@ -21,45 +37,30 @@ function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] 
 		}));
 }
 
-export function broadcast(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
+export async function broadcast(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
 	const AllusersBlocked: User[] = fastify.db.getAllUsers() ?? [];
-	// console.log(color.yellow, 'me:', getUserByName(AllusersBlocked, data.user)?.id)
 	const UserID = getUserByName(AllusersBlocked, data.user)?.id ?? '';
 	const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
-	const blockers = list.map(read => read.blocker);
-	const blocked = list.map(read => read.blocked);
-	console.log('All blockers:', blockers);
-	console.log('All blocked:', blocked);
-	// console.log(color.yellow, 'list:', list)
-	fastify.io.fetchSockets().then((sockets) => {
-		for (const socket of sockets) {
-			// Skip sender's own socket
-			if (socket.id === sender) continue;
-			// Get client name from map
-			const clientInfo = clientChat.get(socket.id);
-			if (!clientInfo?.user) {
-				// console.log(color.yellow, `Skipping socket ${socket.id} (no user found)`);
-				continue;
-			}
-			// console.log('BLOCKED MAYBE', getUserById(sender));
-			// console.log('TARGET',socket.id );
-			// Emit structured JSON object
-			// const UserID = getUserByName(AllusersBlocked, data.user)?.name ?? "";
-			// const UserByID = getUserByName(AllusersBlocked, data.user)?.id ?? "";
-			// console.log(color.blue, 'Asking:', UserID);
-			// console.log(color.blue, 'Asking ID:', UserByID);
-			console.log('Blocked list:', list);
-			// console.log('Sender ID:', UserByID);
-			// if (!list.includes(UserByID)) {
-			// 	console.log('TRUE → sender NOT blocked');
-			// } else {
-			// 	console.log('FALSE → sender IS blocked');
-			// }
-			// if (list.filter(entry => entry.blocker === UserByID)) continue;
-			socket.emit('MsgObjectServer', { message: data });
-			// Debug logs
-			// console.log(color.green, `'DEBUG LOG: Broadcast to:', ${data.command} message: ${data.text}`);
+	const sockets = await fastify.io.fetchSockets();
+	for (const socket of sockets) {
+		const clientInfo = clientChat.get(socket.id);
+		if (!clientInfo?.user) {
+			console.log(color.red, `Skipping socket ${socket.id} (no user found)`);
+			continue;
 		}
-	});
+		let blockMsgFlag: boolean = false;
+		const UserByID = getUserByName(AllusersBlocked, clientInfo.user)?.id ?? '';
+		if (UserByID === '') return;
+		blockMsgFlag = checkNamePair(list, data.SenderUserID, UserByID) || false;
+
+		if (socket.id === sender) {
+			console.log(color.red, 'sKip Sender ', socket.id);
+			continue;
+		}
+		if (!blockMsgFlag) {
+			console.log(color.blue, 'Emit message: ', data.command, 'blockMsgFlag: ', blockMsgFlag);
+			socket.emit('MsgObjectServer', { message: data });
+		}
+	}
 }
