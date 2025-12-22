@@ -31,10 +31,10 @@ export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
 //     },
 };
 
-export type TicTacToeId = number & { readonly __brand: unique symbol };
+export type GameId = number & { readonly __brand: unique symbol };
 
 export type TicTacToeData = {
-	readonly id: TicTacToeId;
+	readonly id: GameId;
 	readonly player1: string;
 	readonly player2: string;
 	readonly outcome: string;
@@ -51,4 +51,4 @@ export type TicTacToeData = {
 // }
 
 // silence warnings
-void privateFunction;
+// void privateFunction;
