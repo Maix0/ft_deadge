@@ -18,12 +18,13 @@ enhancing user engagement with gameplay history, and facilitating matchmaking
 for an enjoyable gaming experience.
 
 # TO-DO
-For now I am prohibited from working on the backend as per Maieul's request.
-[ ] - Implement other game
+For now I am prohibited from working on the backend as per Maieul's request.  
+[X] - Implement other game  
     [X] - (Done on Dec. 7 2025) Task for December 08 or 09: Tic-tac-toe should lock up once it's finished (i.e., draw or win) and print who won, how many turns and which row/col/diag the win happened in 
 
-[ ] - Implement user history
-[ ] - Implement matchmaking
-[ ] - 
-[ ] - 
-[ ] - 
+[ ] - Implement user history (ongoing)  
+    [ ] - Write to database the outcome of each game  
+[ ] - Implement matchmaking  
+[ ] -   
+[ ] -   
+[ ] -   

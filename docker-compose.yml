@@ -3,6 +3,7 @@ networks:
     driver: bridge
   monitoring:
     driver: bridge
+
 services:
   frontend:
     build: ./frontend
@@ -67,6 +68,33 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
+  ###############
+  # TIC-TAC-TOE #
+  ###############
+  tic-tac-toe:
+     build:
+       context: ./src/
+       args:
+         - SERVICE=tic-tac-toe
+     container_name: app-tic-tac-toe
+     restart: always
+     networks:
+       - app
+     volumes:
+       - sqlite-volume:/volumes/database
+       - static-volume:/volumes/static
+     environment:
+       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
+       - DATABASE_DIR=/volumes/database
+     logging:
+       driver: gelf
+       options:
+         gelf-address: "udp://127.0.0.1:12201"
+         tag: "{{.Name}}"
+
+  ###############
+  #    CHAT     #
+  ###############
   chat:
     build:
       context: ./src/

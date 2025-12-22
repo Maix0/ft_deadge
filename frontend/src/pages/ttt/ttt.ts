@@ -1,191 +1,95 @@
-import { addRoute, setTitle, type RouteHandlerReturn } from "@app/routing";
+import { addRoute, type RouteHandlerReturn } from "@app/routing";
 import tttPage from "./ttt.html?raw";
 import { showError, showInfo, showSuccess } from "@app/toast";
+import { io, Socket } from "socket.io-client";
 
-// Represents the possible states of a cell on the board.
-// `null` means that the cell is empty.
-type CellState = 'O' | 'X' | null
+// get the name of the machine used to connect
+const machineHostName = window.location.hostname;
+console.log(
+	"connect to login at https://" + machineHostName + ":8888/app/login",
+);
 
-// Encapsulates the game logic.
-class TTC {
+export let __socket: Socket | undefined = undefined;
+document.addEventListener("ft:pageChange", () => {
+	if (__socket !== undefined) __socket.close();
+	__socket = undefined;
+	console.log("Page changed");
+});
 
-    private isGameOver: boolean;
-
-    private board: [
-        CellState, CellState, CellState,
-        CellState, CellState, CellState,
-        CellState, CellState, CellState];
-    private currentPlayer: 'O' | 'X';
-    
-    constructor() {
-        this.board = [null,null,null,null,null,null,null,null,null];
-        this.isGameOver = false;
-        this.currentPlayer = 'X';
-    }
-
-    private changePlayer()
-    {
-        if (this.currentPlayer === 'X')
-            this.currentPlayer = 'O';
-        else 
-            this.currentPlayer = 'X';
-    }
-
-    // Analyzes the current board to determine if the game has ended.
-    private checkState(): 'winX' | 'winO' | 'draw' | 'ongoing'
-    {
-        const checkRow = (row: number): ('X' | 'O' | null) =>  {
-            if (this.board[row * 3] === null)
-                return null;
-            if (this.board[row * 3] === this.board[row * 3 + 1] && this.board[row * 3 + 1] === this.board[row * 3 + 2])
-                return this.board[row * 3];
-            return null;
-        }
-
-        const checkCol = (col: number): ('X' | 'O' | null) => {
-            if (this.board[col] === null) return null;
-
-            if (this.board[col] === this.board[col + 3] && this.board[col + 3] === this.board[col + 6])
-                return this.board[col];
-            return null;
-        }
-
-        const checkDiag = (): ('X' | 'O' | null) => {
-            if (this.board[4] === null) return null
-
-            if (this.board[0] === this.board[4] && this.board[4] === this.board[8]) 
-                return this.board[4]
-
-            if (this.board[2] === this.board[4] && this.board[4] === this.board[6]) 
-                return this.board[4]
-            return null;
-        }
-
-        
-        const row = (checkRow(0) ?? checkRow(1)) ?? checkRow(2);
-        const col = (checkCol(0) ?? checkCol(1)) ?? checkCol(2);
-        const diag = checkDiag();
-
-        if (row !== null) return `win${row}`;
-        if (col !== null) return `win${col}`;
-        if (diag !== null ) return `win${diag}`;
-
-        if (this.board.filter(c => c === null).length === 0)
-            return 'draw';
-        return 'ongoing';
-    }
-
-    public reset(): void {
-      this.board = [null,null,null,null,null,null,null,null,null];
-      this.currentPlayer = 'X';
-      this.isGameOver = false;
-    };
-
-    // Attempts to place the current player's mark on the specified cell.
-    // @param idx - The index of the board (0-8) to place the mark.
-    // @returns The resulting game state, or `invalidMove` if the move is illegal.
-    public makeMove(idx: number): 'winX' | 'winO' | 'draw' | 'ongoing' | 'invalidMove' {
-        if (this.isGameOver) {
-            return 'invalidMove';
-        }
-        if (idx < 0 || idx >= this.board.length) {
-            return 'invalidMove';
-        }
-        if (this.board[idx] !== null) {
-            return 'invalidMove';
-        }
-        this.board[idx] = this.currentPlayer;
-        this.changePlayer();
-
-        const result = this.checkState();
-
-        if (result !== 'ongoing') {
-            this.isGameOver = true;
-        }
-
-        return result;
-    }
-
-    public getBoard(): [
-        CellState, CellState, CellState,
-        CellState, CellState, CellState,
-        CellState, CellState, CellState]
-    {
-        return this.board;
-    }
+export function getSocket(): Socket {
+	let addressHost = `wss://${machineHostName}:8888`;
+	// let addressHost = `wss://localhost:8888`;
+	if (__socket === undefined)
+		__socket = io(addressHost, {
+			path: "/api/ttt/socket.io/",
+			secure: true,
+			transports: ["websocket"],
+		});
+	return __socket;
 }
 
 // Route handler for the Tic-Tac-Toe page.
 // Instantiates the game logic and binds UI events.
-async function handleTTT(): Promise<RouteHandlerReturn>
-{
-    // Create a fresh instance for every page load.
-    let board = new TTC();
+async function handleTTT(): Promise<RouteHandlerReturn> {
+	const socket: Socket = getSocket();
 
-    return {
-        html: tttPage,
-        postInsert: async (app) => {
-            if (!app) {
-                return;
-            }
+	return {
+		html: tttPage,
+		postInsert: async (app) => {
+			if (!app) {
+				return;
+			}
 
-            const cells = app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
-            const restartBtn = app.querySelector<HTMLButtonElement>("#ttt-restart-btn");
+			const cells =
+				app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
+			const restartBtn =
+				app.querySelector<HTMLButtonElement>("#ttt-restart-btn");
+			const grid = app.querySelector(".ttt-grid"); // Not sure about this one
 
-            const updateUI = () => {
-              const board_state = board.getBoard();
-              board_state.forEach((cell_state, cell_idx) => {
-                 cells[cell_idx].innerText = cell_state !== null ? cell_state : " ";
-              });
-            };
+			const updateUI = (boardState: (string | null)[]) => {
+				boardState.forEach((state, idx) => {
+					cells[idx].innerText = state || " ";
+				});
+			};
 
-            console.log(cells);
+			socket.on("gameState", (data) => {
+				updateUI(data.board);
 
-            cells?.forEach(function (c, idx) {
-                c.addEventListener('click', () => {
-                    const result = board.makeMove(idx);
-                    switch(result)
-                    {
-                        case ('draw'): {
-                            showInfo('Game is a draw');
-                            break;
-                        }
-                        case ('invalidMove'): {
-                            showError('Move is invalid');
-                            break;
-                        }
+				if (data.lastResult && data.lastResult !== "ongoing") {
+					grid?.classList.add("pointer-events-none");
+					if (data.lastResult === "winX") {
+						showSuccess("X won !");
+					}
+					if (data.lastResult === "winO") {
+						showSuccess("O won !");
+					}
+					if (data.lastResult === "draw") {
+						showInfo("Draw !");
+					}
+				}
 
-                        case ('winX'): {
-                            showSuccess('X won');
-                            app?.querySelector('.ttt-grid')?.classList.add('pointer-events-none');
-                            break;
-                        }
-                        case ('winO'): {
-                            showSuccess('O won');
-                            app?.querySelector('.ttt-grid')?.classList.add('pointer-events-none');
-                            break;
-                        }
-                    }
+				if (data.reset) {
+					grid?.classList.remove("pointer-events-none");
+					showInfo("Game Restarted");
+				}
+			});
 
-                    // Sync UI with Game State
-                    const board_state = board.getBoard();
-                    board_state.forEach( function (cell_state, cell_idx) {
-                        cells[cell_idx].innerText = cell_state !== null ? cell_state : " ";
-                    });
+			socket.on("error", (msg) => {
+				showError(msg);
+			});
 
-                    updateUI();
-                });
-            });
-            restartBtn?.addEventListener('click', () => {
-               board.reset();
-               // Remove pointer-events-none to re-enable the board if it was disabled
-               app?.querySelector('.ttt-grid')?.classList.remove('pointer-events-none');
-               updateUI();
-               showInfo('Game Restarted');
-            });
-        }
-    }
+			cells?.forEach(function(c, idx) {
+				c.addEventListener("click", () => {
+					socket.emit("makeMove", idx);
+				});
+			});
+
+			restartBtn?.addEventListener("click", () => {
+				socket.emit("resetGame");
+			});
+		},
+	};
 }
 
+addRoute("/ttt", handleTTT);
 
-addRoute('/ttt', handleTTT)

@@ -5,6 +5,8 @@ apis:
     root: ./user/openapi.json
   chat:
     root: ./chat/openapi.json
+  ttt:
+    root: ./tic-tac-toe/openapi.json
 
 rules:
   info-license: warn
