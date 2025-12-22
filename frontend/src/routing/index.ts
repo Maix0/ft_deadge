@@ -1,6 +1,20 @@
 import { updateUser } from '@app/auth';
 import { route_404 } from './special_routes'
+import { ensureWindowState } from '@app/utils';
 
+ensureWindowState();
+
+declare module 'ft_state' {
+	interface State {
+		routes: Map<string, RouteHandlerData>,
+		title: string,
+		titleElem: HTMLDivElement,
+	}
+};
+
+window.__state.routes ??= new Map();
+window.__state.title ??= "";
+window.__state.titleElem ??= document.querySelector<HTMLDivElement>('#header-title')!;
 
 // ---- Router logic ----
 export function navigateTo(url: string) {
@@ -101,44 +115,18 @@ function urlToParts(url: string): string[] {
 	return parts.filter(p => p.length !== 0);
 }
 
-function setupRoutes(): [
-	() => Routes,
-	(url: string, handler: RouteHandler, args?: Partial<RouteHandlerSpecialArgs>) => void
-] {
-	const routes = new Map();
-
-	return [
-		() => routes,
-		(url: string, handler: RouteHandler | string, args?: Partial<RouteHandlerSpecialArgs>) => {
-			let d = new RouteHandlerData(url, handler, args ?? {});
-			if (routes.has(d.url))
-				throw `Tried to insert route ${url}, but it already exists`;
-			routes.set(d.url, d);
-		}
-	];
-}
-
-function setupTitle(): [
-	() => string,
-	(title: string) => void,
-] {
-	let title = "";
-	let titleElem = document.querySelector<HTMLDivElement>('#header-title')!;
-	return [
-		() => title,
-		(new_title) => {
-			title = new_title;
-			titleElem.innerText = title;
-		}
-	]
+export function addRoute(url: string, handler: RouteHandler | string, args?: Partial<RouteHandlerSpecialArgs>) {
+	let d = new RouteHandlerData(url, handler, args ?? {});
+	if (window.__state.routes.has(d.url))
+		throw `Tried to insert route ${url}, but it already exists`;
+	window.__state.routes.set(d.url, d);
 }
 
 
-export const [getRoute, addRoute] = setupRoutes();
-
-export const [getTitle, setTitle] = setupTitle();
-
-(window as any).getRoute = getRoute;
+export function setTitle(title: string) {
+	window.__state.title = title;
+	window.__state.titleElem.innerText = window.__state.title;
+}
 
 const executeRouteHandler = async (handler: RouteHandlerData, ...args: Parameters<SyncRouteHandler>): Promise<RouteHandlerReturn> => {
 	// handler may be a raw string literal, if yes => return it directly
@@ -169,7 +157,7 @@ function parts_match(route_parts: (string | null)[], parts: string[]): boolean {
 }
 
 export async function handleRoute() {
-	let routes = getRoute();
+	let routes = window.__state.routes;
 
 	let parts = urlToParts(window.location.pathname);
 	let routes_all = routes.entries();
@@ -222,4 +210,4 @@ document.addEventListener('click', e => {
 // ---- Handle browser navigation (back/forward) ----
 window.addEventListener('popstate', handleRoute);
 
-Object.assign((window as any), { getTitle, setTitle, getRoute, addRoute, navigateTo })
+Object.assign((window as any), { setTitle, addRoute, navigateTo })
