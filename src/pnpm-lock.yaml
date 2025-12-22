@@ -177,7 +177,6 @@ importers:
       rollup-plugin-node-externals:
         specifier: ^8.1.2
         version: 8.1.2(rollup@4.54.0)
-<<<<<<< HEAD
       vite:
         specifier: ^7.3.0
         version: 7.3.0(@types/node@22.19.3)(yaml@2.8.2)
@@ -224,16 +223,6 @@ importers:
       rollup-plugin-node-externals:
         specifier: ^8.1.2
         version: 8.1.2(rollup@4.54.0)
-=======
-<<<<<<< HEAD
->>>>>>> 4a4b418 (Adding blockage invitations to a Game)
-=======
-<<<<<<< HEAD
->>>>>>> refs/remotes/origin/nigel/block_invitations
-=======
->>>>>>> 4a4b418 (Adding blockage invitations to a Game)
->>>>>>> ce3f8b6 (Adding blockage invitations to a Game)
->>>>>>> ec79d26 (Adding blockage invitations to a Game)
       vite:
         specifier: ^7.3.0
         version: 7.3.0(@types/node@22.19.3)(yaml@2.8.2)
