@@ -48,3 +48,8 @@ export type obj =
 	SenderWindowID: string,
 	Sendertext: string,
 };
+
+export type BlockRelation = {
+	blocked: string;
+	blocker: string;
+};

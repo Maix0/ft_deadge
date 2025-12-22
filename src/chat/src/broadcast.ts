@@ -1,41 +1,11 @@
-import type { ClientMessage } from './chat_types';
+import type { ClientMessage, BlockRelation} from './chat_types';
 import { clientChat } from './app';
 import { FastifyInstance } from 'fastify';
 import { getUserByName } from './getUserByName';
 import type { User } from '@shared/database/mixin/user';
 import { color } from './app';
-
-type BlockRelation = {
-	blocked: string;
-	blocker: string;
-};
-
-function checkNamePair(list: BlockRelation[], name1: string, name2: string): (boolean) {
-	const matches: BlockRelation[] = [];
-	let exists: boolean = false;
-	for (const item of list) {
-		if (item.blocker === name1) {
-			matches.push(item);
-			if (item.blocked === name2) {
-			  exists = true;
-			  return true;;
-			}
-		}
-	}
-	return exists;
-}
-
-function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] {
-	const usersBlocked =
-		fastify.db.getAllBlockedUsers() ?? [];
-
-	return usersBlocked
-		.filter(entry => entry.blocked === myID)
-		.map(entry => ({
-			blocked: entry.user,
-			blocker: entry.blocked,
-		}));
-}
+import { checkNamePair } from './checkNamePair';
+import { whoBlockedMe } from './whoBlockedMe';
 
 export async function broadcast(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
