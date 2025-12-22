@@ -7,7 +7,6 @@ import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server } from 'socket.io';
-import type { TicTacToeImpl } from '@shared/database/mixin/tictactoe';
 
 declare const __SERVICE_NAME: string;
 
@@ -78,12 +77,14 @@ async function onReady(fastify: FastifyInstance, game: TTC) {
 				socket.emit('error', 'Invalid Move');
 			}
 			else {
+				if (result !== 'ongoing') {
+					fastify.db.setGameOutcome('011001', 'Aless', 'Clara', result);
+				}
 				fastify.io.emit('gameState', {
 					board: game.board,
 					turn: game.currentPlayer,
 					lastResult: result,
 				});
-				fastify.db.setGameOutcome("011001", result);
 			}
 		});
 
