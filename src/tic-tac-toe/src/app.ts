@@ -7,7 +7,7 @@ import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server } from 'socket.io';
-// import type { TicTacToeImpl } from '@shared/database/mixin/tictactoe';
+import type { TicTacToeImpl } from '@shared/database/mixin/tictactoe';
 
 declare const __SERVICE_NAME: string;
 
@@ -83,7 +83,7 @@ async function onReady(fastify: FastifyInstance, game: TTC) {
 					turn: game.currentPlayer,
 					lastResult: result,
 				});
-				// fastify.db.setGameOutcome(this, "011001");
+				fastify.db.setGameOutcome("011001", result);
 			}
 		});
 
