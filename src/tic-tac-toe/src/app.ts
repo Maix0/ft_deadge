@@ -78,7 +78,7 @@ async function onReady(fastify: FastifyInstance, game: TTC) {
 			}
 			else {
 				if (result !== 'ongoing') {
-					fastify.db.setGameOutcome('011001', 'Aless', 'Clara', result);
+					fastify.db.setGameOutcome('011001', 'player1', 'player2', result);
 				}
 				fastify.io.emit('gameState', {
 					board: game.board,
