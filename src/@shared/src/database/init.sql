@@ -29,6 +29,6 @@ CREATE TABLE IF NOT EXISTS tictactoe (
     player2 TEXT NOT NULL,
     outcome TEXT NOT NULL,
 
-    FOREIGN KEY(player1) REFERENCES user(id)
-    FOREIGN KEY(player2) REFERENCES user(id)
+--     FOREIGN KEY(player1) REFERENCES user(id)
+--     FOREIGN KEY(player2) REFERENCES user(id)
 );
