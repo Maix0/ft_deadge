@@ -1,3 +1,4 @@
+import "./chat.css";
 import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
 import { showError } from "@app/toast";
 import authHtml from './chat.html?raw';

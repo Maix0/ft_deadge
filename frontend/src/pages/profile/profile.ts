@@ -1,4 +1,4 @@
-import { addRoute, getRoute, handleRoute, navigateTo, setTitle } from "@app/routing";
+import { addRoute, handleRoute, navigateTo, setTitle } from "@app/routing";
 import { showError, showSuccess } from "@app/toast";
 import page from "./profile.html?raw";
 import { updateUser } from "@app/auth";

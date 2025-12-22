@@ -1,8 +1,12 @@
 import { showError } from "@app/toast";
 import client from '@app/api';
 import cookie from 'js-cookie';
+import { ensureWindowState } from "@app/utils";
 
 cookie.remove('pkce');
+
+ensureWindowState();
+window.__state.user ??= null;
 
 export type User = {
 	id: string;
@@ -15,18 +19,22 @@ export type User = {
 	}
 };
 
-let currentUser: User | null = null;
+declare module 'ft_state' {
+	interface State {
+		user: User | null,
+	}
+};
 
 export function getUser(): Readonly<User> | null {
-	return currentUser;
+	return window.__state.user;
 }
 
 export function isLogged(): boolean {
-	return currentUser !== null;
+	return window.__state.user !== null;
 }
 
 export function setUser(newUser: User | null) {
-	currentUser = newUser;
+	window.__state.user = newUser;
 }
 
 export async function updateUser(): Promise<Readonly<User> | null> {
