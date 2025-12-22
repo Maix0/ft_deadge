@@ -16,15 +16,16 @@ export function sendInvite(fastify: FastifyInstance, innerHtml: string, profil: 
 		let targetSocket;
 		for (const socket of sockets) {
 			const clientInfo: string = clientChat.get(socket.id)?.user || '';
+			targetSocket = socket || null;
+			if (!targetSocket) continue;
+			console.log(color.yellow, 'DEBUG LOG: user online found', profil.user, 'socket', targetSocket.id);
 			if (clientInfo === profil.user) {
-				console.log(color.yellow, 'DEBUG LOG: user online found', profil.user);
-				targetSocket = socket || '';
-				break;
+				profil.innerHtml = innerHtml ?? '';
+				if (targetSocket.id) {
+					targetSocket.emit('inviteGame', profil);
+				}
+				return;
 			}
-		}
-		profil.innerHtml = innerHtml ?? '';
-		if (targetSocket) {
-			targetSocket.emit('inviteGame', profil);
 		}
 	});
 }
