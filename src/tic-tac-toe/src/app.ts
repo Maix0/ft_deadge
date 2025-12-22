@@ -83,7 +83,7 @@ async function onReady(fastify: FastifyInstance, game: TTC) {
 					turn: game.currentPlayer,
 					lastResult: result,
 				});
-				// setGameOutcome();
+				// fastify.db.setGameOutcome(this, "011001");
 			}
 		});
 
