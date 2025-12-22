@@ -14,9 +14,9 @@ export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
 	 * @param gameId The game we want to write the outcome of.
 	 *
 	 */
-	setGameOutcome(this: ITicTacToeDb, id: GameId): void {
+	setGameOutcome(this: ITicTacToeDb, id: GameId, outcome: string): void {
 		// Find a way to retrieve the outcome of the game.
-		this.prepare('INSERT INTO tictactoe (game, outcome) VALUES (@id, "draw" /* replace w/ game outcome */)').run({ id });
+		this.prepare('INSERT INTO tictactoe (game, outcome) VALUES (@id, @outcome)').run({ id });
 	},
 	/**
 	 * whole function description
