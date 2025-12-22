@@ -18,7 +18,7 @@ const fastifySocketIO: FastifyPluginAsync = fp(async (fastify) => {
 	}
 	fastify.decorate(
 		'io',
-		new Server(fastify.server, { path: '/api/chat/socket.io' }),
+		new Server(fastify.server, { path: '/api/ttt/socket.io' }),
 	);
 	fastify.addHook('preClose', defaultPreClose);
 	fastify.addHook('onClose', (instance: FastifyInstance, done) => {
