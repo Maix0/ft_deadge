@@ -20,6 +20,7 @@ function checkNamePair(list: BlockRelation[], name1: string, name2: string): (bo
 			  return true;;
 			}
 		}
+		console.log(color.red, `'RETURN FLAG CheckNamePair ${exists}' item: ${name1}  item2: ${name2}`);
 	}
 	return exists;
 }
@@ -46,39 +47,42 @@ function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] 
 
 export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
-	const AllusersBlocked: User[] = fastify.db.getAllUsers() ?? [];
-	const UserID = getUserByName(AllusersBlocked, data.user)?.id ?? '';
-	const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
 	const sockets = await fastify.io.fetchSockets();
+	const AllusersBlocked: User[] = fastify.db.getAllUsers() ?? [];
 	const senderSocket = sockets.find(socket => socket.id === sender);
 	for (const socket of sockets) {
-		if (socket.id === sender) continue;
+		const UserID = getUserByName(AllusersBlocked, data.user)?.id ?? '';
+		const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
 		const clientInfo = clientChat.get(socket.id);
 		if (!clientInfo?.user) {
-			console.log(color.yellow, `DEBUG LOG: Skipping socket ${socket.id} (no user found)`);
+			console.log(color.red, `Skipping socket ${socket.id} (no user found)`);
 			continue;
 		}
 		let blockMsgFlag: boolean = false;
-		const UserByID = getUserByName(AllusersBlocked, clientInfo.user)?.id ?? '';
-		if (UserByID === '') {
-			blockMsgFlag = checkNamePair(list, data.SenderUserID, UserByID) || false;
-		}
+		const UserByID = getUserByName(AllusersBlocked, clientInfo.user) ?? '';
+		if (UserByID === '') return;
+
+
 		const user: string = clientChat.get(socket.id)?.user ?? '';
 		const atUser = `@${user}`;
-		if (atUser !== data.command || atUser === '') {
-			console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command NOT FOUND: '${data.command[0]}' `);
+		if (atUser !== data.command || atUser === '' || data.text === '') {
 			continue;
 		}
-		if (data.text !== '') {
-			if (!blockMsgFlag) {
-				console.log(color.blue, 'Emit message: ', data.command, 'blockMsgFlag: ', blockMsgFlag);
-				// socket.emit('MsgObjectServer', { message: data });
-				console.log(color.yellow, `DEBUG LOG: User: '${atUser}' command FOUND: '${data.command}' `);
-				if (senderSocket) {
-					senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
-				}
+
+		blockMsgFlag = checkNamePair(list, UserID, UserByID.id) || false;
+		console.log(color.green, `USER ID: ${UserID} data.user: ${data.user} blockFlag: ${blockMsgFlag} userName: ${UserByID.name} iD:${UserByID.id}`);
+
+		if (socket.id === sender) {
+			console.log(color.blue, 'sKip Sender ', socket.id);
+			continue;
+		}
+		console.log(color.yellow, `blockFlag=${blockMsgFlag}: Target ${clientInfo.user}`);
+		if (!blockMsgFlag) {
+			console.log(color.blue, 'Emit message: ', data.command, 'blockMsgFlag: ', blockMsgFlag);
+			socket.emit('MsgObjectServer', { message: data });
+			if (senderSocket) {
+				senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
 			}
 		}
-		console.log(color.green, `DEBUG LOG: 'Priv to:', ${data.command} message: ${data.text}`);
 	}
 }

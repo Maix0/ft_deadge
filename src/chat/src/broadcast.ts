@@ -58,6 +58,7 @@ export async function broadcast(fastify: FastifyInstance, data: ClientMessage, s
 			console.log(color.red, 'sKip Sender ', socket.id);
 			continue;
 		}
+		console.log(`BROADCAST blockFlag=${blockMsgFlag} : Target ${clientInfo.user}`);
 		if (!blockMsgFlag) {
 			console.log(color.blue, 'Emit message: ', data.command, 'blockMsgFlag: ', blockMsgFlag);
 			socket.emit('MsgObjectServer', { message: data });

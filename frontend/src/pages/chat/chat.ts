@@ -542,6 +542,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 								};
 								//socket.emit('MsgObjectServer', message);
+								// addMessage(message.command);
 								socket.emit('privMessage', JSON.stringify(message));
     						    // addMessage(JSON.stringify(message));
     						    break;
