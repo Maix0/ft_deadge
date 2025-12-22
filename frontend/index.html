@@ -8,18 +8,23 @@
 </head>
 
 <body class="bg-gray-500 font-sans min-h-screen">
-
 	<!-- Header -->
 	<header
 		class="fixed top-0 left-0 right-0 h-14 bg-gray-800 text-white flex items-center justify-between px-4 shadow-md z-50">
-		<button id="menuBtn" class="flip-btn text-lg font-semibold focus:outline-none">
-			<span class="arrow front">&gt;</span>
-			<span class="arrow back">&lt;</span>
-		</button>
-		<div id="header-title" class="text-white text-lf text-semibold ps-4 shadow-md font-mono"></div>
-		<div class="text-white text-lf ps-4 font-mono"> </div>
+		<div class="flex-1 flex justify-start">
+			<button id="menuBtn" class="flip-btn text-lg font-semibold focus:outline-none">
+				<span class="arrow front">&gt;</span>
+				<span class="arrow back">&lt;</span>
+			</button>
+		</div>
+		<div id="header-title" class="text-white text-lf flex-1 text-center text-semibold ps-4 shadow-md font-mono">
+		</div>
+		<div class="flex-1 ps-4 flex justify-end">
+			<button id="header-profile"
+				class="right-0 px-4 inset-y-0 text-white text-right font-mono border-1 border-orange-500 rounded-3xl bg-orange-500 cursor-pointer shadow-[0_2px_0_0_black] transition-all hover:bg-orange-400 active:bg-orange-200 active:translate-y-[1px] active:shadow-[0_2px_0_0_black]">
+			</button>
+		</div>
 	</header>
-
 	<!-- Sidebar -->
 	<aside id="sidebar"
 		class="fixed top-14 left-0 w-64 h-full bg-gray-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
@@ -33,18 +38,16 @@
 			<a href="/logout" class="hover:bg-gray-700 rounded-md px-3 py-2">🚪 Logout</a>
 		</nav>
 	</aside>
-
-	<div class="fixed top-0 left-0 opacity-40" hidden> <!-- >this is used so tailwind create the class styles... -->
+	<div class="fixed top-0 left-0 opacity-40" hidden>
+		<!-- >this is used so tailwind create the class styles... -->
 	</div>
 	<!-- Overlay -->
 	<div id="overlay"
 		class="fixed top-14 left-0 right-0 bottom-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-30">
 	</div>
-
 	<!-- Main content -->
 	<main class="pt-16 px-6 pb-8 w-full h-full container" id="app">
 	</main>
-
 	<!-- Scripts -->
 	<script type="module" src="/src/pages/"></script>
 	<script type="module" src="/src/carousel"></script>
