@@ -1,6 +1,7 @@
-import type { ClientProfil } from './chat_types';
+import type { ClientMessage, ClientProfil } from './chat_types';
 import { clientChat, color } from './app';
 import { FastifyInstance } from 'fastify';
+import { sendPrivMessage } from './sendPrivMessage';
 
 /**
  * function looks for the user online in the chat
@@ -15,14 +16,43 @@ export function sendInvite(fastify: FastifyInstance, innerHtml: string, profil: 
 	fastify.io.fetchSockets().then((sockets) => {
 		let targetSocket;
 		for (const socket of sockets) {
+			console.log(color.yellow, 'DEBUG LOG: sendInvite Function');
 			const clientInfo: string = clientChat.get(socket.id)?.user || '';
+			console.log(color.green, 'AskingName=', profil.SenderName);
 			targetSocket = socket || null;
 			if (!targetSocket) continue;
-			console.log(color.yellow, 'DEBUG LOG: user online found', profil.user, 'socket', targetSocket.id);
 			if (clientInfo === profil.user) {
 				profil.innerHtml = innerHtml ?? '';
 				if (targetSocket.id) {
-					targetSocket.emit('inviteGame', profil);
+					
+					const data: ClientMessage = {
+						command: `@${clientInfo}`,
+						destination: 'inviteMsg',
+						type: "chat",
+						user: profil.SenderName,
+						token: '',
+						text: ' needs this to work',
+						timestamp: Date.now(),
+						SenderWindowID: socket.id,
+						userID: '', 
+						frontendUserName: '', 
+						frontendUser: '', 
+						SenderUserName: profil.SenderName,
+						SenderUserID: '', 
+						Sendertext: '',
+						innerHtml: innerHtml,
+						
+					};
+					
+					console.log(color.yellow, 'DEBUG LOG: sendInvite Function -> sendPrivMessage :');
+					sendPrivMessage(fastify, data, '');
+				
+
+					// targetSocket.emit('MsgObjectServer', { message: data });
+
+
+					// targetSocket.emit('inviteGame', profil);
+
 				}
 				return;
 			}

@@ -9,7 +9,7 @@ type BlockRelation = {
 	blocker: string;
 };
 
-function checkNamePair(list: BlockRelation[], name1: string, name2: string): (boolean) {
+function  checkNamePair(list: BlockRelation[], name1: string, name2: string): (boolean) {
 	const matches: BlockRelation[] = [];
 	let exists: boolean = false;
 	for (const item of list) {
@@ -46,7 +46,7 @@ function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] 
  */
 
 export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
-
+	
 	const sockets = await fastify.io.fetchSockets();
 	const AllusersBlocked: User[] = fastify.db.getAllUsers() ?? [];
 	const senderSocket = sockets.find(socket => socket.id === sender);
@@ -60,17 +60,20 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		}
 		let blockMsgFlag: boolean = false;
 		const UserByID = getUserByName(AllusersBlocked, clientInfo.user) ?? '';
-		if (UserByID === '') return;
-
-
+		if (UserByID === ''){ 
+			return;
+		}
+		
 		const user: string = clientChat.get(socket.id)?.user ?? '';
 		const atUser = `@${user}`;
+		console.log(color.red, `'DEBUG LOG:'${atUser}' '${data.command}'`)
 		if (atUser !== data.command || atUser === '' || data.text === '') {
+			console.log(color.red, 'DEBUG: atUser !== data.command');
 			continue;
 		}
-
+		
+		console.log(color.green, `USER ID: ${UserID} userName: ${UserByID.name} iD:${UserByID.id}`);
 		blockMsgFlag = checkNamePair(list, UserID, UserByID.id) || false;
-		console.log(color.green, `USER ID: ${UserID} data.user: ${data.user} blockFlag: ${blockMsgFlag} userName: ${UserByID.name} iD:${UserByID.id}`);
 
 		if (socket.id === sender) {
 			console.log(color.blue, 'sKip Sender ', socket.id);
@@ -78,7 +81,7 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		}
 		console.log(color.yellow, `blockFlag=${blockMsgFlag}: Target ${clientInfo.user}`);
 		if (!blockMsgFlag) {
-			console.log(color.blue, 'Emit message: ', data.command, 'blockMsgFlag: ', blockMsgFlag);
+			console.log(color.blue, 'DEBUG Emit message: ', data.command, 'blockMsgFlag: ', blockMsgFlag);
 			socket.emit('MsgObjectServer', { message: data });
 			if (senderSocket) {
 				senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);

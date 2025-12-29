@@ -13,6 +13,7 @@ export type ClientMessage = {
 	SenderUserID: string,
 	timestamp: number,
 	Sendertext: string,
+	innerHtml?: string,
 };
 
 

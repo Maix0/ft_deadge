@@ -340,6 +340,25 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		}
 
 
+
+
+
+
+		if (chatWindow && data.message.destination === "inviteMsg") {
+			const messageElement = document.createElement("div-private");
+			const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+			messageElement.innerHTML = `🎃${data.message.SenderUserName}: ${data.message.innerHtml}`;
+	    	chatWindow.appendChild(messageElement);
+			chatWindow.scrollTop = chatWindow.scrollHeight;
+		}
+
+
+
+
+
+
+
+
 		const MAX_SYSTEM_MESSAGES = 10;
 
 		if (systemWindow && data.message.destination === "system-info") {

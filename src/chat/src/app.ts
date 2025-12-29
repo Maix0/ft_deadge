@@ -334,6 +334,7 @@ async function onReady(fastify: FastifyInstance) {
 
 			const inviteHtml: string = 'invites you to a game ' + setGameLink('');
 			if (clientName !== null) {
+				console.log(`DEBUG LOG: clientName =${clientName}`);
 				// const testuser: User | null = getUserByName(users, profilInvite.user ?? '');
 				// console.log(color.yellow, 'user:', testuser?.name ?? 'Guest');
 				sendInvite(fastify, inviteHtml, profilInvite);
