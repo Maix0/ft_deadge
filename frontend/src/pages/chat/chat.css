@@ -233,24 +233,17 @@ div-private {
   items-center;
 }
 
-.popup-b-clear {
+.popup-b-invite {
   @apply
   absolute 
   bottom-42 
   right-12
 }
 
-.popup-b-invite {
-  @apply
-  absolute 
-  bottom-52 
-  right-12
-}
-
 .popup-b-block {
   @apply
   absolute 
-  bottom-62 
+  bottom-52 
   right-12
 }
 

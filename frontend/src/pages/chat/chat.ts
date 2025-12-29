@@ -1,4 +1,4 @@
-import "./chat.css";
+import './chat.css';
 import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
 import { showError } from "@app/toast";
 import authHtml from './chat.html?raw';
@@ -46,6 +46,8 @@ export type obj =
 	SenderWindowID: string,
 	Sendertext: string,
 };
+
+const MAX_SYSTEM_MESSAGES = 10;
 
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
@@ -215,33 +217,33 @@ async function connected(socket: Socket): Promise<void> {
 		}, 16);
 	};
 		
-async function whoami(socket: Socket) {
-	try {
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		const loggedIn = isLoggedIn();
+// async function whoami(socket: Socket) {
+// 	try {
+// 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+// 		const loggedIn = isLoggedIn();
 
-		const res = (getUser());
-		console.log('loginGuest():', res?.name);
-		if (res) {
-				let user = await updateUser();
-				if (chatWindow) {
-					socket.emit('updateClientName', {
-						oldUser: '',
-						user: user?.name
-					});
-				}
-				if (user === null)
-					return showError('Failed to get user: no user ?');
-				setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
-			} else {
-				showError(`Failed to login: ${res}`);
-			}
+// 		const res = (getUser());
+// 		console.log('loginGuest():', res?.name);
+// 		if (res) {
+// 				let user = await updateUser();
+// 				if (chatWindow) {
+// 					socket.emit('updateClientName', {
+// 						oldUser: '',
+// 						user: user?.name
+// 					});
+// 				}
+// 				if (user === null)
+// 					return showError('Failed to get user: no user ?');
+// 				setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
+// 			} else {
+// 				showError(`Failed to login: ${res}`);
+// 			}
 
-	} catch (e) {
-		console.error("Login error:", e);
-		showError('Failed to login: Unknown error');
-	}
-};
+// 	} catch (e) {
+// 		console.error("Login error:", e);
+// 		showError('Failed to login: Unknown error');
+// 	}
+// };
 
 let count = 0;
 function incrementCounter(): number {
@@ -340,26 +342,13 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		}
 
 
-
-
-
-
 		if (chatWindow && data.message.destination === "inviteMsg") {
 			const messageElement = document.createElement("div-private");
 			const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-			messageElement.innerHTML = `🎃${data.message.SenderUserName}: ${data.message.innerHtml}`;
+			messageElement.innerHTML = `🏓${data.message.SenderUserName}: ${data.message.innerHtml}`;
 	    	chatWindow.appendChild(messageElement);
 			chatWindow.scrollTop = chatWindow.scrollHeight;
 		}
-
-
-
-
-
-
-
-
-		const MAX_SYSTEM_MESSAGES = 10;
 
 		if (systemWindow && data.message.destination === "system-info") {
     		const messageElement = document.createElement("div");
@@ -380,21 +369,21 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		profil.SenderName = getUser()?.name ?? "";
 		openProfilePopup(profil);
 		socket.emit('isBlockdBtn', profil);
-		console.log(`DEBUG LOG: userId:${profil.userID}: senderID${profil.SenderID}' senderID:${getUser()?.id}`);
-		console.log(`DEBUG LOG: user:${profil.user}: sender:${profil.SenderName}' senderID:${getUser()?.name}`);
+		// console.log(`DEBUG LOG: userId:${profil.userID}: senderID${profil.SenderID}' senderID:${getUser()?.id}`);
+		// console.log(`DEBUG LOG: user:${profil.user}: sender:${profil.SenderName}' senderID:${getUser()?.name}`);
 		socket.emit('check_Block_button', profil);
 		actionBtnPopUpClear(profil, socket);
 		actionBtnPopUpInvite(profil, socket);
 		actionBtnPopUpBlock(profil, socket);
 	});
 
-	socket.on('inviteGame', (invite: ClientProfil) => {
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		const messageElement = document.createElement("div");
-    	messageElement.innerHTML =`🏓${invite.SenderName}:  ${invite.innerHtml}`;
-    	chatWindow.appendChild(messageElement);
-		chatWindow.scrollTop = chatWindow.scrollHeight;
-	});
+	// socket.on('inviteGame', (invite: ClientProfil) => {
+	// 	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+	// 	const messageElement = document.createElement("div");
+    // 	messageElement.innerHTML =`🏓${invite.SenderName}:  ${invite.innerHtml}`;
+    // 	chatWindow.appendChild(messageElement);
+	// 	chatWindow.scrollTop = chatWindow.scrollHeight;
+	// });
 
 
 	socket.on('blockUser', (blocked: ClientProfil) => {
@@ -413,9 +402,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		const blockUserBtn = document.querySelector("#popup-b-block");
 		if (blockUserBtn) {
 
-			console.log(' =================== >>> User State:', data.userState);
-			console.log(' =================== >>> UserTarget:', data.userTarget);
-			console.log(' =================== >>> By:', data.by);
+			// console.log(' =================== >>> User State:', data.userState);
+			// console.log(' =================== >>> UserTarget:', data.userTarget);
+			// console.log(' =================== >>> By:', data.by);
 			let message = "";
 			if (data.userState === "block") {message = "un-block", blockMessage = true} else{message = "block", blockMessage = false}
 			blockUserBtn.textContent = message;
@@ -427,7 +416,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		quitChat(socket);
 	});
 
-	socket.on('privMessageCopy', (message) => {
+	socket.on('privMessageCopy', (message: string) => {
 		addMessage(message);
 	})
 
@@ -485,8 +474,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
 			const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
 			const clearText = document.getElementById('b-clear') as HTMLButtonElement;
-			const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
-			const bconnected = document.getElementById('b-help') as HTMLButtonElement;
+			// const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
+			// const bconnected = document.getElementById('b-help') as HTMLButtonElement;
 			const username = document.getElementById('username') as HTMLDivElement;
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 			const bquit = document.getElementById('b-quit') as HTMLDivElement;
@@ -532,9 +521,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 							case '@msg':
 								broadcastMsg(socket, msgCommand);
 								break;
-    						case '@who':
-								whoami(socket);
-								break;
+    						// case '@who':
+							// 	whoami(socket);
+							// 	break;
 							case '@profil':
 								getProfil(socket, msgCommand[1]);
 								break;
@@ -601,9 +590,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			// Whoami button to display user name					addMessage(msgCommand[0]);
 
-			bwhoami?.addEventListener('click', async () => {
-				whoami(socket);
-			});
+			// bwhoami?.addEventListener('click', async () => {
+			// 	whoami(socket);
+			// });
 		}
 	}
 	
