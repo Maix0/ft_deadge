@@ -31,7 +31,7 @@ export function sendInvite(fastify: FastifyInstance, innerHtml: string, profil: 
 						type: "chat",
 						user: profil.SenderName,
 						token: '',
-						text: ' needs this to work',
+						text: ' needs some text to work',
 						timestamp: Date.now(),
 						SenderWindowID: socket.id,
 						userID: '', 
