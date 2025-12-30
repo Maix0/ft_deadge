@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: rparodi <rparodi@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/11/12 11:05:05 by rparodi           #+#    #+#              #
-#    Updated: 2025/12/12 14:55:40 by maiboyer         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 # Colors
 GREEN     = \033[32m
 BLACK     = \033[30m
@@ -27,7 +15,6 @@ UNDERLINE = \033[4m
 PROJECT = ft_transcendence
 BASE_PATH=$(shell realpath .)
 ECHO = /usr/bin/env echo
-
 
 all:
 	@$(MAKE) --no-print-directory header
@@ -115,14 +102,15 @@ npm@eslint:
 	(cd ./src/ && npx pnpm run eslint)
 
 npm@install:
-	(cd ./src/ && npx pnpm install)
+	(cd ./src/ && npx pnpm install --frozen-lockfile)
+	(cd ./frontend/ && npx pnpm install --frozen-lockfile)
 
 npm@build:
 	(cd ./src/ && npx pnpm run build)
 
 npm@update:
-	(cd ./src/ && rm -rf ./node_modules/ && npx pnpm update -r --workspace)
-	(cd ./frontend/ && rm -rf ./node_modules/ && npx pnpm update)
+	(cd ./src/ && rm -rf ./node_modules/ && npx pnpm install --lockfile-only  && npx pnpm install --frozen-lockfile)
+	(cd ./frontend/ && rm -rf ./node_modules/ && npx pnpm install --lockfile-only && npx pnpm install --frozen-lockfile)
 
 npm@openapi: openapi.jar
 	@(cd ./src/ && npx pnpm run --if-present -r build:openapi)

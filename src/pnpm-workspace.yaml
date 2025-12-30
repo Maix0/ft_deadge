@@ -9,4 +9,3 @@ onlyBuiltDependencies:
   - core-js
   - esbuild
   - protobufjs
-  - sharp
