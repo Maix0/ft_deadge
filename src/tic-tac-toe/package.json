@@ -27,9 +27,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.19.3",
-    "fastify-socket.io": "^5.1.0",
     "rollup-plugin-node-externals": "^8.1.2",
-    "socket.io": "^4.8.1",
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
