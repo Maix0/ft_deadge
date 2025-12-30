@@ -69,7 +69,7 @@ export type ProviderMap = T.Static<typeof ProviderMap>;
 
 export type ProviderMapFile = T.Static<typeof ProviderMapFile>;
 async function buildProviderMap(): Promise<ProviderMap> {
-	const providerFile = process.env.PROVIDER_FILE;
+	const providerFile = process.env.PROVIDER_FILE ?? '/config/providers.toml';
 	if (isNullish(providerFile)) return {};
 	try {
 		await access(providerFile, fsConstants.F_OK | fsConstants.R_OK);
