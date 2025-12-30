@@ -5,22 +5,41 @@ networks:
     driver: bridge
 
 services:
+  ##########
+  #  DEPS  #
+  ##########
+  
+  pnpm_base:
+    build:
+      context: ./src
+      dockerfile: '@dockerfiles/pnpm.Dockerfile'
+    restart: on-failure:3
+
+  pnpm_deps:
+    build:
+      context: ./src
+      dockerfile: '@dockerfiles/deps.Dockerfile'
+      additional_contexts:
+        pnpm_base: "service:pnpm_base"
+    restart: on-failure:3
+
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      additional_contexts:
+        pnpm_base: "service:pnpm_base"
     container_name: app-frontend
     restart: on-failure:3
-    networks:
-      - app
-    volumes:
-      - static-volume:/volumes/static
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "{{.Name}}"
+
+  ############
+  # SERVICES #
+  ############
 
   nginx:
-    build: ./nginx
+    build: 
+      context: ./nginx
+      additional_contexts:
+        frontend: "service:frontend"
     container_name: app-nginx
     restart: always
     networks:
@@ -41,15 +60,14 @@ services:
         gelf-address: "udp://127.0.0.1:12201"
         tag: "{{.Name}}"
 
-  ###############
-  #   SERVICE   #
-  ###############
-
   auth:
     build:
       context: ./src/
       args:
         - SERVICE=auth
+      additional_contexts:
+        pnpm_base: "service:pnpm_base"
+        pnpm_deps: "service:pnpm_deps"
     container_name: app-auth
     restart: always
     networks:
@@ -74,6 +92,9 @@ services:
        context: ./src/
        args:
          - SERVICE=tic-tac-toe
+       additional_contexts:
+         pnpm_base: "service:pnpm_base"
+         pnpm_deps: "service:pnpm_deps"
      container_name: app-tic-tac-toe
      restart: always
      networks:
@@ -97,6 +118,9 @@ services:
       context: ./src/
       args:
         - SERVICE=chat
+      additional_contexts:
+        pnpm_base: "service:pnpm_base"
+        pnpm_deps: "service:pnpm_deps"
     container_name: app-chat 
     restart: always
     networks:
@@ -119,6 +143,9 @@ services:
       context: ./src/
       args:
         - SERVICE=user
+      additional_contexts:
+        pnpm_base: "service:pnpm_base"
+        pnpm_deps: "service:pnpm_deps"
     container_name: app-user
     restart: always
     networks:

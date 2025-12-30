@@ -6,7 +6,6 @@ DOCKER_SERVICE=        \
 			  auth     \
 			  chat     \
 			  tic-tac-toe \
-			  frontend \
 			  nginx    \
 			  user     \
 			  
