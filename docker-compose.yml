@@ -150,7 +150,7 @@ services:
     container_name: app-pong
     restart: always
     networks:
-      - transcendance-network
+      - app
     volumes:
       - sqlite-volume:/volumes/database
       - static-volume:/volumes/static
