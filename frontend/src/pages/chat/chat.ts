@@ -48,6 +48,7 @@ export type obj =
 };
 
 const MAX_SYSTEM_MESSAGES = 10;
+let inviteMsgFlag: boolean = false;
 
 // get the name of the machine used to connect
 const machineHostName = window.location.hostname;
@@ -217,34 +218,6 @@ async function connected(socket: Socket): Promise<void> {
 		}, 16);
 	};
 		
-// async function whoami(socket: Socket) {
-// 	try {
-// 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-// 		const loggedIn = isLoggedIn();
-
-// 		const res = (getUser());
-// 		console.log('loginGuest():', res?.name);
-// 		if (res) {
-// 				let user = await updateUser();
-// 				if (chatWindow) {
-// 					socket.emit('updateClientName', {
-// 						oldUser: '',
-// 						user: user?.name
-// 					});
-// 				}
-// 				if (user === null)
-// 					return showError('Failed to get user: no user ?');
-// 				setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
-// 			} else {
-// 				showError(`Failed to login: ${res}`);
-// 			}
-
-// 	} catch (e) {
-// 		console.error("Login error:", e);
-// 		showError('Failed to login: Unknown error');
-// 	}
-// };
-
 let count = 0;
 function incrementCounter(): number {
 	count += 1;
@@ -388,13 +361,14 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	socket.on('blockUser', (blocked: ClientProfil) => {
 		let icon = '⛔';
-
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		const messageElement = document.createElement("div");
-		if (`${blocked.text}` === 'I have un-blocked you' ) {icon = '💚'};
-    	messageElement.innerText =`${icon}${blocked.SenderName}:  ${blocked.text}`;
-    	chatWindow.appendChild(messageElement);
-		chatWindow.scrollTop = chatWindow.scrollHeight;
+		if (inviteMsgFlag) {
+			const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
+			const messageElement = document.createElement("div");
+			if (`${blocked.text}` === 'I have un-blocked you' ) {icon = '💚'};
+    		messageElement.innerText =`${icon}${blocked.SenderName}:  ${blocked.text}`;
+    		chatWindow.appendChild(messageElement);
+			chatWindow.scrollTop = chatWindow.scrollHeight;
+		}
 	});
 
 
@@ -521,9 +495,13 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 							case '@msg':
 								broadcastMsg(socket, msgCommand);
 								break;
-    						// case '@who':
-							// 	whoami(socket);
-							// 	break;
+    						case '@notify':
+								if (inviteMsgFlag === false) {
+									inviteMsgFlag = true;
+								} else {
+									inviteMsgFlag = false;
+								}
+								break;
 							case '@profil':
 								getProfil(socket, msgCommand[1]);
 								break;
