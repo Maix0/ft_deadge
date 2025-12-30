@@ -24,29 +24,29 @@ export function sendInvite(fastify: FastifyInstance, innerHtml: string, profil: 
 			if (clientInfo === profil.user) {
 				profil.innerHtml = innerHtml ?? '';
 				if (targetSocket.id) {
-					
+
 					const data: ClientMessage = {
 						command: `@${clientInfo}`,
 						destination: 'inviteMsg',
-						type: "chat",
+						type: 'chat',
 						user: profil.SenderName,
 						token: '',
 						text: ' needs some text to work',
 						timestamp: Date.now(),
 						SenderWindowID: socket.id,
-						userID: '', 
-						frontendUserName: '', 
-						frontendUser: '', 
+						userID: '',
+						frontendUserName: '',
+						frontendUser: '',
 						SenderUserName: profil.SenderName,
-						SenderUserID: '', 
+						SenderUserID: '',
 						Sendertext: '',
 						innerHtml: innerHtml,
-						
+
 					};
-					
+
 					console.log(color.yellow, 'DEBUG LOG: sendInvite Function -> sendPrivMessage :');
 					sendPrivMessage(fastify, data, '');
-				
+
 
 					// targetSocket.emit('MsgObjectServer', { message: data });
 
