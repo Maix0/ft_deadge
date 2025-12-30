@@ -13,7 +13,7 @@ import { sendGameLinkToChatService } from './sendGameLinkToChatService';
  */
 export function nextGame_SocketListener(fastify: FastifyInstance, socket: Socket) {
 	socket.on('nextGame', () => {
-		const link = createNextGame();
+		const link: string = createNextGame();
 		const game: Promise<string> = sendGameLinkToChatService(link);
 		broadcastNextGame(fastify, game);
 	});
