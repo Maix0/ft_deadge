@@ -1,11 +1,9 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 
-import { isNullish } from '@shared/utils';
 import { Database as DbImpl } from './mixin/_base';
 import { IUserDb, UserImpl } from './mixin/user';
 import { IBlockedDb, BlockedImpl } from './mixin/blocked';
-
 
 Object.assign(DbImpl.prototype, UserImpl);
 Object.assign(DbImpl.prototype, BlockedImpl);
@@ -23,18 +21,18 @@ let dbAdded = false;
 
 export const useDatabase = fp<FastifyPluginAsync>(async function(
 	f: FastifyInstance,
-	_options: object) {
+	_options: object,
+) {
 	void _options;
-	if (dbAdded) { return; }
+	if (dbAdded) {
+		return;
+	}
 	dbAdded = true;
-	const path = process.env.DATABASE_DIR;
-	if (isNullish(path)) {
-		f.log.fatal('env `DATABASE_DIR` not defined');
-		throw 'env `DATABASE_DIR` not defined';
-	 }
+	const path = process.env.DATABASE_DIR ?? '/volumes/database';
 	const db: Database = new DbImpl(`${path}/database.db`) as Database;
-	if (!f.hasDecorator('db')) { f.decorate('db', db); }
+	if (!f.hasDecorator('db')) {
+		f.decorate('db', db);
+	}
 });
 
 export default useDatabase;
-
