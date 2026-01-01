@@ -1,5 +1,7 @@
 // import type { TicTacToeData } from '@shared/database/mixin/tictactoe';
 
+import { UserId } from '@shared/database/mixin/user';
+
 // Represents the possible states of a cell on the board.
 // `null` means that the cell is empty.
 type CellState = 'O' | 'X' | null
@@ -9,31 +11,35 @@ export class TTC {
 	public board: CellState[] = Array(9).fill(null);
 	private currentPlayer: 'O' | 'X' = 'X';
 
+	public gameUpdate: NodeJS.Timeout | null = null;
+
 	private changePlayer() {
 		this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
 	}
 
+	public constructor(public readonly playerX: UserId, public readonly playerO: UserId) { }
+
 	// Analyzes the current board to determine if the game has ended.
-	private checkState(): 'winX' | 'winO' | 'draw' | 'ongoing' {
+	public checkState(): 'winX' | 'winO' | 'draw' | 'ongoing' {
 		const checkRow = (row: number): ('X' | 'O' | null) => {
-			if (this.board[row * 3] === null) {return null;}
-			if (this.board[row * 3] === this.board[row * 3 + 1] && this.board[row * 3 + 1] === this.board[row * 3 + 2]) {return this.board[row * 3];}
+			if (this.board[row * 3] === null) { return null; }
+			if (this.board[row * 3] === this.board[row * 3 + 1] && this.board[row * 3 + 1] === this.board[row * 3 + 2]) { return this.board[row * 3]; }
 			return null;
 		};
 
 		const checkCol = (col: number): ('X' | 'O' | null) => {
 			if (this.board[col] === null) return null;
 
-			if (this.board[col] === this.board[col + 3] && this.board[col + 3] === this.board[col + 6]) {return this.board[col];}
+			if (this.board[col] === this.board[col + 3] && this.board[col + 3] === this.board[col + 6]) { return this.board[col]; }
 			return null;
 		};
 
 		const checkDiag = (): ('X' | 'O' | null) => {
 			if (this.board[4] === null) return null;
 
-			if (this.board[0] === this.board[4] && this.board[4] === this.board[8]) {return this.board[4];}
+			if (this.board[0] === this.board[4] && this.board[4] === this.board[8]) { return this.board[4]; }
 
-			if (this.board[2] === this.board[4] && this.board[4] === this.board[6]) {return this.board[4];}
+			if (this.board[2] === this.board[4] && this.board[4] === this.board[6]) { return this.board[4]; }
 			return null;
 		};
 
@@ -46,7 +52,7 @@ export class TTC {
 		if (col !== null) return `win${col}`;
 		if (diag !== null) return `win${diag}`;
 
-		if (this.board.filter(c => c === null).length === 0) {return 'draw';}
+		if (this.board.filter(c => c === null).length === 0) { return 'draw'; }
 		return 'ongoing';
 	}
 
@@ -59,8 +65,14 @@ export class TTC {
 	// Attempts to place the current player's mark on the specified cell.
 	// @param idx - The index of the board (0-8) to place the mark.
 	// @returns The resulting game state, or `invalidMove` if the move is illegal.
-	public makeMove(idx: number): 'winX' | 'winO' | 'draw' | 'ongoing' | 'invalidMove' {
-		if (this.isGameOver) {
+	public makeMove(playerId: UserId, idx: number): 'success' | 'invalidMove' {
+		const player = playerId == this.playerX ? 'X' : (
+			playerId == this.playerO ? 'O' : null
+		);
+
+		if (player === null) return 'invalidMove';
+
+		if (player !== this.currentPlayer || this.isGameOver) {
 			return 'invalidMove';
 		}
 		if (idx < 0 || idx >= this.board.length) {
@@ -77,7 +89,9 @@ export class TTC {
 		if (result !== 'ongoing') {
 			this.isGameOver = true;
 		}
+		return 'success';
 
-		return result;
 	}
+
+	getCurrentState(): 'X' | 'O' { return this.currentPlayer; };
 }

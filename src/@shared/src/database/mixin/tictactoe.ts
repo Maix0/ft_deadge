@@ -1,10 +1,11 @@
 import type { Database } from './_base';
+import { UserId } from './user';
 // import { UserId } from './user';
 
 // describe every function in the object
 export interface ITicTacToeDb extends Database {
-	setGameOutcome(this: ITicTacToeDb, id: GameId): void,
-// 	asyncFunction(id: TemplateId): Promise<TemplateData | undefined>,
+	setGameOutcome(this: ITicTacToeDb, id: GameId, player1: UserId, player2: UserId, outcome: string): void,
+	// 	asyncFunction(id: TemplateId): Promise<TemplateData | undefined>,
 };
 
 export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
@@ -25,13 +26,13 @@ export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
 	 *
 	 * @returns what does the function return ?
 	 */
-//     async asyncFunction(this: ITemplateDb, id: TemplateId): Promise<TemplateData | undefined> {
-//         void id;
-//         return undefined;
-//     },
+	//     async asyncFunction(this: ITemplateDb, id: TemplateId): Promise<TemplateData | undefined> {
+	//         void id;
+	//         return undefined;
+	//     },
 };
 
-export type GameId = number & { readonly __brand: unique symbol };
+export type GameId = string & { readonly __brand: unique symbol };
 
 export type TicTacToeData = {
 	readonly id: GameId;
