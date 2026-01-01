@@ -1,8 +1,9 @@
 import { addRoute, type RouteHandlerReturn } from "@app/routing";
 import tttPage from "./ttt.html?raw";
-import { showError, showInfo, showSuccess } from "@app/toast";
+import { showError, showInfo, showSuccess, showWarn } from "@app/toast";
 import { io } from "socket.io-client";
-import type { CSocket as Socket } from "./socket";
+import type { GameUpdate, CSocket as Socket } from "./socket";
+import { updateUser } from "@app/auth";
 
 
 declare module 'ft_state' {
@@ -22,6 +23,8 @@ export function getSocket(): Socket {
 	return window.__state.tttSock;
 }
 
+type CurrentGameInfo = GameUpdate & { lastState: GameUpdate['gameState'] | null };
+
 // Route handler for the Tic-Tac-Toe page.
 // Instantiates the game logic and binds UI events.
 async function handleTTT(): Promise<RouteHandlerReturn> {
@@ -33,10 +36,17 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			if (!app) {
 				return;
 			}
+			let user = await updateUser();
+			if (user === null)
+				return;
+			let curGame: CurrentGameInfo | null = null;
 
 			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
-			socket.on('newGame', (e) => showInfo(`newGame: ${e}`));
+			socket.on('newGame', (gameState) => {
+				showInfo(`newGame: ${gameState.gameId}`)
+				curGame = { ...gameState, lastState: null };
+			});
 			socket.emit('enqueue');
 
 			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
@@ -48,27 +58,59 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				});
 			};
 
+			const makeEnd = (type: 'win' | 'conceded' | 'draw', player: 'X' | 'O') => {
+				if (type === 'draw') {
+					showWarn('It\'s a draw !')
+				}
+				// if the other player conceded, switch the side so you won
+				if (type === 'conceded') {
+					player = player === 'X' ? 'O' : 'X';
+					const youWin = (curGame?.playerX === user.id);
+					if (youWin)
+						showSuccess('The other player Conceded !');
+					else
+						showError('You Conceded :(');
+				}
+
+				if (type === 'win') {
+					const youWin = (curGame?.playerX === user.id);
+					if (youWin)
+						showSuccess('You won the game !');
+					else
+						showError('You lost the game :(');
+				}
+			};
+
+			socket.on('gameEnd', () => {
+				curGame = null;
+				socket.emit('enqueue');
+				showInfo('Game is finished, enqueuing directly')
+			})
+
 			socket.on('gameBoard', (u) => {
+				if (curGame === null) {
+					return showError('Got game State, but no in a game ?');
+				}
 				updateUI(u.boardState);
 
 				if (u.gameState && u.gameState !== "ongoing") {
 					grid?.classList.add("pointer-events-none");
-					if (u.gameState === "winX") {
-						showSuccess("X won !");
-					}
-					if (u.gameState === "winO") {
-						showSuccess("O won !");
-					}
-					if (u.gameState === "draw") {
-						showInfo("Draw !");
-					}
-					if (u.gameState === 'concededX' )
-					{
-						showInfo("concededX");
-					}
-					if (u.gameState === 'concededO' )
-					{
-						showInfo("concededO");
+
+					if (u.gameState !== curGame.lastState) {
+						curGame.lastState = u.gameState;
+						switch (u.gameState) {
+							case 'winX':
+							case 'winO':
+								makeEnd('win', u.gameState[3] as 'X' | 'O');
+								break;
+							case 'concededX':
+							case 'concededO':
+								makeEnd('conceded', u.gameState[8] as 'X' | 'O');
+								break;
+							case 'draw':
+								makeEnd('draw', 'X');
+								break;
+						}
 					}
 				}
 			});
