@@ -20,21 +20,22 @@ export type GameUpdate = {
 export type GameMove = {
 	index: number;
 }
-export type GameMoveResponse = 'success' | 'invalidMove' | 'unknownError';
 
 export interface ClientToServer {
 	enqueue: () => void;
 	dequeue: () => void;
 	debugInfo: () => void;
-	gameMove: (up: GameMove) => GameMoveResponse;
+	gameMove: (up: GameMove) => void;
+	connectedToGame: (gameId: string) => void;
 };
 
 export interface ServerToClient {
 	forceDisconnect: (reason: string) => void;
 	queueEvent: (msg: 'registered' | 'unregistered') => void;
 	updateInformation: (info: UpdateInfo) => void,
-	newGame: (gameId: string) => void,
+	newGame: (initState: GameUpdate) => void,
 	gameBoard: (state: GameUpdate) => void,
+	gameEnd: () => void;
 };
 
 export type SSocket = Socket<ClientToServer, ServerToClient>;
