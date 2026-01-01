@@ -1,38 +1,32 @@
 import { addRoute, type RouteHandlerReturn } from "@app/routing";
 import tttPage from "./ttt.html?raw";
 import { showError, showInfo, showSuccess } from "@app/toast";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
+import type { CSocket as Socket } from "./socket";
 
-// get the name of the machine used to connect
-const machineHostName = window.location.hostname;
-console.log(
-	"connect to login at https://" + machineHostName + ":8888/app/login",
-);
 
-export let __socket: Socket | undefined = undefined;
+declare module 'ft_state' {
+	interface State {
+		tttSock?: Socket;
+	}
+}
+
 document.addEventListener("ft:pageChange", () => {
-	if (__socket !== undefined) __socket.close();
-	__socket = undefined;
-	console.log("Page changed");
+	if (window.__state.tttSock !== undefined) window.__state.tttSock.close();
+	window.__state.tttSock = undefined;
 });
 
 export function getSocket(): Socket {
-	let addressHost = `wss://${machineHostName}:8888`;
-	// let addressHost = `wss://localhost:8888`;
-	if (__socket === undefined)
-		__socket = io(addressHost, {
-			path: "/api/ttt/socket.io/",
-			secure: true,
-			transports: ["websocket"],
-		});
-	return __socket;
+	if (window.__state.tttSock === undefined)
+		window.__state.tttSock = io(window.location.host, { path: "/api/ttt/socket.io/" }) as any as Socket;
+	return window.__state.tttSock;
 }
 
 // Route handler for the Tic-Tac-Toe page.
 // Instantiates the game logic and binds UI events.
 async function handleTTT(): Promise<RouteHandlerReturn> {
 	const socket: Socket = getSocket();
-
+	void socket;
 	return {
 		html: tttPage,
 		postInsert: async (app) => {
@@ -40,10 +34,12 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				return;
 			}
 
-			const cells =
-				app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
-			const restartBtn =
-				app.querySelector<HTMLButtonElement>("#ttt-restart-btn");
+			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
+			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
+			socket.on('newGame', (e) => showInfo(`newGame: ${e}`));
+			socket.emit('enqueue');
+
+			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
 			const grid = app.querySelector(".ttt-grid"); // Not sure about this one
 
 			const updateUI = (boardState: (string | null)[]) => {
@@ -52,40 +48,35 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				});
 			};
 
-			socket.on("gameState", (data) => {
-				updateUI(data.board);
+			socket.on('gameBoard', (u) => {
+				updateUI(u.boardState);
 
-				if (data.lastResult && data.lastResult !== "ongoing") {
+				if (u.gameState && u.gameState !== "ongoing") {
 					grid?.classList.add("pointer-events-none");
-					if (data.lastResult === "winX") {
+					if (u.gameState === "winX") {
 						showSuccess("X won !");
 					}
-					if (data.lastResult === "winO") {
+					if (u.gameState === "winO") {
 						showSuccess("O won !");
 					}
-					if (data.lastResult === "draw") {
+					if (u.gameState === "draw") {
 						showInfo("Draw !");
 					}
+					if (u.gameState === 'concededX' )
+					{
+						showInfo("concededX");
+					}
+					if (u.gameState === 'concededO' )
+					{
+						showInfo("concededO");
+					}
 				}
-
-				if (data.reset) {
-					grid?.classList.remove("pointer-events-none");
-					showInfo("Game Restarted");
-				}
-			});
-
-			socket.on("error", (msg) => {
-				showError(msg);
 			});
 
 			cells?.forEach(function(c, idx) {
 				c.addEventListener("click", () => {
-					socket.emit("makeMove", idx);
+					socket.emit("gameMove", { index: idx });
 				});
-			});
-
-			restartBtn?.addEventListener("click", () => {
-				socket.emit("resetGame");
 			});
 		},
 	};

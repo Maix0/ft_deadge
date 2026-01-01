@@ -1,4 +1,4 @@
-import { TTC } from './game';
+// import { TTC } from './game';
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fastifyFormBody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
@@ -7,6 +7,8 @@ import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
 import * as utils from '@shared/utils';
 import { Server } from 'socket.io';
+import { State, createState } from './state';
+import { ClientToServer, ServerToClient } from './socket';
 
 declare const __SERVICE_NAME: string;
 
@@ -36,11 +38,10 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	void fastify.register(fastifyFormBody, {});
 	void fastify.register(fastifyMultipart, {});
 
-	const game = new TTC();
-
 	fastify.ready((err) => {
 		if (err) throw err;
-		onReady(fastify, game);
+		onReady(fastify);
+		createState(fastify);
 	});
 };
 export default app;
@@ -48,53 +49,13 @@ export default app;
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
 	interface FastifyInstance {
-		io: Server<{
-			hello: (message: string) => string;
-			// idk you put something
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			gameState: any;
-			makeMove: (idx: number) => void;
-			resetGame: () => void;
-			error: string,
-		}>;
+		io: Server<ClientToServer, ServerToClient>;
 	}
 }
 
-async function onReady(fastify: FastifyInstance, game: TTC) {
+async function onReady(fastify: FastifyInstance) {
 	fastify.io.on('connection', (socket) => {
 		fastify.log.info(`Client connected: ${socket.id}`);
-
-		socket.emit('gameState', {
-			board: game.board,
-			turn: game.currentPlayer,
-			gameOver: game.isGameOver,
-		});
-
-		socket.on('makeMove', (idx: number) => {
-			const result = game.makeMove(idx);
-
-			if (result === 'invalidMove') {
-				socket.emit('error', 'Invalid Move');
-			}
-			else {
-				if (result !== 'ongoing') {
-					fastify.db.setGameOutcome('011001', 'player1', 'player2', result);
-				}
-				fastify.io.emit('gameState', {
-					board: game.board,
-					turn: game.currentPlayer,
-					lastResult: result,
-				});
-			}
-		});
-
-		socket.on('resetGame', () => {
-			game.reset();
-			fastify.io.emit('gameState', {
-				board: game.board,
-				turn: game.currentPlayer,
-				reset: true,
-			});
-		});
+		State.registerUser(socket);
 	});
 }
