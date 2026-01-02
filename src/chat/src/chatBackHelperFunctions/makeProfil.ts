@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import type { ClientProfil } from './chat_types';
+import type { ClientProfil } from '../chat_types';
 import type { User } from '@shared/database/mixin/user';
 import { getUserByName } from './getUserByName';
 import { Socket } from 'socket.io';

@@ -1,4 +1,4 @@
-import { __socket } from './chat';
+import { __socket } from '../chat';
 import { updateUser } from "@app/auth";
 
 export async function windowStateHidden() {		

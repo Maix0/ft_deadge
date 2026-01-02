@@ -1,4 +1,4 @@
-import type { ClientProfil } from './types_front';
+import type { ClientProfil } from '../types_front';
 
 export async function openProfilePopup(profil: ClientProfil) {
 	const modalname = document.getElementById("modal-name") ?? null;

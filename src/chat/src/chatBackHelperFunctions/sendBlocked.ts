@@ -1,5 +1,5 @@
-import type { ClientProfil } from './chat_types';
-import { clientChat } from './app';
+import type { ClientProfil } from '../chat_types';
+import { clientChat } from '../app';
 import { FastifyInstance } from 'fastify';
 
 /**

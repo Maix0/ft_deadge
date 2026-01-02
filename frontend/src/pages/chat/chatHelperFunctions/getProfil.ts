@@ -19,6 +19,5 @@ export function getProfil(socket: Socket, user: string) {
 			timestamp: Date.now(),
 			SenderWindowID: socket.id,
 		};
-    	// addMessage(JSON.stringify(profil));
 		socket.emit('profilMessage', JSON.stringify(profil));
 }
