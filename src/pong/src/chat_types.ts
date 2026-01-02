@@ -9,15 +9,15 @@ export type ClientMessage = {
 export type ClientProfil = {
 	command: string,
 	destination: string,
-   	type: string,
+	type: string,
 	user: string,
 	loginName: string,
 	userID: string,
 	text: string,
 	timestamp: number,
-	SenderWindowID:string,
+	SenderWindowID: string,
 	SenderName: string,
-    Sendertext: string,
-    innerHtml?: string,
+	Sendertext: string,
+	innerHtml?: string,
 
 };

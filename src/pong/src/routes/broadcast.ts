@@ -2,14 +2,11 @@ import { FastifyPluginAsync } from 'fastify';
 import { Static, Type } from 'typebox';
 import { broadcast } from '../broadcast';
 
-
-
 export const PongReq = Type.Object({
 	message: Type.String(),
 });
 
 export type PongReq = Static<typeof PongReq>;
-
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	fastify.post<{ Body: PongReq }>(
@@ -37,9 +34,6 @@ export default route;
  *
  *  send message info to the fronatend via the route '/api/pong/broadcast'
  */
-
-
-
 
 // const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 // 	fastify.post('/api/chat/broadcast', {
