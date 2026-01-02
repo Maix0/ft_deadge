@@ -1,5 +1,5 @@
 import type { ClientProfil } from './chat_types';
-import { clientChat, color } from './app';
+import { clientChat } from './app';
 import { FastifyInstance } from 'fastify';
 
 /**
@@ -9,21 +9,18 @@ import { FastifyInstance } from 'fastify';
  * @param profil
  */
 
-export function sendBlocked(fastify: FastifyInstance, blockedMessage: string, profil: ClientProfil) {
-	fastify.io.fetchSockets().then((sockets) => {
-		let targetSocket;
-		for (const socket of sockets) {
-			const clientInfo: string = clientChat.get(socket.id)?.user || '';
-			if (clientInfo === profil.user) {
-				console.log(color.yellow, 'DEBUG LOG: User found online to block:', profil.user);
-				targetSocket = socket || '';
-				break;
-			}
+export async function sendBlocked(fastify: FastifyInstance, blockedMessage: string, profil: ClientProfil) {
+	const sockets = await fastify.io.fetchSockets();
+	let targetSocket;
+	for (const socket of sockets) {
+		const clientInfo: string = clientChat.get(socket.id)?.user || '';
+		if (clientInfo === profil.user) {
+			targetSocket = socket ?? null;
+			break;
 		}
-		profil.text = blockedMessage ?? '';
-		// console.log(color.red, 'DEBUG LOG:',profil.Sendertext);
-		if (targetSocket) {
-			targetSocket.emit('blockUser', profil);
-		}
-	});
+	}
+	profil.text = blockedMessage ?? '';
+	if (targetSocket) {
+		targetSocket.emit('blockUser', profil);
+	}
 }
