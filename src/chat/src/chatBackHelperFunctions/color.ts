@@ -1,4 +1,3 @@
-// colors for console.log
 export const color = {
 	red: '\x1b[31m',
 	green: '\x1b[32m',

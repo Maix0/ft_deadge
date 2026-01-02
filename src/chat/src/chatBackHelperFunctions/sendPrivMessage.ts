@@ -1,5 +1,5 @@
-import type { ClientMessage } from './chat_types';
-import { clientChat, color } from './app';
+import type { ClientMessage } from '../chat_types';
+import { clientChat } from '../app';
 import { FastifyInstance } from 'fastify';
 import { getUserByName } from './getUserByName';
 import type { User } from '@shared/database/mixin/user';
@@ -20,7 +20,6 @@ function checkNamePair(list: BlockRelation[], name1: string, name2: string): (bo
 			  return true;;
 			}
 		}
-		console.log(color.red, `'RETURN FLAG CheckNamePair ${exists}' item: ${name1}  item2: ${name2}`);
 	}
 	return exists;
 }
@@ -55,7 +54,6 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
 		const clientInfo = clientChat.get(socket.id);
 		if (!clientInfo?.user) {
-			console.log(color.red, `Skipping socket ${socket.id} (no user found)`);
 			continue;
 		}
 		let blockMsgFlag: boolean = false;
@@ -67,14 +65,11 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		const user: string = clientChat.get(socket.id)?.user ?? '';
 		const atUser = `@${user}`;
 		if (atUser !== data.command || atUser === '' || data.text === '') {
-			console.log(color.red, 'DEBUG: atUser !== data.command');
 			continue;
 		}
 
 		blockMsgFlag = checkNamePair(list, UserID, UserByID.id) || false;
-
 		if (socket.id === sender) {
-			console.log(color.blue, 'sKip Sender ', socket.id);
 			continue;
 		}
 		if (!blockMsgFlag) {

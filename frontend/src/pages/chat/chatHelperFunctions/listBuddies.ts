@@ -27,20 +27,16 @@ export async function listBuddies(socket: Socket, buddies: HTMLDivElement, listB
 		const user = getUser()?.name ?? ""; 
 		buddies.appendChild(buddiesElement);
 		buddies.scrollTop = buddies.scrollHeight;
-		console.log(`Added buddies: ${bud}`);
 
 		buddiesElement.style.cursor = "pointer";
 		buddiesElement.addEventListener("click", () => {
 			navigator.clipboard.writeText(bud);
 			if (bud !== user && user !== "") {
 				sendtextbox.value = `@${bud}: `;
-				console.log("Copied to clipboard:", bud);
 				sendtextbox.focus();
 			} 
 		});
-
 		buddiesElement.addEventListener("dblclick", () => {
-			console.log("Open profile:", bud);
 			getProfil(socket, bud);
 			sendtextbox.value = "";
 		});

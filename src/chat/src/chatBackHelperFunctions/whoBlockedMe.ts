@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import type { BlockRelation } from './chat_types';
+import type { BlockRelation } from '../chat_types';
 
 export function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] {
 	const usersBlocked =

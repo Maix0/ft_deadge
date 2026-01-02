@@ -2,18 +2,18 @@ import './chat.css';
 import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
 import { showError } from "@app/toast";
 import authHtml from './chat.html?raw';
-import client from '@app/api'
 import { getUser, updateUser } from "@app/auth";
 import io, { Socket } from 'socket.io-client';
-import { listBuddies } from './listBuddies';
-import { getProfil } from './getProfil';
-import { addMessage } from './addMessage';
-import { broadcastMsg } from './broadcastMsg';
-import { isLoggedIn } from './isLoggedIn';
+import { listBuddies } from './chatHelperFunctions/listBuddies';
+import { getProfil } from './chatHelperFunctions/getProfil';
+import { addMessage } from './chatHelperFunctions/addMessage';
+import { broadcastMsg } from './chatHelperFunctions/broadcastMsg';
+import { isLoggedIn } from './chatHelperFunctions/isLoggedIn';
 import type { ClientMessage, ClientProfil } from './types_front';
-import { openProfilePopup } from './openProfilePopup';
-import { actionBtnPopUpBlock } from './actionBtnPopUpBlock';
-import { windowStateHidden } from './windowStateHidden';
+import { openProfilePopup } from './chatHelperFunctions/openProfilePopup';
+import { actionBtnPopUpBlock } from './chatHelperFunctions/actionBtnPopUpBlock';
+import { windowStateHidden } from './chatHelperFunctions/windowStateHidden';
+import type { blockedUnBlocked, obj } from './types_front';
 
 export const color = {
 	red: 'color: red;',
@@ -23,28 +23,6 @@ export const color = {
 	reset: '',
 };
 
-
-export type blockedUnBlocked = 
-{
-	userState: string,
-	userTarget: string,
-	by: string,
-};
-
-export type obj =
-{
-	command: string,
-	destination: string,
-	type: string,
-	user: string,
-	frontendUserName: string,
-	frontendUser: string,
-	token: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID: string,
-	Sendertext: string,
-};
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
@@ -513,10 +491,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									SenderID: userID,
 
 								};
-								//socket.emit('MsgObjectServer', message);
-								// addMessage(message.command);
 								socket.emit('privMessage', JSON.stringify(message));
-    						    // addMessage(JSON.stringify(message));
     						    break;
 						}
 						// Clear the input in all cases
@@ -530,7 +505,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				if (chatWindow) {
 					chatWindow.innerHTML = '';
 				}
-				//clearChatWindow(socket); //DEV testing broadcastGames
 			});
 
 			// Dev Game message button
@@ -550,12 +524,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					sendButton?.click();
 				}
 			});
-
-			// Whoami button to display user name					addMessage(msgCommand[0]);
-
-			// bwhoami?.addEventListener('click', async () => {
-			// 	whoami(socket);
-			// });
 		}
 	}
 	

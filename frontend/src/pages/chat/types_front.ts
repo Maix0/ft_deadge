@@ -34,6 +34,13 @@ export type ClientProfil = {
 }; 	
 
 
+export type blockedUnBlocked = 
+{
+	userState: string,
+	userTarget: string,
+	by: string,
+};
+
 export type obj =
 {
 	command: string,

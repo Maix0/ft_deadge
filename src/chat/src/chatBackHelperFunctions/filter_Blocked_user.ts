@@ -1,4 +1,4 @@
-import type { ClientMessage } from './chat_types';
+import type { ClientMessage } from '../chat_types';
 import { FastifyInstance } from 'fastify';
 import type { User } from '@shared/database/mixin/user';
 import { getUserById } from './getUserById';
@@ -17,11 +17,6 @@ export function filter_Blocked_user(fastify: FastifyInstance, data: ClientMessag
 	const UserToBlock: string = id;
 	const UserAskingToBlock: User | null = getUserById(users, `${data.SenderUserID}`);
 	if (!UserAskingToBlock) {
-		// console.log('SOMETHING NULL', data);
-		// console.log('UsetToBlock', UserToBlock?.id);
-		// console.log('UsetToBlock', UserToBlock?.name);
-		// console.log('UsetAskingToBlock', UserAskingToBlock?.id);
-		// console.log('UsetAskingToBlock', UserAskingToBlock?.name);
 		return false;
 	}
 	if (isUser_BlockedBy_me(fastify, UserAskingToBlock!.id, UserToBlock)) {

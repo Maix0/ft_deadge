@@ -8,18 +8,18 @@ import * as utils from '@shared/utils';
 import { Server, Socket } from 'socket.io';
 import type { User } from '@shared/database/mixin/user';
 import type { BlockedData } from '@shared/database/mixin/blocked';
-import { broadcast } from './broadcast';
+import { broadcast } from './chatBackHelperFunctions/broadcast';
 import type { ClientProfil, ClientMessage, obj } from './chat_types';
-import { sendPrivMessage } from './sendPrivMessage';
-import { sendBlocked } from './sendBlocked';
-import { sendInvite } from './sendInvite';
-import { getUserByName } from './getUserByName';
-import { makeProfil } from './makeProfil';
-import { isBlocked } from './isBlocked';
-import { sendProfil } from './sendProfil';
+import { sendPrivMessage } from './chatBackHelperFunctions/sendPrivMessage';
+import { sendBlocked } from './chatBackHelperFunctions/sendBlocked';
+import { sendInvite } from './chatBackHelperFunctions/sendInvite';
+import { getUserByName } from './chatBackHelperFunctions/getUserByName';
+import { makeProfil } from './chatBackHelperFunctions/makeProfil';
+import { isBlocked } from './chatBackHelperFunctions/isBlocked';
+import { sendProfil } from './chatBackHelperFunctions/sendProfil';
 import { setGameLink } from './setGameLink';
 import { nextGame_SocketListener } from './nextGame_SocketListener';
-import { list_SocketListener } from './list_SocketListener';
+import { list_SocketListener } from './chatBackHelperFunctions/list_SocketListener';
 
 // colors for console.log
 export const color = {

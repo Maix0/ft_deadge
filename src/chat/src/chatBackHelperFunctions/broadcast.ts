@@ -1,5 +1,5 @@
-import type { ClientMessage, BlockRelation } from './chat_types';
-import { clientChat } from './app';
+import type { ClientMessage, BlockRelation } from '../chat_types';
+import { clientChat } from '../app';
 import { FastifyInstance } from 'fastify';
 import { getUserByName } from './getUserByName';
 import type { User } from '@shared/database/mixin/user';

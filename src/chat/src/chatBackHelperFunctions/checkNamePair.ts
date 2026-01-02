@@ -1,4 +1,4 @@
-import type { BlockRelation } from './chat_types';
+import type { BlockRelation } from '../chat_types';
 
 export function checkNamePair(list: BlockRelation[], name1: string, name2: string): (boolean) {
 	const matches: BlockRelation[] = [];

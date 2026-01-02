@@ -1,4 +1,4 @@
-import io, { Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 
 /**
  * function clears all messages in the chat window
@@ -9,5 +9,4 @@ export function clearChatWindow(senderSocket: Socket) {
 	const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
 	if (!chatWindow) return;
 	chatWindow.innerHTML = "";
-	// senderSocket.emit('nextGame');
 }
