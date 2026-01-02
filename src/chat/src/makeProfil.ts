@@ -19,16 +19,17 @@ export async function makeProfil(fastify: FastifyInstance, user: string, socket:
 	let clientProfil!: ClientProfil;
 	const users: User[] = fastify.db.getAllUsers() ?? [];
 	const allUsers: User | null = getUserByName(users, user);
-	// console.log(color.yellow, `DEBUG LOG: 'userFound is:'${allUsers?.name}`);
 	if (user === allUsers?.name) {
-		// console.log(color.yellow, `DEBUG LOG: 'login Name: '${allUsers.login}' user: '${user}'`);
+		let loginState = `${allUsers?.login ?? 'Guest'}`
+		if (loginState !== 'Guest')
+			loginState = 'Member';
 		clientProfil =
 		{
 			command: 'makeProfil',
 			destination: 'profilMsg',
 			type: 'chat' as const,
 			user: `${allUsers.name}`,
-			loginName: `${allUsers?.login ?? 'Guest'}`,
+			loginName: loginState,
 			userID: `${allUsers?.id ?? ''}`,
 			text: escape(allUsers.desc),
 			timestamp: Date.now(),
