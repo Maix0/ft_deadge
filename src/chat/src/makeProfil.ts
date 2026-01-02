@@ -20,9 +20,10 @@ export async function makeProfil(fastify: FastifyInstance, user: string, socket:
 	const users: User[] = fastify.db.getAllUsers() ?? [];
 	const allUsers: User | null = getUserByName(users, user);
 	if (user === allUsers?.name) {
-		let loginState = `${allUsers?.login ?? 'Guest'}`
-		if (loginState !== 'Guest')
+		let loginState = `${allUsers?.login ?? 'Guest'}`;
+		if (loginState !== 'Guest') {
 			loginState = 'Member';
+		}
 		clientProfil =
 		{
 			command: 'makeProfil',
