@@ -1,276 +1,36 @@
 import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
-import { showError } from "@app/toast";
 import authHtml from './pong.html?raw';
-import client from '@app/api'
-import { getUser, updateUser } from "@app/auth";
-import io, { Socket } from 'socket.io-client';
-import { addPongMessage } from './addPongMessage';
-import { isLoggedIn } from './isLoggedIn';
-import type { ClientMessage, ClientProfil } from './types_front';
-import { isNullish } from "@app/utils";
-
-export const color = {
-	red: 'color: red;',
-	green: 'color: green;',
-	yellow: 'color: orange;',
-	blue: 'color: blue;',
-	reset: '',
-};
+import io from 'socket.io-client';
+import type { CSocket, GameMove, GameUpdate } from "./socket";
+import { showError, showInfo } from "@app/toast";
 
 // TODO: local game (2player -> server -> 2player : current setup)
 // TODO: tournament via remote (dedicated queu? idk)
 //
 
 // get the name of the machine used to connect
-const machineHostName = window.location.hostname;
-console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
+declare module 'ft_state' {
+	interface State {
+		pongSock?: CSocket;
+	}
+}
 
-export let __socket: Socket | undefined = undefined;
-
-document.addEventListener('ft:pageChange', () => { // dont regen socket on page change from forward/backward navigation arrows
-	if (__socket !== undefined)
-		__socket.close();
-	__socket = undefined;
-	console.log("Page changed");
+document.addEventListener("ft:pageChange", () => {
+	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
+	window.__state.pongSock = undefined;
 });
 
-/**
- * @returns the initialized socket
- */
-export function getSocket(): Socket {
-	let addressHost = `wss://${machineHostName}:8888`;
-
-	if (__socket === undefined)
-		__socket = io(addressHost, {
-			path: "/api/pong/socket.io/",
-			secure: false,
-			transports: ["websocket"],
-		});
-	return __socket;
-};
-
-/**
- * 
- * @param socket The socket to wait for
- * @returns voir or a promise<void>
- */
-function waitSocketConnected(socket: Socket): Promise<void> {
-	return new Promise(resolve => {
-		if (socket.connected) return resolve();
-		socket.on("connect", () => resolve());
-	});
-};
-
-/**
- * 
- * @param socket The socket to communicat
- * @returns nothing
- */
-async function whoami(socket: Socket) {
-	try {
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-
-		const res = await client.guestLogin();
-		switch (res.kind) {
-			case 'success': {
-				let user = await updateUser();
-				if (chatWindow) {
-					socket.emit('updateClientName', {
-						oldUser: '',
-						user: user?.name
-					});
-				}
-				if (user === null)
-					return showError('Failed to get user: no user ?');
-				setTitle(`Welcome ${user.guest ? '[GUEST] ' : ''}${user.name}`);
-				break;
-			}
-			case 'failed': {
-				showError(`Failed to login: ${res.msg}`);
-			}
-		}
-	} catch (e) {
-		console.error("Login error:", e);
-		showError('Failed to login: Unknown error');
-	}
-};
+export function getSocket(): CSocket {
+	if (window.__state.pongSock === undefined)
+		window.__state.pongSock = io(window.location.host, { path: "/api/pong/socket.io/" }) as any as CSocket;
+	return window.__state.pongSock;
+}
 
 function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-	let socket = getSocket();
-
-	socket.on("connect", async () => {
-		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
-		await waitSocketConnected(socket);
-		console.log("I AM Connected to the server:", socket.id);
-		// const message = {
-		// 	command: "",
-		// 	destination: 'system-info',
-		// 	type: "chat",
-		// 	user: getUser()?.name,
-		// 	token: document.cookie ?? "",
-		// 	text: " has Just ARRIVED in the chat",
-		// 	timestamp: Date.now(),
-		// 	SenderWindowID: socket.id,
-		// };
-		// socket.emit('message', JSON.stringify(message));
-		const messageElement = document.createElement("div");
-		// messageElement.textContent = `${message.user}: is connected au server`;
-		messageElement.textContent = `${getUser()?.name ?? "unkown user"}: is connected au server`;
-		systemWindow.appendChild(messageElement);
-		systemWindow.scrollTop = systemWindow.scrollHeight;
-	});
-
-	// Queu handler
-	async function joinQueu(socket : Socket) {
-		try {
-			const res = await client.guestLogin();
-
-			switch (res.kind) {
-				case 'success': {
-					let user = await updateUser();
-
-					if (user === null)
-						return showError('Failed to get user: no user ?');
-					socket.emit('queuJoin', user.id);
-					console.log('queu join sent for : ', user.id);
-					break;
-				}
-				case 'failed': {
-					showError(`Failed to Join Game Queu: ${res.msg}`);
-					console.log('Failed to Join Game Queu');
-				}
-			}
-		} catch (err ) {
-			showError(`Failed to Join Game Queu`);
-			console.log('Failed to Join Game Queu');
-		}
-	}
-
-	// keys handler
-	const keys: Record<string, boolean> = {};
-
-	document.addEventListener("keydown", (e) => {
-		keys[e.key.toLowerCase()] = true;
-	});
-	document.addEventListener("keyup", (e) => {
-		keys[e.key.toLowerCase()] = false;
-	});
-	setInterval(() => { // key sender
-		if ((keys['w'] || keys['s']) && !(keys['w'] && keys['s'])) { // exclusive or to filter requests
-			if (keys['w']) {
-				socket.emit("batmove_Left", "up");
-				console.log('north key pressed - emit batmove_Left up');
-			}
-			if (keys['s']) {
-				socket.emit("batmove_Left", "down");
-				console.log('south key pressed - emit batmove_Left down');
-			}
-		}
-		if ((keys['p'] || keys['l']) && !(keys['p'] && keys['l'])) { // exclusive or to filter requests
-			if (keys['p']) {
-				socket.emit("batmove_Right", "up");
-				console.log('north key pressed - emit batmove_Right up');
-			}
-			if (keys['l']) {
-				socket.emit("batmove_Right", "down");
-				console.log('south key pressed - emit batmove_Right down');
-			}
-		}
-	}, 16);
-
-	// Pong Objects updators
-	socket.on("batLeft_update", (y: number) => {
-		console.log('batLeft_update received y: ', y);
-		const bat = document.getElementById("batleft") as HTMLDivElement | null;
-		if (!bat) {
-			console.error("FATAL ERROR: Bat element with ID 'bat-left' not found. Check HTML.");
-			return ;
-		}
-		if (typeof y === 'number' && !isNaN(y)) {
-			bat.style.transform = `translateY(${y}px)`;
-		} else {
-			 console.warn(`Received invalid Y value: ${y}`);
-		}
-	});
-	socket.on("batRight_update", (y: number) => {
-		console.log('batRight_update received y: ', y);
-		const bat = document.getElementById("batright") as HTMLDivElement | null;
-		if (!bat) {
-			console.error("FATAL ERROR: Bat element with ID 'bat-Right' not found. Check HTML.");
-			return ;
-		}
-		if (typeof y === 'number' && !isNaN(y)) {
-			bat.style.transform = `translateY(${y}px)`;
-		} else {
-			 console.warn(`Received invalid Y value: ${y}`);
-		}
-	});
-	socket.on("ballPos_update", (x:number, y : number) => {
-		console.log('ballPos_update recieved');
-		const ball = document.getElementById("ball") as HTMLDivElement | null;
-
-		if (!ball) {
-			console.error("FATAL ERROR: Bat element with ID 'bat-Right' not found. Check HTML.");
-			return ;
-		}
-		if (typeof y !== 'number' || isNaN(y) || typeof x !== 'number' || isNaN(x)) {
-			console.warn(`Received invalid X/Y value: ${x} / ${y}`);
-			return ;
-		}
-		ball.style.transform = `translateY(${y}px)`;
-		ball.style.transform += `translateX(${x}px)`;
-	});
-
-	// socket.once('welcome', (data) => {
-	// 	console.log('%cWelcome PONG PAGE', color.yellow );
-	// 	addPongMessage('socket.once \'Welcome\' called')
-	// });
-
-	// Listen for messages from the server "MsgObjectServer"
-	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
-		// Display the message in the chat window
-		console.log("message recieved : ", data.message.text);
-		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
-		const MAX_SYSTEM_MESSAGES = 10;
-
-		if (systemWindow && data.message.destination === "system-info") {
-			const messageElement = document.createElement("div");
-			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
-			systemWindow.appendChild(messageElement);
-
-			// keep only last 10
-			while (systemWindow.children.length > MAX_SYSTEM_MESSAGES) {
-				systemWindow.removeChild(systemWindow.firstChild!);
-			}
-			systemWindow.scrollTop = systemWindow.scrollHeight;
-		}
-		if (systemWindow && data.message.destination === "score-info") {
-			console.log("score update:", data.message.text);
-			const scoreboard = document.getElementById('score-board') as HTMLHeadingElement ;
-
-			if (!scoreboard) {
-				console.log("update score failed :(");
-				return ;
-			}
-			scoreboard.textContent = `${data.message.text}`;
-		}
-		//	console.log("Getuser():", getUser());
-	});
-
 	setTitle('Pong Game Page');
 	return {
 
 		html: authHtml, postInsert: async (app) => {
-			const bwhoami = document.getElementById('b-whoami') as HTMLButtonElement;
-			const bqueu = document.getElementById('b-joinQueu') as HTMLButtonElement;
-
-			bwhoami?.addEventListener('click', async () => {
-				whoami(socket);
-			});
-			bqueu?.addEventListener('click', async () => {
-				joinQueu(socket);
-			});
-
 			const checkbox = document.getElementById("modeToggle") as HTMLInputElement;
 			const label = document.getElementById("toggleLabel") as HTMLSpanElement;
 			const track = document.getElementById("toggleTrack") as HTMLDivElement;
@@ -287,7 +47,67 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					knob.classList.remove("translate-x-7");
 				}
 			});
+
+
+
+			const batLeft = document.querySelector<HTMLDivElement>("#batleft");
+			const batRight = document.querySelector<HTMLDivElement>("#batright");
+			const ball = document.querySelector<HTMLDivElement>("#ball");
+			const score = document.querySelector<HTMLDivElement>("#score-board");
+			if (!batLeft || !batRight || !ball || !score)
+				return showError('fatal error');
+
+			let socket = getSocket();
+
+			// keys handler
+			const keys: Record<string, boolean> = {};
+
+			document.addEventListener("keydown", (e) => {
+				keys[e.key.toLowerCase()] = true;
+			});
+			document.addEventListener("keyup", (e) => {
+				keys[e.key.toLowerCase()] = false;
+			});
+
+			setInterval(() => { // key sender
+				let packet: GameMove = {
+					move: null,
+				}
+				if ((keys['w'] !== keys['s'])) {
+					packet.move = keys['w'] ? 'up' : 'down';
+				}
+
+				socket.emit('gameMove', packet);
+			}, 1000 / 60);
+
+			const render = (state: GameUpdate) => {
+				//batLeft.style.transform = `translateY(${state.left.paddle.y}px) translateX(${state.left.paddle.x}px)`;
+				batLeft.style.top = `${state.left.paddle.y}px`;
+				batLeft.style.left = `${state.left.paddle.x}px`;
+				batLeft.style.width = `${state.left.paddle.width}px`;
+				batLeft.style.height = `${state.left.paddle.height}px`;
+
+				//batRight.style.transform = `translateY(${state.right.paddle.y}px) translateX(-${state.left.paddle.x}px)`;
+				batRight.style.top = `${state.right.paddle.y}px`;
+				batRight.style.left = `${state.right.paddle.x}px`;
+				batRight.style.width = `${state.right.paddle.width}px`;
+				batRight.style.height = `${state.right.paddle.height}px`;
+
+				ball.style.transform = `translateX(${state.ball.x - state.ball.size}px) translateY(${state.ball.y - state.ball.size}px)`;
+				ball.style.height = `${state.ball.size * 2}px`;
+				ball.style.width = `${state.ball.size * 2}px`;
+
+
+				score.innerText = `${state.left.score} | ${state.right.score}`
+			}
+
+			socket.on('gameUpdate', (state: GameUpdate) => render(state));
+			socket.on('newGame', (state) => render(state));
+
+			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
+			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
+			socket.emit('enqueue');
 		}
 	}
 };
-addRoute('/pong', pongClient, { bypass_auth: true });
+addRoute('/pong', pongClient);

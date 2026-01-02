@@ -1,6 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
 import { Static, Type } from 'typebox';
-import { broadcast } from '../broadcast';
 
 export const PongReq = Type.Object({
 	message: Type.String(),
@@ -19,7 +18,6 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 			config: { requireAuth: false },
 		},
 		async function(req, res) {
-			broadcast(this, { command: '', destination: 'system-info', user: 'CMwaLeSever!!', text: req.body.message, SenderWindowID: 'server' });
 			void res;
 		},
 	);

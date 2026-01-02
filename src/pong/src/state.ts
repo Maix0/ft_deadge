@@ -1,0 +1,182 @@
+import { UserId } from '@shared/database/mixin/user';
+import { newUUID } from '@shared/utils/uuid';
+import { FastifyInstance } from 'fastify';
+import { Pong } from './game';
+import { GameMove, GameUpdate, SSocket } from './socket';
+import { isNullish } from '@shared/utils';
+
+type PUser = {
+	id: UserId;
+	currentGame: null | GameId;
+	socket: SSocket,
+	windowId: string,
+	updateInterval: NodeJS.Timeout,
+};
+
+type GameId = string & { readonly __brand: unique symbol };
+
+class StateI {
+	public static readonly UPDATE_INTERVAL_FRAMES: number = 60;
+
+	private users: Map<UserId, PUser> = new Map();
+	private queue: Set<UserId> = new Set();
+	private queueInterval: NodeJS.Timeout;
+	private games: Map<GameId, Pong> = new Map();
+
+	public constructor(private fastify: FastifyInstance) {
+		this.queueInterval = setInterval(() => this.queuerFunction());
+		void this.queueInterval;
+	}
+
+	private static getGameUpdateData(id: GameId, g: Pong): GameUpdate {
+		return {
+			gameId: id,
+			left: { id: g.userLeft, score: g.score[0], paddle: { x: g.leftPaddle.x, y: g.leftPaddle.y, width: g.leftPaddle.width, height: g.leftPaddle.height } },
+			right: { id: g.userRight, score: g.score[1], paddle: { x: g.rightPaddle.x, y: g.rightPaddle.y, width: g.rightPaddle.width, height: g.rightPaddle.height } },
+			ball: { x: g.ball.x, y: g.ball.y, size: g.ball.size },
+		};
+	}
+
+	private queuerFunction(): void {
+		const values = Array.from(this.queue.values());
+		while (values.length >= 2) {
+			const id1 = values.pop();
+			const id2 = values.pop();
+
+			if (isNullish(id1) || isNullish(id2)) {
+				continue;
+			}
+
+			const u1 = this.users.get(id1);
+			const u2 = this.users.get(id2);
+
+			if (isNullish(u1) || isNullish(u2)) {
+				continue;
+			}
+			this.queue.delete(id1);
+			this.queue.delete(id2);
+
+			const gameId = newUUID() as unknown as GameId;
+			const g = new Pong(u1.id, u2.id);
+			const iState: GameUpdate = StateI.getGameUpdateData(gameId, g);
+
+			u1.socket.emit('newGame', iState);
+			u2.socket.emit('newGame', iState);
+			this.games.set(gameId, g);
+
+			u1.currentGame = gameId;
+			u2.currentGame = gameId;
+
+			g.gameUpdate = setInterval(() => {
+				g.tick();
+				this.gameUpdate(gameId, u1.socket);
+				this.gameUpdate(gameId, u2.socket);
+				if (g.checkWinner() !== null) { this.cleanupGame(gameId, g); }
+			}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
+		}
+	}
+
+	private gameUpdate(id: GameId, sock: SSocket) {
+		// does the game we want to update the client exists ?
+		if (!this.games.has(id)) return;
+		// is the client someone we know ?
+		if (!this.users.has(sock.authUser.id)) return;
+		// is the client associated with that game ?
+		if (this.users.get(sock.authUser.id)!.currentGame !== id) return;
+		sock.emit('gameUpdate', StateI.getGameUpdateData(id, this.games.get(id)!));
+	}
+
+	private gameMove(socket: SSocket, u: GameMove) {
+		// do we know this user ?
+		if (!this.users.has(socket.authUser.id)) return;
+		const user = this.users.get(socket.authUser.id)!;
+		// does the user have a game and do we know such game ?
+		if (user.currentGame === null || !this.games.has(user.currentGame)) return;
+		const game = this.games.get(user.currentGame)!;
+
+		if (u.move !== null) { game.movePaddle(user.id, u.move); }
+	}
+
+
+	public registerUser(socket: SSocket): void {
+		this.fastify.log.info('Registering new user');
+		if (this.users.has(socket.authUser.id)) {
+			socket.emit('forceDisconnect', 'Already Connected');
+			socket.disconnect();
+			return;
+		}
+		this.users.set(socket.authUser.id, {
+			socket,
+			id: socket.authUser.id,
+			windowId: socket.id,
+			updateInterval: setInterval(() => this.updateClient(socket), 3000),
+			currentGame: null,
+		});
+		this.fastify.log.info('Registered new user');
+
+		socket.on('disconnect', () => this.cleanupUser(socket));
+		socket.on('enqueue', () => this.enqueueUser(socket));
+		socket.on('dequeue', () => this.dequeueUser(socket));
+
+		socket.on('gameMove', (e) => this.gameMove(socket, e));
+	}
+
+	private updateClient(socket: SSocket): void {
+		socket.emit('updateInformation', {
+			inQueue: this.queue.size,
+			totalUser: this.users.size,
+		});
+	}
+
+	private cleanupUser(socket: SSocket): void {
+		if (!this.users.has(socket.authUser.id)) return;
+
+		clearInterval(this.users.get(socket.authUser.id)?.updateInterval);
+		this.users.delete(socket.authUser.id);
+		this.queue.delete(socket.authUser.id);
+	}
+
+	private cleanupGame(gameId: GameId, game: Pong): void {
+		clearInterval(game.gameUpdate ?? undefined);
+		this.games.delete(gameId);
+		let player: PUser | undefined = undefined;
+		if ((player = this.users.get(game.userLeft)) !== undefined) {
+			player.currentGame = null;
+			player.socket.emit('gameEnd');
+		}
+		if ((player = this.users.get(game.userRight)) !== undefined) {
+			player.currentGame = null;
+			player.socket.emit('gameEnd');
+		}
+		// do something here with the game result before deleting the game at the end
+	}
+
+
+	private enqueueUser(socket: SSocket): void {
+		if (!this.users.has(socket.authUser.id)) return;
+
+		if (this.queue.has(socket.authUser.id)) return;
+
+		if (this.users.get(socket.authUser.id)?.currentGame !== null) return;
+
+		this.queue.add(socket.authUser.id);
+		socket.emit('queueEvent', 'registered');
+	}
+
+	private dequeueUser(socket: SSocket): void {
+		if (!this.users.has(socket.authUser.id)) return;
+
+		if (!this.queue.has(socket.authUser.id)) return;
+
+		this.queue.delete(socket.authUser.id);
+		socket.emit('queueEvent', 'unregistered');
+	}
+
+
+}
+
+export let State: StateI = undefined as unknown as StateI;
+
+export function newState(f: FastifyInstance) {
+	State = new StateI(f);
+}
