@@ -39,5 +39,24 @@ export async function makeProfil(fastify: FastifyInstance, user: string, socket:
 			innerHtml: '',
 		};
 	}
+	else {
+		clientProfil =
+		{
+			command: 'makeProfil',
+			destination: 'profilMsg',
+			type: 'chat' as const,
+			user: user,
+			loginName: 'Not Found',
+			userID: 'Not Found',
+			text: 'Not Found',
+			timestamp: Date.now(),
+			SenderWindowID: socket.id,
+			SenderName: '',
+			Sendertext: '',
+			SenderID: '',
+			innerHtml: '',
+		};
+
+	}
 	return clientProfil;
 };

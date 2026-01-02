@@ -122,7 +122,7 @@ function parseCmdMsg(msgText: string): string[] | undefined {
         command[1] = msgText;
         return command;
     }
-    const noArgCommands = ['@quit', '@who', '@cls'];
+    const noArgCommands = ['@quit', '@help', '@cls'];
     if (noArgCommands.includes(msgText)) {
         command[0] = msgText;
         command[1] = '';
@@ -456,6 +456,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			// Send button
 			sendButton?.addEventListener("click", () => {
+				const notify = document.getElementById("notify") ?? null;
 				if (sendtextbox && sendtextbox.value.trim()) {
 					let msgText: string = sendtextbox.value.trim();
 					const msgCommand = parseCmdMsg(msgText) ?? "";
@@ -466,18 +467,32 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								broadcastMsg(socket, msgCommand);
 								break;
     						case '@notify':
+								if (notify === null) {break;};
 								if (inviteMsgFlag === false) {
+									notify.innerText = '🔔';
 									inviteMsgFlag = true;
 								} else {
+									notify.innerText = '🔕';
 									inviteMsgFlag = false;
 								}
 								break;
 							case '@profil':
+								if (msgCommand[1] === '') {break;};
 								getProfil(socket, msgCommand[1]);
 								break;
     						case '@cls':
     						    chatWindow.innerHTML = '';
     						    break;
+							case '@help':
+								addMessage('*');
+								addMessage('** ********** List of @cmds ********** **');
+								addMessage('\'@cls\' - clear chat screen conversations');
+								addMessage('\'@profil <name>\' - pulls ups user profil');
+								addMessage('\'@notify\' - toggles notifications on / off');
+								addMessage('\'@quit\' - disconnect user from the chat');
+								addMessage('** *********************************** **');
+								addMessage('*');
+								break;
 							case '@quit':
 								quitChat(socket);
     						    break;
