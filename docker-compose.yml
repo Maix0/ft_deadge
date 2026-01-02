@@ -146,7 +146,9 @@ services:
       context: ./src/
       args:
         - SERVICE=pong
-        - EXTRA_FILES=pong/extra
+      additional_contexts:
+        pnpm_base: "service:pnpm_base"
+        pnpm_deps: "service:pnpm_deps"
     container_name: app-pong
     restart: always
     networks:
@@ -156,10 +158,6 @@ services:
       - static-volume:/volumes/static
     environment:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
-      - DATABASE_DIR=/volumes/database
-      - PROVIDER_FILE=/extra/providers.toml
-      - SESSION_MANAGER=${SESSION_MANAGER}
-
 
   ###############
   #    USER     #
