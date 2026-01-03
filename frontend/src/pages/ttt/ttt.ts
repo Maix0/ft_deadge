@@ -1,3 +1,4 @@
+import "./ttt.css"
 import { addRoute, type RouteHandlerReturn } from "@app/routing";
 import tttPage from "./ttt.html?raw";
 import { showError, showInfo, showSuccess, showWarn } from "@app/toast";
@@ -49,7 +50,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			});
 			socket.emit('enqueue');
 
-			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-grid-cell");
+			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-cell");
 			const grid = app.querySelector(".ttt-grid"); // Not sure about this one
 
 			const updateUI = (boardState: (string | null)[]) => {
