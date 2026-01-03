@@ -51,7 +51,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			socket.emit('enqueue');
 
 			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-cell");
-			const grid = app.querySelector(".ttt-grid"); // Not sure about this one
+			// const grid = app.querySelector(".ttt-grid"); // Not sure about this one
 
 			const updateUI = (boardState: (string | null)[]) => {
 				boardState.forEach((state, idx) => {
@@ -95,7 +95,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				updateUI(u.boardState);
 
 				if (u.gameState && u.gameState !== "ongoing") {
-					grid?.classList.add("pointer-events-none");
+					// grid?.classList.add("pointer-events-none");
 
 					if (u.gameState !== curGame.lastState) {
 						curGame.lastState = u.gameState;
