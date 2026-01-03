@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Nimbus Mono L";
+  src: url("/fonts/NimbusMonoL.woff2") format("woff2");
+}
+
+
+
+.displaybox {
+  @apply
+  fixed
+  inset-0
+  flex
+  items-center
+  justify-center
+  bg-[#43536b];
+  
+}
+
+.mainboxDisplay {
+  @apply
+  fixed 
+  top-1/2 
+  left-1/2 
+  -translate-x-1/2 
+  -translate-y-1/2 
+  bg-gray-200 
+  p-6 rounded-xl 
+  shadow-2xl 
+  text-center z-50;
+}
+
+
+.btn-style {
+  @apply
+  w-[100px]
+  h-[32px]
+  border 
+  border-gray-500
+  rounded-3xl
+  bg-gray-500
+  text-white
+  cursor-pointer
+  shadow-[0_2px_0_0_black]
+  transition-all
+  hover:bg-blue-200
+  active:bg-gray-400
+  active:translate-y-[1px]
+  active:shadow-[0_2px_0_0_black];
+}
+
+
+.grid-box {
+    @apply
+    bg-white
+    p-8 
+    rounded-3xl
+    border
+    border-black
+    shadow-2xl
+}
+
+
+.grid-layout {
+    @apply
+
+    grid 
+    grid-cols-3 
+    gap-1 
+    max-w-2xl 
+    mx-auto
+}
+
+.ttt-cell {
+    @apply 
+    bg-black 
+    aspect-square
+    flex
+    items-center 
+    justify-center 
+    text-white 
+    text-9xl 
+    font-bold 
+    hover:bg-gray-500
+}
