@@ -15,4 +15,5 @@ openapi.jar
 /db/
 
 pnpm-lock.yaml
+package-lock.json
 .idea
