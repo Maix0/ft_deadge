@@ -34,8 +34,8 @@
 
 .btn-style {
   @apply
-  w-[100px]
-  h-[32px]
+  w-25
+  h-8
   border 
   border-gray-500
   rounded-3xl
@@ -46,7 +46,7 @@
   transition-all
   hover:bg-blue-200
   active:bg-gray-400
-  active:translate-y-[1px]
+  active:translate-y-px
   active:shadow-[0_2px_0_0_black];
 }
 

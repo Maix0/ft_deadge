@@ -8,9 +8,9 @@
 
 .btn-style {
   @apply
-  w-[100px]
-  h-[32px]
-  border-1 
+  w-25
+  h-8
+  border 
   border-gray-500
   rounded-3xl
   bg-gray-500
@@ -20,15 +20,15 @@
   transition-all
   hover:bg-blue-200
   active:bg-gray-400
-  active:translate-y-[1px]
+  active:translate-y-px
   active:shadow-[0_2px_0_0_black];
 }
 
 .send-btn-style {
   @apply 
-  w-[50px] 
-  h-[50px] 
-  border-1 
+  w-12.5 
+  h-12.5 
+  border 
   border-gray-500
   rounded-3xl
   hover:bg-blue-200 
@@ -38,16 +38,16 @@
   shadow-[0_2px_0_0_black]
   transition-all
   active:bg-gray-400
-  active:translate-y-[1px]
+  active:translate-y-px
   active:shadow-[0_2px_0_0_black];;
 }
 
 .chatbox-style {
   @apply
-  w-[650px]
-  h-[300px] /* increase height if needed */
-  p-[8px]
-  border-1
+  w-162.5
+  h-75 /* increase height if needed */
+  p-2
+  border
   border-black
   shadow-2xl 
   text-left
@@ -63,7 +63,7 @@
 
 .system-info {
   @apply
-  h-[40px]
+  h-10
   bg-gray-200 
   text-gray-700 
   p-3 
@@ -79,7 +79,7 @@
 
 .modal-messages {
   @apply
-  h-[80px]
+  h-20
   bg-white 
   text-gray-700 
   p-3 
@@ -104,10 +104,10 @@
 
 .chat-window-style {
   @apply
-  w-[400px]
-  h-[50px]
-  p-[10px]
-  border-1 
+  w-100
+  h-12.5
+  p-6
+  border 
   border-black
   shadow-sm
   flex-1
@@ -136,7 +136,7 @@
   left-1/2 
   -translate-x-1/2 
   -translate-y-1/2 
-  bg-gray-200 w-[850px] 
+  bg-gray-200 w-212.5 
   p-6 rounded-xl 
   shadow-2xl 
   text-center z-50;
@@ -156,8 +156,8 @@
 
 .ping-box {
   @apply
-  w-[150px] 
-  ml-2 border-1
+  w-37.5 
+  ml-2 border
   border-gray-500 
   bg-white 
   rounded-2xl 
@@ -165,7 +165,7 @@
   shadow-md 
   flex flex-col 
   gap-1 
-  h-[350px];
+  h-87.5;
 }
 
 .ping-title {
@@ -213,12 +213,12 @@ div-private {
 .popUpBox {
   @apply
   bg-white 
-  p-6 rounded-xl 
+  rounded-xl 
   shadow-xl 
-  w-[800px]
-  h-[350px]
-  p-[10px]
-  border-1 
+  w-200
+  h-87.5
+  p-6
+  border 
   border-black
 
 }
@@ -250,12 +250,12 @@ div-private {
 .popUpMessage {
   @apply
   bg-white 
-  p-6 rounded-xl 
+  rounded-xl 
   shadow-xl 
-  w-[800px]
-  h-[100px]
-  p-[10px]
-  border-1 
+  w-200
+  h-25
+  p-6
+  border 
   border-black
 
 }
