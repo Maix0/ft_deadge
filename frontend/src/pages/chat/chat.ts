@@ -41,7 +41,6 @@ document.addEventListener('ft:pageChange', () => {
 
 export function getSocket(): Socket {
 	let addressHost = `wss://${machineHostName}:8888`;
-	// let addressHost = `wss://localhost:8888`;
 	if (__socket === undefined)
 
 		__socket = io(addressHost, {
@@ -73,19 +72,16 @@ async function windowStateVisable() {
 	const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 	const socketId = __socket || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
-	console.log("%c WINDOW VISIBLE - oldName :'" + oldName + "'", color.green);
 
 	if (socketId === undefined || oldName === undefined) {console.log("%SOCKET ID", color.red); return;}
 	let user = await updateUser();
 	if(user === null) return;
-	console.log("%cUserName :'" + user?.name + "'", color.green);
 	socketId.emit('client_entered', {
 		userName: oldName,
 		user: user?.name,
 	});
 	buddies.innerHTML = '';
 	buddies.textContent = '';
-	//connected(socketId);
 	setTitle('Chat Page');
 	return;
 };
@@ -144,14 +140,11 @@ function quitChat (socket: Socket) {
 		if (socket) {
 			logout(socket);
 			setTitle('Chat Page');
-			// systemWindow.innerHTML = "";
-			// chatWindow.textContent = "";
 			connected(socket);
 		} else {
 			getSocket();
 		}
 	} catch (e) {
-		console.error("Quit Chat error:", e);
 		showError('Failed to Quit Chat: Unknown error');
 	}
 
@@ -163,7 +156,6 @@ function logout(socket: Socket) {
   localStorage.clear();
   if (__socket !== undefined)
 		__socket.close();
-//   window.location.href = "/login";
 };
 
 
@@ -189,7 +181,6 @@ async function connected(socket: Socket): Promise<void> {
 					user: user?.name,
 				});
 			} catch (e) {
-				console.error("Login error:", e);
 				showError('Failed to login: Unknown error');
 			}
 		}, 16);
@@ -217,21 +208,18 @@ async function openMessagePopup(message: string) {
 
 	}
 	const gameMessage = document.getElementById("game-modal") ?? null;
-	if (gameMessage)
+	if (gameMessage) {
 		gameMessage.classList.remove("hidden");
-	 // The popup now exists → attach the event
+	}
 }
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 	let socket = getSocket();
 	let blockMessage: boolean;
-	setTimeout(async () => {
 		// Listen for the 'connect' event
 		socket.on("connect", async () => {
-
 			const systemWindow = document.getElementById('system-box') as HTMLDivElement;
 			await waitSocketConnected(socket);
-			console.log("I AM Connected to the server:", socket.id);
 			const user = getUser()?.name;
 			const userID = getUser()?.id;
 			// Ensure we have a user AND socket is connected
@@ -246,7 +234,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				timestamp: Date.now(),
 				SenderWindowID: socket.id,
 				SenderID: userID,
-
 			};
 			socket.emit('message', JSON.stringify(message));
 			const messageElement = document.createElement("div");
@@ -254,37 +241,29 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     		systemWindow.appendChild(messageElement);
 			systemWindow.scrollTop = systemWindow.scrollHeight;
 		});
-	},0);
 
 	// Listen for messages from the server "MsgObjectServer"
 	socket.on("MsgObjectServer", (data: { message: ClientMessage}) => {
-		// Display the message in the chat window
 		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
 		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		const bconnected = document.getElementById('b-help') as HTMLButtonElement;
-
-		console.log('UserSender:', data.message.SenderUserID);
-		console.log('User:', getUser()?.id);
-
-
-
-		if (bconnected) {
+		
+		if (socket) {
 			connected(socket);
 		}
-		console.log('stahe   eeee  :', blockMessage);
+
 		if (chatWindow && data.message.destination === "") {
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
 			chatWindow.scrollTop = chatWindow.scrollHeight;
 		}
+
 		if (chatWindow && data.message.destination === "privateMsg") {
 			const messageElement = document.createElement("div-private");
 			messageElement.textContent = `🔒${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
 			chatWindow.scrollTop = chatWindow.scrollHeight;
 		}
-
 
 		if (chatWindow && data.message.destination === "inviteMsg") {
 			const messageElement = document.createElement("div-private");
@@ -305,7 +284,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     		}
     		systemWindow.scrollTop = systemWindow.scrollHeight;
 		}
-		console.log("Getuser():", getUser());
 	});
 
 	socket.on('profilMessage', (profil: ClientProfil) => {
@@ -359,7 +337,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			connected(socket);
 		}, 16);
 		if (window.location.pathname === '/app/chat') {
-			console.log('%cWindow is focused on /chat:' + socket.id, color.green);
 			if (socket.id) {
 				await windowStateVisable();
 			}
@@ -368,7 +345,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 	});
 
 	window.addEventListener("blur", () => {
-		console.log('%cWindow is not focused on /chat', color.red);
 		if (socket.id)
 			windowStateHidden();
 		toggle = false;
@@ -376,23 +352,19 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	socket.on('listBud', async (myBuddies: string[])  => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-		console.log('%cList buddies connected ',color.yellow, myBuddies);
 		listBuddies(socket, buddies, myBuddies);
 	});
 
 	socket.once('welcome', (data) => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 		const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
-		// chatWindow.innerHTML = '';
 		buddies.textContent = '';
 		buddies.innerHTML = '';
 		connected(socket);
 		addMessage (`${data.msg}  ` + getUser()?.name);
 	});
-
-
 	setTitle('Chat Page');
-	// Listen for the 'connect' event
+
 	return {
 
 		html: authHtml, postInsert: async (app) => {
@@ -526,6 +498,5 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 		}
 	}
-	
 };
 addRoute('/chat', handleChat);

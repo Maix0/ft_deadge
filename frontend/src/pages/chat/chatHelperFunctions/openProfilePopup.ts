@@ -19,5 +19,4 @@ export async function openProfilePopup(profil: ClientProfil) {
 	const profilList = document.getElementById("profile-modal") ?? null;
 	if (profilList)
 		profilList.classList.remove("hidden");
-	 // The popup now exists → attach the event
 }
