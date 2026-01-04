@@ -6,6 +6,18 @@
 
 @tailwind utilities;
 
+.recessed {
+	@apply
+	inline-block
+	bg-gray-100
+	text-gray-800
+	p-2
+	rounded-md
+	shadow-inner
+	border
+	border-gray-300;
+}
+
 .btn-style {
   @apply
   w-25

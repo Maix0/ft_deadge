@@ -103,7 +103,7 @@ function parseCmdMsg(msgText: string): string[] | undefined {
         return command;
     }
 
-	const ArgCommands = ['@profil', '@block'];
+	const ArgCommands = ['@profile', '@block'];
 	const userName = msgText.indexOf(" ");
 	const cmd2 = msgText.slice(0, userName).trim() ?? "";
 	const user = msgText.slice(userName + 1).trim();
@@ -426,7 +426,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									inviteMsgFlag = false;
 								}
 								break;
-							case '@profil':
+							case '@profile':
 								if (msgCommand[1] === '') {break;};
 								getProfil(socket, msgCommand[1]);
 								break;
@@ -437,7 +437,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								addMessage('*');
 								addMessage('** ********** List of @cmds ********** **');
 								addMessage('\'@cls\' - clear chat screen conversations');
-								addMessage('\'@profil <name>\' - pulls ups user profil');
+								addMessage('\'@profile <name>\' - pulls ups user profile');
 								addMessage('\'@notify\' - toggles notifications on / off');
 								addMessage('\'@quit\' - disconnect user from the chat');
 								addMessage('** *********************************** **');

@@ -10,7 +10,7 @@ import { Socket } from 'socket.io-client';
 export function getProfil(socket: Socket, user: string) {
 		if (!socket.connected) return;
 		const profil = {
-			command: '@profil',
+			command: '@profile',
 			destination: 'profilMessage',
 			type: "chat",
 			user: user,

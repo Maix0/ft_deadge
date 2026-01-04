@@ -1,7 +1,7 @@
 import { UserId } from '@shared/database/mixin/user';
 
 export class Paddle {
-	public static readonly DEFAULT_SPEED = 20;
+	public static readonly DEFAULT_SPEED = 10;
 	public static readonly DEFAULT_HEIGHT = 80;
 	public static readonly DEFAULT_WIDTH = 12;
 
@@ -30,7 +30,7 @@ class Ball {
 	public static readonly DEFAULT_SIZE = 16;
 	public static readonly DEFAULT_MAX_SPEED = 15;
 	public static readonly DEFAULT_MIN_SPEED = Ball.DEFAULT_SPEED;
-	public static readonly DEFAULT_ACCEL_FACTOR = 1.2;
+	public static readonly DEFAULT_ACCEL_FACTOR = 1.1;
 
 	public speed: number = Ball.DEFAULT_SPEED;
 	public size: number = Ball.DEFAULT_SIZE;
@@ -51,7 +51,7 @@ class Ball {
 		walls: { [k in typeof side]: number },
 		snap: boolean = true,
 	) {
-		// this.speed *= this.accel_factor;
+		this.speed *= this.accel_factor;
 		this.speed = Math.max(
 			Math.min(this.speed, this.max_speed),
 			this.min_speed,
