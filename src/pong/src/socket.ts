@@ -20,10 +20,13 @@ export type GameUpdate = {
 	right: { id: string, paddle: PaddleData, score: number };
 
 	ball: { x: number, y: number, size: number };
+	local: boolean,
 }
 
 export type GameMove = {
 	move: 'up' | 'down' | null,
+	// only used in local games
+	moveRight: 'up' | 'down' | null,
 }
 
 export interface ClientToServer {
@@ -32,6 +35,7 @@ export interface ClientToServer {
 	debugInfo: () => void;
 	gameMove: (up: GameMove) => void;
 	connectedToGame: (gameId: string) => void;
+	localGame: () => void,
 };
 
 export interface ServerToClient {

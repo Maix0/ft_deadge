@@ -15,7 +15,9 @@ declare module 'ft_state' {
 	}
 }
 
-document.addEventListener("ft:pageChange", () => {
+document.addEventListener("ft:pageChange", (newUrl) => {
+	// we are still on a pong page => keep the socket around !
+	if (newUrl.detail.startsWith('/app/pong') || newUrl.detail.startsWith('/pong')) return;
 	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
 	window.__state.pongSock = undefined;
 });
@@ -59,6 +61,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			let socket = getSocket();
 
+			let currentGame: GameUpdate | null = null;
 			// keys handler
 			const keys: Record<string, boolean> = {};
 
@@ -70,17 +73,23 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 
 			setInterval(() => { // key sender
+				if (currentGame === null) return;
 				let packet: GameMove = {
 					move: null,
+					moveRight: null,
 				}
 				if ((keys['w'] !== keys['s'])) {
 					packet.move = keys['w'] ? 'up' : 'down';
+				}
+				if (currentGame.local && (keys['o'] !== keys['l'])) {
+					packet.moveRight = keys['o'] ? 'up' : 'down';
 				}
 
 				socket.emit('gameMove', packet);
 			}, 1000 / 60);
 
 			const render = (state: GameUpdate) => {
+				currentGame = state;
 				//batLeft.style.transform = `translateY(${state.left.paddle.y}px) translateX(${state.left.paddle.x}px)`;
 				batLeft.style.top = `${state.left.paddle.y}px`;
 				batLeft.style.left = `${state.left.paddle.x}px`;
@@ -101,12 +110,15 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				score.innerText = `${state.left.score} | ${state.right.score}`
 			}
 
+			socket.on('gameEnd', () => currentGame = null);
+
 			socket.on('gameUpdate', (state: GameUpdate) => render(state));
-			socket.on('newGame', (state) => render(state));
+			socket.on('newGame', (state: GameUpdate) => render(state));
 
 			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
-			socket.emit('enqueue');
+			//socket.emit('enqueue');
+			socket.emit('localGame');
 		}
 	}
 };

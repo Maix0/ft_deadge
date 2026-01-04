@@ -34,6 +34,7 @@ class StateI {
 			left: { id: g.userLeft, score: g.score[0], paddle: { x: g.leftPaddle.x, y: g.leftPaddle.y, width: g.leftPaddle.width, height: g.leftPaddle.height } },
 			right: { id: g.userRight, score: g.score[1], paddle: { x: g.rightPaddle.x, y: g.rightPaddle.y, width: g.rightPaddle.width, height: g.rightPaddle.height } },
 			ball: { x: g.ball.x, y: g.ball.y, size: g.ball.size },
+			local: g.local,
 		};
 	}
 
@@ -76,6 +77,27 @@ class StateI {
 		}
 	}
 
+	private newLocalGame(sock: SSocket) {
+		const user = this.users.get(sock.authUser.id);
+		if (!user) return;
+
+		const gameId = newUUID() as unknown as GameId;
+		const g = Pong.makeLocal(user.id);
+		const iState: GameUpdate = StateI.getGameUpdateData(gameId, g);
+
+		user.socket.emit('newGame', iState);
+		this.games.set(gameId, g);
+
+		user.currentGame = gameId;
+
+		g.gameUpdate = setInterval(() => {
+			g.tick();
+			this.gameUpdate(gameId, user.socket);
+			if (g.checkWinner() !== null) { this.cleanupGame(gameId, g); }
+		}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
+
+	}
+
 	private gameUpdate(id: GameId, sock: SSocket) {
 		// does the game we want to update the client exists ?
 		if (!this.games.has(id)) return;
@@ -94,7 +116,11 @@ class StateI {
 		if (user.currentGame === null || !this.games.has(user.currentGame)) return;
 		const game = this.games.get(user.currentGame)!;
 
-		if (u.move !== null) { game.movePaddle(user.id, u.move); }
+		if (game.local) {
+			if (u.move !== null) { game.movePaddle('left', u.move); }
+			if (u.moveRight !== null) { game.movePaddle('right', u.moveRight); }
+		}
+		else if (u.move !== null) { game.movePaddle(user.id, u.move); }
 	}
 
 
@@ -119,6 +145,7 @@ class StateI {
 		socket.on('dequeue', () => this.dequeueUser(socket));
 
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
+		socket.on('localGame', () => this.newLocalGame(socket));
 	}
 
 	private updateClient(socket: SSocket): void {

@@ -119,6 +119,13 @@ export class Pong {
 	public ball: Ball = new Ball(Pong.GAME_WIDTH / 2, Pong.GAME_HEIGHT / 2, Pong.BALL_START_ANGLES[this.ballAngleIdx++]);
 
 	public score: [number, number] = [0, 0];
+	public local: boolean = false;
+
+	public static makeLocal(owner: UserId): Pong {
+		const game = new Pong(owner, owner);
+		game.local = true;
+		return game;
+	}
 
 	constructor(
 		public userLeft: UserId,
@@ -202,13 +209,14 @@ export class Pong {
 		return null;
 	}
 
-	public movePaddle(user: UserId, dir: 'up' | 'down') {
-		const paddle =
-			user === this.userLeft
-				? this.leftPaddle
-				: user == this.userRight
-					? this.rightPaddle
-					: null;
+	public movePaddle(user: UserId | ('left' | 'right'), dir: 'up' | 'down') {
+		let paddle: Paddle | null = null;
+		if (this.local) {
+			if (user === 'left') { paddle = this.leftPaddle; }
+			else if (user === 'right') { paddle = this.rightPaddle; }
+		}
+		else if (user === this.userLeft) { paddle = this.leftPaddle; }
+		else if (user === this.userRight) { paddle = this.rightPaddle; }
 		if (paddle === null) return;
 		paddle.move(dir);
 		paddle.clamp(0, Pong.GAME_HEIGHT);
