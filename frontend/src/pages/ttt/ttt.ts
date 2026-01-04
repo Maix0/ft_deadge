@@ -74,7 +74,17 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				}
 
 				if (type === 'win') {
-					const youWin = (curGame?.playerX === user.id);
+					let youWin: boolean;
+					switch(player) {
+						case 'X':
+							youWin = (curGame?.playerX === user.id);
+							break ;
+						case 'O':
+							youWin = (curGame?.playerO === user.id);
+							break;
+						default:
+							return;
+					}
 					if (youWin)
 						showSuccess('You won the game !');
 					else
@@ -118,7 +128,9 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 
 			cells?.forEach(function(c, idx) {
 				c.addEventListener("click", () => {
+					if (socket) {
 					socket.emit("gameMove", { index: idx });
+					}
 				});
 			});
 		},
