@@ -29,6 +29,7 @@ export type GameMove = {
 	moveRight: 'up' | 'down' | null,
 }
 
+// TODO: add new evt such as "local play", "ready-up" see: ./pong.ts
 export interface ClientToServer {
 	enqueue: () => void;
 	dequeue: () => void;

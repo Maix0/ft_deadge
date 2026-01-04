@@ -1,35 +1,35 @@
 <div class="displaybox">
 	<div id="mainbox" class="mainboxDisplay">
-		<button id="b-whoami" class="btn-style absolute top-4 left-6">Who am i</button>
-		<br>
-		<button id="b-joinQueu" class="btn-style absolute top-16 left-6">Queue Up</button>
+		<button id="QueueBtn" class="btn-style absolute top-4 left-6">Queue Up</button>
 		<br>
 		<h1 class="text-3xl font-bold text-gray-800">
 			Pong Box<span id="t-username"></span>
 		</h1><br>
 
-		<label class="inline-flex items-center gap-3 cursor-pointer select-none">
-			<!-- Checkbox -->
-			<input id="modeToggle" type="checkbox" class="sr-only"/>
-			<!-- Switch -->
-			<div id="toggleTrack" class="relative w-14 h-7 rounded-full bg-gray-300 transition-colors duration-300">
-				<span id="toggleKnob" class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform duration-300"></span>
-			</div>
-			<!-- Label -->
-			<span id="toggleLabel" class="text-sm font-medium text-gray-700"> Local </span>
-		</label>
+	<!-- on/off switch for local / online play : idea was re-worked, we probably wont use that -->
+	<!--	<label class="inline-flex items-center gap-3 cursor-pointer select-none"> -->
+	<!--		<input id="modeToggle" type="checkbox" class="sr-only"/> -->
+	<!--		<div id="toggleTrack" class="relative w-14 h-7 rounded-full bg-gray-300 transition-colors duration-300"> -->
+	<!--			<span id="toggleKnob" class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform duration-300"></span> -->
+	<!--		</div> -->
+	<!--		<span id="toggleLabel" class="text-sm font-medium text-gray-700"> Local </span> -->
+	<!--	</label> -->
 
 		<!-- Horizontal Message Box -->
 		<div id="system-box" class="system-info">System: connecting ... </div>
-		<h1 id="score-board" class="text-p10 font-bold text-gray-800">0:0</h1>
+		<div id="score-box" class="grid grid-cols-[1fr_auto_1fr] items-center">
+			<h1 id="player-left"></h1>
+			<h1 id="score-board" class="justify-self-center text-p10 font-bold text-gray-800">0:0</h1>
+			<h1 id="player-right"></h1>
+		</div>
 		<!-- Pong Box -->
 		<div class="flex justify-center mt-2">
 			<div id="pongspace" class="flex flex-col">
 				<div id="pongbox" class="pongbox-style">
 					<div class="pong-field">
-						<div id="batleft" class="pong-batleft bg-amber-400 top-0"></div>
+						<div id="batleft" class="pong-batleft top-0"></div>
 						<div class="pong-center-line"></div>
-						<div id="batright" class="pong-batright bg-amber-400 top-0"></div>
+						<div id="batright" class="pong-batright top-0"></div>
 						<div id="ball" class="rounded-full border-4 bg-white border-gray-400"></div>
 					</div>
 				</div>
