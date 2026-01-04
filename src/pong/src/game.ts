@@ -26,9 +26,9 @@ export class Paddle {
 }
 
 class Ball {
-	public static readonly DEFAULT_SPEED = 1;
+	public static readonly DEFAULT_SPEED = 3;
 	public static readonly DEFAULT_SIZE = 16;
-	public static readonly DEFAULT_MAX_SPEED = 30;
+	public static readonly DEFAULT_MAX_SPEED = 15;
 	public static readonly DEFAULT_MIN_SPEED = Ball.DEFAULT_SPEED;
 	public static readonly DEFAULT_ACCEL_FACTOR = 1.2;
 
@@ -49,6 +49,7 @@ class Ball {
 	public collided(
 		side: 'left' | 'right' | 'top' | 'bottom',
 		walls: { [k in typeof side]: number },
+		snap: boolean = true,
 	) {
 		// this.speed *= this.accel_factor;
 		this.speed = Math.max(
@@ -65,9 +66,11 @@ class Ball {
 			this.angle = -this.angle + Math.PI;
 			c = 'x';
 		}
-		this[c] =
-			walls[side] +
-			this.size * (side === 'right' || side === 'bottom' ? -1 : 1);
+		if (snap){
+			this[c] =
+				walls[side] +
+				this.size * (side === 'right' || side === 'bottom' ? -1 : 1);
+		}
 
 		while (this.angle >= Math.PI) {
 			this.angle -= 2 * Math.PI;
@@ -139,8 +142,8 @@ export class Pong {
 				left: this.leftPaddle.x + this.leftPaddle.width,
 				right: 0,
 				top: 0,
-				bottom: 0,
-			});
+				bottom: 0}, false
+			);
 			return;
 		}
 		if (this.paddleCollision(this.rightPaddle, 'right')) {
@@ -148,8 +151,7 @@ export class Pong {
 				right: this.rightPaddle.x,
 				left: 0,
 				top: 0,
-				bottom: 0,
-			});
+				bottom: 0}, false);
 			return;
 		}
 		const wallCollision = this.boxCollision();
@@ -184,6 +186,10 @@ export class Pong {
 	}
 
 	private paddleCollision(paddle: Paddle, side: 'left' | 'right'): boolean {
+		if (Math.abs(this.ball.angle) > Math.PI / 2 && side !== 'left' ||
+			Math.abs(this.ball.angle) < Math.PI / 2 && side !== 'right')
+			return (false)
+
 		// now we check only if the ball is near enought in the y axis to permform the collision
 		if (!(
 			// check if ball is bellow the top of the paddle
@@ -194,7 +200,6 @@ export class Pong {
 		// so we know that the y is close enougth to be a bit, so we check the X. are we closer than the ball size ? if yes -> hit
 		if (
 			// check if the paddle.x is at most ball.size away from the center of the ball => we have a hit houston
-			// call he pentagon, 9 11
 			Math.abs(
 				paddle.x + paddle.width * (side === 'left' ? 1 : 0)
 				- this.ball.x)
