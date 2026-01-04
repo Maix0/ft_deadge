@@ -205,9 +205,10 @@ export async function handleRoute() {
 			`/login?returnTo=${encodeURIComponent(window.location.pathname)}`,
 		);
 	const app = document.getElementById("app")!;
-	document.dispatchEvent(
-		new CustomEvent("ft:pageChange" as any, {} as any) as any,
-	);
+
+	const event = new CustomEvent("ft:pageChange", { detail: window.location.pathname });
+	document.dispatchEvent(event);
+
 	let ret = await executeRouteHandler(
 		route_handler,
 		window.location.pathname,
