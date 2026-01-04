@@ -66,7 +66,7 @@ class Ball {
 			this.angle = -this.angle + Math.PI;
 			c = 'x';
 		}
-		if (snap){
+		if (snap) {
 			this[c] =
 				walls[side] +
 				this.size * (side === 'right' || side === 'bottom' ? -1 : 1);
@@ -98,7 +98,6 @@ function makeAngle(i: number): [number, number, number, number] {
 export class Pong {
 	public gameUpdate: NodeJS.Timeout | null = null;
 
-
 	public static readonly BALL_START_ANGLES: number[] = [
 		...makeAngle(4),
 		...makeAngle(6),
@@ -119,7 +118,11 @@ export class Pong {
 		Pong.GAME_WIDTH - Pong.PADDLE_OFFSET - Paddle.DEFAULT_WIDTH,
 		(Pong.GAME_HEIGHT - Paddle.DEFAULT_HEIGHT) / 2,
 	);
-	public ball: Ball = new Ball(Pong.GAME_WIDTH / 2, Pong.GAME_HEIGHT / 2, Pong.BALL_START_ANGLES[this.ballAngleIdx++]);
+	public ball: Ball = new Ball(
+		Pong.GAME_WIDTH / 2,
+		Pong.GAME_HEIGHT / 2,
+		Pong.BALL_START_ANGLES[this.ballAngleIdx++],
+	);
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
@@ -133,25 +136,33 @@ export class Pong {
 	constructor(
 		public userLeft: UserId,
 		public userRight: UserId,
-	) {
-	}
+	) { }
 
 	public tick() {
 		if (this.paddleCollision(this.leftPaddle, 'left')) {
-			this.ball.collided('left', {
-				left: this.leftPaddle.x + this.leftPaddle.width,
-				right: 0,
-				top: 0,
-				bottom: 0}, false
+			this.ball.collided(
+				'left',
+				{
+					left: this.leftPaddle.x + this.leftPaddle.width,
+					right: 0,
+					top: 0,
+					bottom: 0,
+				},
+				false,
 			);
 			return;
 		}
 		if (this.paddleCollision(this.rightPaddle, 'right')) {
-			this.ball.collided('right', {
-				right: this.rightPaddle.x,
-				left: 0,
-				top: 0,
-				bottom: 0}, false);
+			this.ball.collided(
+				'right',
+				{
+					right: this.rightPaddle.x,
+					left: 0,
+					top: 0,
+					bottom: 0,
+				},
+				false,
+			);
 			return;
 		}
 		const wallCollision = this.boxCollision();
@@ -186,25 +197,32 @@ export class Pong {
 	}
 
 	private paddleCollision(paddle: Paddle, side: 'left' | 'right'): boolean {
-		if (Math.abs(this.ball.angle) > Math.PI / 2 && side !== 'left' ||
-			Math.abs(this.ball.angle) < Math.PI / 2 && side !== 'right')
-			return (false)
+		if (
+			(Math.abs(this.ball.angle) > Math.PI / 2 && side !== 'left') ||
+			(Math.abs(this.ball.angle) < Math.PI / 2 && side !== 'right')
+		) {return false;}
 
 		// now we check only if the ball is near enought in the y axis to permform the collision
-		if (!(
-			// check if ball is bellow the top of the paddle
-			paddle.y - this.ball.size < this.ball.y &&
-			// check if ball is above the bottom of the paddle
-			this.ball.y < paddle.y + paddle.height + this.ball.size)) return false;
+		if (
+			!(
+				// check if ball is bellow the top of the paddle
+				(
+					paddle.y - this.ball.size < this.ball.y &&
+					// check if ball is above the bottom of the paddle
+					this.ball.y < paddle.y + paddle.height + this.ball.size
+				)
+			)
+		) {return false;}
 
 		// so we know that the y is close enougth to be a bit, so we check the X. are we closer than the ball size ? if yes -> hit
 		if (
 			// check if the paddle.x is at most ball.size away from the center of the ball => we have a hit houston
 			Math.abs(
-				paddle.x + paddle.width * (side === 'left' ? 1 : 0)
-				- this.ball.x)
-			< this.ball.size
-		) return true;
+				paddle.x +
+				paddle.width * (side === 'left' ? 1 : 0) -
+				this.ball.x,
+			) < this.ball.size
+		) {return true;}
 		return false;
 	}
 
@@ -217,11 +235,19 @@ export class Pong {
 	public movePaddle(user: UserId | ('left' | 'right'), dir: 'up' | 'down') {
 		let paddle: Paddle | null = null;
 		if (this.local) {
-			if (user === 'left') { paddle = this.leftPaddle; }
-			else if (user === 'right') { paddle = this.rightPaddle; }
+			if (user === 'left') {
+				paddle = this.leftPaddle;
+			}
+			else if (user === 'right') {
+				paddle = this.rightPaddle;
+			}
 		}
-		else if (user === this.userLeft) { paddle = this.leftPaddle; }
-		else if (user === this.userRight) { paddle = this.rightPaddle; }
+		else if (user === this.userLeft) {
+			paddle = this.leftPaddle;
+		}
+		else if (user === this.userRight) {
+			paddle = this.rightPaddle;
+		}
 		if (paddle === null) return;
 		paddle.move(dir);
 		paddle.clamp(0, Pong.GAME_HEIGHT);
