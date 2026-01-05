@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import { Pong } from './game';
 import { GameMove, GameUpdate, SSocket } from './socket';
 import { isNullish } from '@shared/utils';
+import { PongGameId, PongGameOutcome } from '@shared/database/mixin/pong';
 
 type PUser = {
 	id: UserId;
@@ -13,7 +14,7 @@ type PUser = {
 	updateInterval: NodeJS.Timeout,
 };
 
-type GameId = string & { readonly __brand: unique symbol };
+type GameId = PongGameId;
 
 class StateI {
 	public static readonly UPDATE_INTERVAL_FRAMES: number = 60;
@@ -72,7 +73,9 @@ class StateI {
 				g.tick();
 				this.gameUpdate(gameId, u1.socket);
 				this.gameUpdate(gameId, u2.socket);
-				if (g.checkWinner() !== null) { this.cleanupGame(gameId, g); }
+				if (g.checkWinner() !== null) {
+					this.cleanupGame(gameId, g);
+				}
 			}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
 		}
 	}
@@ -175,6 +178,12 @@ class StateI {
 			player.currentGame = null;
 			player.socket.emit('gameEnd');
 		}
+		const rOutcome = game.checkWinner();
+		let outcome: PongGameOutcome = 'other';
+		if (rOutcome === 'left') { outcome = 'winL'; }
+		if (rOutcome === 'right') { outcome = 'winR'; }
+		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
+		this.fastify.log.info('SetGameOutcome !');
 		// do something here with the game result before deleting the game at the end
 	}
 

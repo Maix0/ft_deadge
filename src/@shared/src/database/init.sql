@@ -10,18 +10,14 @@ CREATE TABLE IF NOT EXISTS user (
   allow_guest_message INTEGER NOT NULL DEFAULT 1
 );
 
-
 CREATE TABLE IF NOT EXISTS blocked (
   id INTEGER PRIMARY KEY NOT NULL,
   user TEXT NOT NULL,
   blocked TEXT NOT NULL,
-
-  FOREIGN KEY(user) REFERENCES user(id)
-  FOREIGN KEY(blocked) REFERENCES user(id)
+  FOREIGN KEY (user) REFERENCES user (id) FOREIGN KEY (blocked) REFERENCES user (id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_user_pair
-    ON blocked(user, blocked);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_user_pair ON blocked (user, blocked);
 
 CREATE TABLE IF NOT EXISTS tictactoe (
     id TEXT PRIMARY KEY NOT NULL,
@@ -30,4 +26,17 @@ CREATE TABLE IF NOT EXISTS tictactoe (
     outcome TEXT NOT NULL,
     FOREIGN KEY(player1) REFERENCES user(id),
     FOREIGN KEY(player2) REFERENCES user(id)
+);
+
+CREATE TABLE IF NOT EXISTS pong (
+  id TEXT PRIMARY KEY NOT NULL,
+  time TEXT NOT NULL default (datetime('now')),
+  playerL TEXT NOT NULL,
+  playerR TEXT NOT NULL,
+  scoreL INTEGER NOT NULL,
+  scoreR INTEGER NOT NULL,
+  outcome TEXT NOT NULL,
+  local INTEGER NOT NULL,
+  FOREIGN KEY (playerL) REFERENCES user (id),
+  FOREIGN KEY (playerR) REFERENCES user (id)
 );

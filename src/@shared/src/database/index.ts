@@ -5,12 +5,14 @@ import { Database as DbImpl } from './mixin/_base';
 import { IUserDb, UserImpl } from './mixin/user';
 import { IBlockedDb, BlockedImpl } from './mixin/blocked';
 import { ITicTacToeDb, TicTacToeImpl } from './mixin/tictactoe';
+import { IPongDb, PongImpl } from './mixin/pong';
 
 Object.assign(DbImpl.prototype, UserImpl);
 Object.assign(DbImpl.prototype, BlockedImpl);
 Object.assign(DbImpl.prototype, TicTacToeImpl);
+Object.assign(DbImpl.prototype, PongImpl);
 
-export interface Database extends DbImpl, IUserDb, IBlockedDb, ITicTacToeDb { }
+export interface Database extends DbImpl, IUserDb, IBlockedDb, ITicTacToeDb, IPongDb { }
 
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
