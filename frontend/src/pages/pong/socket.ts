@@ -3,6 +3,7 @@ import { Socket } from 'socket.io-client';
 export type UpdateInfo = {
 	inQueue: number,
 	totalUser: number,
+	totalGames : number
 }
 
 export type PaddleData = {

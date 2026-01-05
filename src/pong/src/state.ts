@@ -159,6 +159,7 @@ class StateI {
 		socket.emit('updateInformation', {
 			inQueue: this.queue.size,
 			totalUser: this.users.size,
+			totalGames: this.games.size,
 		});
 	}
 

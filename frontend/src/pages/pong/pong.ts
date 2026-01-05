@@ -20,6 +20,7 @@ enum QueueState {
 	InQueu = "In Queue",
 	InGame = "In Game",
 	Iddle = "Queue Up",
+	In_local = "In Local",
 };
 
 document.addEventListener("ft:pageChange", (newUrl) => {
@@ -54,7 +55,9 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const playerL = document.querySelector<HTMLDivElement>('#player-left');
 			const playerR = document.querySelector<HTMLDivElement>('#player-right');
 			const queueBtn = document.querySelector<HTMLButtonElement>("#QueueBtn");
+			const LocalGameBtn = document.querySelector<HTMLButtonElement>("#LocalBtn");
 			const gameBoard = document.querySelector<HTMLDivElement>("#pongbox");
+			const queue_infos = document.querySelector<HTMLSpanElement>("#queue-info");
 
 			let socket = getSocket();
 
@@ -62,7 +65,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				navigateTo("/app");
 				return ;
 			}
-			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard) // sanity check
+			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard || !queue_infos || !LocalGameBtn) // sanity check
 				return showError('fatal error');
 
 			// ---
@@ -151,6 +154,18 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				queueBtn.innerText = QueueState.InQueu;
 				socket.emit('enqueue');
 			});
+
+			LocalGameBtn.addEventListener("click", () => {
+				if (queueBtn.innerText !== QueueState.Iddle || currentGame !== null) {
+					showError("cant launch a local game while in queue/in game");
+					return ;
+				}
+				socket.emit("localGame");
+				queueBtn.innerText = QueueState.In_local;
+				LocalGameBtn.innerText = "playing";
+			});
+
+
 			async function get_opponent(opponent_id : string) {
 				let t = await client.getUser({user:opponent_id});
 
@@ -194,10 +209,13 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					new_div.innerText = 'you ' + end_txt; 
 					new_div.className = "pong-end-screen";
 					gameBoard.appendChild(new_div);
-
 					setTimeout(() => {
 						new_div.remove();
 					}, 3 * 1000);
+
+					if (currentGame.local) {
+						LocalGameBtn.innerText = "Local Game"
+					}
 				}
 				render(DEFAULT_POSITIONS);
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
@@ -212,11 +230,17 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// ---
 			// queue evt end
 			// ---
+
+			queueBtn.innerText = QueueState.Iddle;
+			currentGame = null;
 			render(DEFAULT_POSITIONS);
 			batLeft.style.backgroundColor = DEFAULT_COLOR;
 			batRight.style.backgroundColor = DEFAULT_COLOR;
 
-			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
+			socket.on('updateInformation', (e) => {
+				showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue};g=${e.totalGames}`);
+				queue_infos.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
+			});
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
 			showInfo("butter");
 			showInfo("butter-toast");
