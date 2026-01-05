@@ -24,7 +24,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_user_pair
     ON blocked(user, blocked);
 
 CREATE TABLE IF NOT EXISTS tictactoe (
-    id INTEGER PRIMARY KEY NOT NULL,
+    id TEXT PRIMARY KEY NOT NULL,
     player1 TEXT NOT NULL,
     player2 TEXT NOT NULL,
     outcome TEXT NOT NULL
