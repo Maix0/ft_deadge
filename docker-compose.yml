@@ -132,11 +132,11 @@ services:
       - JWT_SECRET=KRUGKIDROVUWG2ZAMJZG653OEBTG66BANJ2W24DTEBXXMZLSEB2GQZJANRQXU6JA
       - PROVIDER_FILE=/extra/providers.toml
       - SESSION_MANAGER=${SESSION_MANAGER}
-    # logging:
-    #   driver: gelf
-    #   options:
-    #     gelf-address: "udp://127.0.0.1:12201"
-    #     tag: "{{.Name}}"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "{{.Name}}"
 
   ###############
   #    PONG     #
