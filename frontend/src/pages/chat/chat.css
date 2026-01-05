@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @font-face {
-  font-family: "Nimbus Mono L";
-  src: url("/fonts/NimbusMonoL.woff2") format("woff2");
+  font-family: "DejaVu Sans Mono";
+  src: url("/fonts/DejaVuSansMono.woff2") format("woff2");
 }
 
 @tailwind utilities;

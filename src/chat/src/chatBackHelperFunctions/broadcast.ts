@@ -27,6 +27,9 @@ export async function broadcast(fastify: FastifyInstance, data: ClientMessage, s
 		}
 		if (!blockMsgFlag) {
 			socket.emit('MsgObjectServer', { message: data });
+			if (data.SenderUserID) {
+				fastify.log.info({ senderID: data.SenderUserID, msgBroadcast: data.text });
+			}
 		}
 	}
 }

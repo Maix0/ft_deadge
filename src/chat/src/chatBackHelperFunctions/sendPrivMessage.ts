@@ -42,22 +42,22 @@ function whoBlockedMe(fastify: FastifyInstance, myID: string): BlockRelation [] 
  * @param fastify
  * @param data
  * @param sender
- */
+*/
 
 export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
 	const sockets = await fastify.io.fetchSockets();
-	const AllusersBlocked: User[] = fastify.db.getAllUsers() ?? [];
+	const allUsers: User[] = fastify.db.getAllUsers() ?? [];
 	const senderSocket = sockets.find(socket => socket.id === sender);
 	for (const socket of sockets) {
-		const UserID = getUserByName(AllusersBlocked, data.user)?.id ?? '';
+		const UserID = getUserByName(allUsers, data.user)?.id ?? '';
 		const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
 		const clientInfo = clientChat.get(socket.id);
 		if (!clientInfo?.user) {
 			continue;
 		}
 		let blockMsgFlag: boolean = false;
-		const UserByID = getUserByName(AllusersBlocked, clientInfo.user) ?? '';
+		const UserByID = getUserByName(allUsers, clientInfo.user) ?? '';
 		if (UserByID === '') {
 			return;
 		}
@@ -74,6 +74,7 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		}
 		if (!blockMsgFlag) {
 			socket.emit('MsgObjectServer', { message: data });
+			fastify.log.info({ senderID: `${UserID}`, msgPriv: data.text, target: `${UserByID.id}` });
 			if (senderSocket) {
 				senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
 			}

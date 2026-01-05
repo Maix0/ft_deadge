@@ -24,7 +24,6 @@ const start = async () => {
 			f.log.info('Requested to shutdown');
 			process.exit(134);
 		});
-		console.log('-------->Serving static files from:');
 		await f.register(app, {});
 		await f.listen({ port: 80, host: '0.0.0.0' });
 	}
