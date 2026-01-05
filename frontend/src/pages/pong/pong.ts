@@ -3,8 +3,9 @@ import authHtml from './pong.html?raw';
 import io from 'socket.io-client';
 import type { CSocket, GameMove, GameUpdate } from "./socket";
 import { showError, showInfo } from "@app/toast";
-import { getUser } from "@app/auth";
+import { getUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
+import client from "@app/api";
 
 // get the name of the machine used to connect
 declare module 'ft_state' {
@@ -45,6 +46,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			const user = getUser();
 			let currentGame: GameUpdate | null = null;
+			let opponent: User | null = null;
 			const batLeft = document.querySelector<HTMLDivElement>("#batleft");
 			const batRight = document.querySelector<HTMLDivElement>("#batright");
 			const ball = document.querySelector<HTMLDivElement>("#ball");
@@ -52,6 +54,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const playerL = document.querySelector<HTMLDivElement>('#player-left');
 			const playerR = document.querySelector<HTMLDivElement>('#player-right');
 			const queueBtn = document.querySelector<HTMLButtonElement>("#QueueBtn");
+			const gameBoard = document.querySelector<HTMLDivElement>("#pongbox");
 
 			let socket = getSocket();
 
@@ -59,7 +62,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				navigateTo("/app");
 				return ;
 			}
-			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR) // sanity check
+			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard) // sanity check
 				return showError('fatal error');
 
 			// ---
@@ -134,8 +137,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			function set_pretty(batU : HTMLDivElement, txtU : HTMLDivElement, txtO : HTMLDivElement, colorYou : string) {
 				batU.style.backgroundColor = colorYou;
 				txtU.style.color = colorYou;
-				txtU.innerText = "you";
-				txtO.innerHTML = "The Mechant";
+				txtU.innerText = isNullish(user) ? "you" : user.name;
+				txtO.innerText = isNullish(opponent) ? "the mechant" : opponent.name;
 			}
 			queueBtn.addEventListener("click", ()=>{
 				if (queueBtn.innerText !== QueueState.Iddle) {
@@ -148,8 +151,22 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				queueBtn.innerText = QueueState.InQueu;
 				socket.emit('enqueue');
 			});
-			socket.on('newGame', (state) => {
+			async function get_opponent(opponent_id : string) {
+				let t = await client.getUser({user:opponent_id});
+
+				switch (t.kind) {
+					case "success" :
+						opponent = t.payload;
+						break ;
+					default :
+						opponent = null;
+				}
+			}
+			
+
+			socket.on('newGame', async (state) => {
 				render(state);
+				await get_opponent(state.left.id == user.id ? state.right.id : state.left.id);
 				queueBtn.innerText = QueueState.InGame;
 				queueBtn.style.color = 'red';
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
@@ -165,6 +182,23 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			socket.on("gameEnd", () => {
 				queueBtn.innerHTML = QueueState.Iddle;
 				queueBtn.style.color = 'white';
+
+				if (!isNullish(currentGame)) {
+					let new_div = document.createElement('div');
+					let end_txt = "";
+					if ((user.id === currentGame.left.id && currentGame.left.score > currentGame.right.score) ||
+						(user.id === currentGame.right.id && currentGame.right.score > currentGame.left.score))
+						end_txt = 'won! #yippe';
+					else
+						end_txt = 'lost #sadge';
+					new_div.innerText = 'you ' + end_txt; 
+					new_div.className = "pong-end-screen";
+					gameBoard.appendChild(new_div);
+
+					setTimeout(() => {
+						new_div.remove();
+					}, 3 * 1000);
+				}
 				render(DEFAULT_POSITIONS);
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
 				batRight.style.backgroundColor = DEFAULT_COLOR;
@@ -173,6 +207,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				playerR.innerText = "";
 				playerL.innerText = "";
 				currentGame = null;
+				opponent = null;
 			})
 			// ---
 			// queue evt end
@@ -181,8 +216,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			batLeft.style.backgroundColor = DEFAULT_COLOR;
 			batRight.style.backgroundColor = DEFAULT_COLOR;
 
-			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`)); // queue info TODO: delete for final product
-			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`)); // queue evt can be left in product
+			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
+			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
 			showInfo("butter");
 			showInfo("butter-toast");
 			// socket.emit('localGame');

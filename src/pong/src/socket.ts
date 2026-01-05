@@ -32,6 +32,8 @@ export type GameMove = {
 export interface ClientToServer {
 	enqueue: () => void;
 	dequeue: () => void;
+	readyUp: () => void;
+	readyDown:() => void;
 	debugInfo: () => void;
 	gameMove: (up: GameMove) => void;
 	connectedToGame: (gameId: string) => void;

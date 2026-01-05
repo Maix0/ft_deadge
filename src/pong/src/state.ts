@@ -69,6 +69,10 @@ class StateI {
 			u1.currentGame = gameId;
 			u2.currentGame = gameId;
 
+			// ---
+			// wait for ready up
+			// --- 
+			
 			g.gameUpdate = setInterval(() => {
 				g.tick();
 				this.gameUpdate(gameId, u1.socket);

@@ -132,3 +132,13 @@
     bg-[linear-gradient(to_bottom,white_50%,transparent_50%)]
     bg-size-[4px_20px];
 }
+
+.pong-end-screen {
+  @apply 
+    rounded-2xl
+    absolute
+    justify-center
+    text-black
+    text-center
+    bg-white
+}

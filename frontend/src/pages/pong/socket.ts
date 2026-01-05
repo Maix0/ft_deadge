@@ -33,6 +33,8 @@ export type GameMove = {
 export interface ClientToServer {
 	enqueue: () => void;
 	dequeue: () => void;
+	readyUp: () => void;
+	readyDown:() => void;
 	debugInfo: () => void;
 	gameMove: (up: GameMove) => void;
 	connectedToGame: (gameId: string) => void;
@@ -43,7 +45,7 @@ export interface ServerToClient {
 	forceDisconnect: (reason: string) => void;
 	queueEvent: (msg: 'registered' | 'unregistered') => void;
 	updateInformation: (info: UpdateInfo) => void,
-	newGame: (initState: GameUpdate) => void,
+	newGame: (initState: GameUpdate) => void, // <- consider this the gameProc eg not start of game but wait for client to "ready up"
 	gameUpdate: (state: GameUpdate) => void,
 	gameEnd: () => void;
 };
