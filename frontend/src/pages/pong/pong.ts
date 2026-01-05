@@ -232,13 +232,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// ---
 
 			queueBtn.innerText = QueueState.Iddle;
-			currentGame = null;
 			render(DEFAULT_POSITIONS);
+			currentGame = null;
 			batLeft.style.backgroundColor = DEFAULT_COLOR;
 			batRight.style.backgroundColor = DEFAULT_COLOR;
 
 			socket.on('updateInformation', (e) => {
-				showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue};g=${e.totalGames}`);
 				queue_infos.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
 			});
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
