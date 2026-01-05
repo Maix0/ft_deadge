@@ -6,13 +6,12 @@ import type { ClientProfil } from '../chat_types';
  * @param fastify
  * @param profil
  * @param SenderWindowID
- */
+*/
 
-export function sendProfil(fastify: FastifyInstance, profil: ClientProfil, SenderWindowID?: string) {
-	fastify.io.fetchSockets().then((sockets) => {
-		const senderSocket = sockets.find(socket => socket.id === SenderWindowID);
-		if (senderSocket) {
-			senderSocket.emit('profilMessage', profil);
-		}
-	});
+export async function sendProfil(fastify: FastifyInstance, profil: ClientProfil, SenderWindowID?: string) {
+	const sockets = await fastify.io.fetchSockets();
+	const senderSocket = sockets.find(socket => socket.id === SenderWindowID);
+	if (senderSocket) {
+		senderSocket.emit('profilMessage', profil);
+	}
 }

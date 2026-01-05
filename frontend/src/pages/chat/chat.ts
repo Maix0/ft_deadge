@@ -15,21 +15,9 @@ import { actionBtnPopUpBlock } from './chatHelperFunctions/actionBtnPopUpBlock';
 import { windowStateHidden } from './chatHelperFunctions/windowStateHidden';
 import type { blockedUnBlocked, obj } from './types_front';
 
-export const color = {
-	red: 'color: red;',
-	green: 'color: green;',
-	yellow: 'color: orange;',
-	blue: 'color: blue;',
-	reset: '',
-};
-
-
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
-
-// get the name of the machine used to connect
 const machineHostName = window.location.hostname;
-console.log('connect to login at %chttps://' + machineHostName + ':8888/app/login',color.yellow);
 
 export let __socket: Socket | undefined = undefined;
 document.addEventListener('ft:pageChange', () => {
@@ -73,7 +61,7 @@ async function windowStateVisable() {
 	const socketId = __socket || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
 
-	if (socketId === undefined || oldName === undefined) {console.log("%SOCKET ID", color.red); return;}
+	if (socketId === undefined || oldName === undefined) {return;};
 	let user = await updateUser();
 	if(user === null) return;
 	socketId.emit('client_entered', {
@@ -166,14 +154,11 @@ async function connected(socket: Socket): Promise<void> {
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 			const loggedIn = isLoggedIn();
 			if (!loggedIn) throw('Not Logged in');
-			console.log('%cloggedIn:',color.blue, loggedIn?.name);
 			let oldUser = localStorage.getItem("oldName") ?? "";
-			console.log('%coldUser:',color.yellow, oldUser);
-			if (loggedIn?.name === undefined) {console.log('');return ;}
+			if (loggedIn?.name === undefined) {return ;};
 				oldUser =  loggedIn.name ?? "";
 				// const res = await client.guestLogin();
 				let user = await updateUser();
-				console.log('%cUser?name:',color.yellow, user?.name);
 				localStorage.setItem("oldName", oldUser);
 				buddies.textContent = "";
 				socket.emit('list', {
@@ -376,11 +361,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const bquit = document.getElementById('b-quit') as HTMLDivElement;
 			const bnextGame = document.getElementById('b-nextGame') as HTMLDivElement;
 
-			// chatWindow.textContent = '';
-			// chatWindow.innerHTML = '';
 			buddies.textContent = '';
 			buddies.innerHTML = '';
-
 			const buttonPro = document.getElementById("close-modal") ?? null;
 
 			if (buttonPro)
@@ -465,12 +447,12 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								};
 								socket.emit('privMessage', JSON.stringify(message));
     						    break;
+							}
+							// Clear the input in all cases
+							sendtextbox.value = "";
 						}
-						// Clear the input in all cases
-						sendtextbox.value = "";
 					}
-				}
-			});
+				});
 
 			// Clear Text button
 			clearText?.addEventListener("click", () => {
@@ -491,8 +473,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 
 			// Enter key to send message
-			sendtextbox!.addEventListener('keydown', (event) => {
+			sendtextbox.addEventListener('keydown', (event) => {
+				if(!sendtextbox) return;
 				if (event.key === 'Enter') {
+					event.preventDefault();
 					sendButton?.click();
 				}
 			});

@@ -21,25 +21,13 @@ import { setGameLink } from './setGameLink';
 import { nextGame_SocketListener } from './nextGame_SocketListener';
 import { list_SocketListener } from './chatBackHelperFunctions/list_SocketListener';
 
-// colors for console.log
-export const color = {
-	red: '\x1b[31m',
-	green: '\x1b[32m',
-	yellow: '\x1b[33m',
-	blue: '\x1b[34m',
-	reset: '\x1b[0m',
-};
-
 declare const __SERVICE_NAME: string;
 
-// Global map of clients
-// key = socket, value = clientname
 interface ClientInfo {
   user: string;
   socket: string
   lastSeen: number;
 }
-
 
 export type blockedUnBlocked =
 {
@@ -125,20 +113,16 @@ function isUser_BlockedBy_me(fastify: FastifyInstance, blockedBy_Id : string, is
 	const UserToBlock: User | null = getUserById(users, `${isBlocked_Id}`);
 	const UserAskingToBlock: User | null = getUserById(users, `${blockedBy_Id}`);
 	if (!UserToBlock) {
-		console.log(color.blue, `'User: ${UserAskingToBlock?.id} has not blocked' ${isBlocked_Id}`);
 		return '';
 	};
 	if (!UserAskingToBlock) {
-		console.log(color.blue, `'User: ${UserToBlock?.id} has not blocked by' ${blockedBy_Id}`);
 		return '';
 	};
 	const usersBlocked: BlockedData[] = fastify.db.getAllBlockedUsers() ?? [];
 	const userAreBlocked: boolean = isBlocked(UserAskingToBlock, UserToBlock, usersBlocked);
 	if (userAreBlocked) {
-		console.log(color.yellow, `'User :${UserAskingToBlock.name}) Hhas UN blocked ${UserToBlock.name}`);
 		return UserAskingToBlock.name;
 	}
-	console.log(color.blue, `'User :${UserAskingToBlock.name}) has BBBblocked ${UserToBlock.name}`);
 	return '';
 };
 
@@ -147,7 +131,7 @@ async function onReady(fastify: FastifyInstance) {
 	if (session) {
 		const part = session.split('/')[1];
 		const machineName = part.split('.')[0];
-		console.log(color.yellow, 'Connect at : https://' + machineName + ':8888/app/login');
+		fastify.log.info(`Connect at : https://${machineName}:8888/`);
 	}
 
 	fastify.io.on('connection', (socket: Socket) => {
@@ -156,6 +140,7 @@ async function onReady(fastify: FastifyInstance) {
 			clientChat.set(socket.id, { user: obj.user, socket: socket.id, lastSeen: Date.now() });
 			socket.emit('welcome', { msg: 'Welcome to the chat! : ' });
 			broadcast(fastify, obj, obj.SenderWindowID);
+			fastify.log.info(`Client connected: ${socket.id}`);
 		});
 		nextGame_SocketListener(fastify, socket);
 		list_SocketListener(fastify, socket);
@@ -166,7 +151,6 @@ async function onReady(fastify: FastifyInstance) {
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				if (client) {
   					client.user = userFromFrontend.user;
-					console.log(color.yellow, `'DEBUG LOG: client.user is, '${client.user}'`);
 				}
 			}
 		});
@@ -218,7 +202,6 @@ async function onReady(fastify: FastifyInstance) {
 					SenderUserName: '',
 					SenderUserID: '',
 				};
-
 				broadcast(fastify, obj, obj.SenderWindowID);
 			}
 		});
@@ -272,6 +255,7 @@ async function onReady(fastify: FastifyInstance) {
 			}
 		});
 
+
 		socket.on('profilMessage', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilMessage: ClientMessage = JSON.parse(data) || '';
@@ -287,7 +271,6 @@ async function onReady(fastify: FastifyInstance) {
 
 			const inviteHtml: string = 'invites you to a game ' + setGameLink('');
 			if (clientName !== null) {
-				console.log(`DEBUG LOG: clientName =${clientName}`);
 				sendInvite(fastify, inviteHtml, profilInvite);
 			}
 		});
@@ -397,29 +380,18 @@ async function onReady(fastify: FastifyInstance) {
     		const userNameFromFrontend = data?.userName || null;
     		const userFromFrontend = data?.user || null;
 			let clientName = clientChat.get(socket.id)?.user || null;
-			// const client = clientChat.get(socket.id) || null;
 			let text = 'is back in the chat';
 
 			if (clientName === null) {
-				console.log('ERROR: clientName is NULL'); return;
+				fastify.log.error('ERROR: clientName is NULL'); return;
 			};
-			// if (client === null) {
-			// 	console.log('ERROR: client is NULL'); return;
-			// };
 			if (userNameFromFrontend !== userFromFrontend) {
 				text = `'is back in the chat, I used to be called '${userNameFromFrontend}`;
 				clientName = userFromFrontend;
 				if (clientName === null) {
-					console.log('ERROR: clientName is NULL'); return;
+					fastify.log.error('ERROR: clientName is NULL'); return;
 				};
-				// if (client) {
-  				// 	client.user = clientName;
-				// }
 			}
-    		// console.log(
-    		    // color.green,
-    		    // `Client entered the Chat: ${clientName} (${socket.id})`,
-    		// );
     		if (clientName !== null) {
     		    const obj: ClientMessage = {
 					command: '',

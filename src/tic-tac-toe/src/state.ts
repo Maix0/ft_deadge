@@ -95,7 +95,6 @@ export class StateI {
 		socket.on('debugInfo', () => this.debugSocket(socket));
 
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
-		if (socket) {console.log('Socket:', socket.id);};
 	}
 
 	private updateClient(socket: SSocket): void {
