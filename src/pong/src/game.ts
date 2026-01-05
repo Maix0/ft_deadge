@@ -98,6 +98,8 @@ function makeAngle(i: number): [number, number, number, number] {
 export class Pong {
 	public gameUpdate: NodeJS.Timeout | null = null;
 
+	public static readonly CONCEDED_TIMEOUT: number = 1500;
+
 	public static readonly BALL_START_ANGLES: number[] = [
 		...makeAngle(4),
 		...makeAngle(6),
@@ -126,6 +128,11 @@ export class Pong {
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
+
+	public rightLastSeen: number = -1;
+	public leftLastSeen: number = -1;
+
+	private cachedWinner: 'left' | 'right' | null = null;
 
 	public static makeLocal(owner: UserId): Pong {
 		const game = new Pong(owner, owner);
@@ -200,7 +207,9 @@ export class Pong {
 		if (
 			(Math.abs(this.ball.angle) > Math.PI / 2 && side !== 'left') ||
 			(Math.abs(this.ball.angle) < Math.PI / 2 && side !== 'right')
-		) {return false;}
+		) {
+			return false;
+		}
 
 		// now we check only if the ball is near enought in the y axis to permform the collision
 		if (
@@ -212,7 +221,9 @@ export class Pong {
 					this.ball.y < paddle.y + paddle.height + this.ball.size
 				)
 			)
-		) {return false;}
+		) {
+			return false;
+		}
 
 		// so we know that the y is close enougth to be a bit, so we check the X. are we closer than the ball size ? if yes -> hit
 		if (
@@ -222,14 +233,49 @@ export class Pong {
 				paddle.width * (side === 'left' ? 1 : 0) -
 				this.ball.x,
 			) < this.ball.size
-		) {return true;}
+		) {
+			return true;
+		}
 		return false;
 	}
 
+	public updateLastSeen(user: UserId) {
+		if (this.local && this.userLeft === user) {
+			this.leftLastSeen = Date.now();
+			this.rightLastSeen = Date.now();
+		}
+		else if (this.userLeft === user) {
+			this.leftLastSeen = Date.now();
+		}
+		else if (this.userRight === user) {
+			this.rightLastSeen = Date.now();
+		}
+	}
+
 	public checkWinner(): 'left' | 'right' | null {
-		if (this.score[0] >= 5) return 'left';
-		if (this.score[1] >= 5) return 'right';
-		return null;
+		const checkInner = () => {
+			if (this.score[0] >= 5) return 'left';
+			if (this.score[1] >= 5) return 'right';
+
+			if (
+				this.leftLastSeen !== -1 &&
+				Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT
+			) {
+				return 'right';
+			}
+			if (
+				this.rightLastSeen !== -1 &&
+				Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT
+			) {
+				return 'left';
+			}
+
+			return null;
+		};
+		if (this.cachedWinner === null) {
+			this.cachedWinner = checkInner();
+		}
+		return this.cachedWinner;
 	}
 
 	public movePaddle(user: UserId | ('left' | 'right'), dir: 'up' | 'down') {

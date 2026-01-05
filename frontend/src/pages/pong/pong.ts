@@ -194,15 +194,15 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					showError("couldn't find your id in game");
 			}); // TODO: notif user of new game w "ready up" btn
 
-			socket.on("gameEnd", () => {
+			socket.on("gameEnd", (winner) => {
 				queueBtn.innerHTML = QueueState.Iddle;
 				queueBtn.style.color = 'white';
 
 				if (!isNullish(currentGame)) {
 					let new_div = document.createElement('div');
 					let end_txt = "";
-					if ((user.id === currentGame.left.id && currentGame.left.score > currentGame.right.score) ||
-						(user.id === currentGame.right.id && currentGame.right.score > currentGame.left.score))
+					if ((user.id === currentGame.left.id && winner === 'left') ||
+						(user.id === currentGame.right.id && winner === 'right'))
 						end_txt = 'won! #yippe';
 					else
 						end_txt = 'lost #sadge';
