@@ -128,6 +128,7 @@ class StateI {
 			if (u.moveRight !== null) { game.movePaddle('right', u.moveRight); }
 		}
 		else if (u.move !== null) { game.movePaddle(user.id, u.move); }
+		game.updateLastSeen(user.id);
 	}
 
 
@@ -174,14 +175,15 @@ class StateI {
 	private cleanupGame(gameId: GameId, game: Pong): void {
 		clearInterval(game.gameUpdate ?? undefined);
 		this.games.delete(gameId);
+		const winner = game.checkWinner() ?? 'left';
 		let player: PUser | undefined = undefined;
 		if ((player = this.users.get(game.userLeft)) !== undefined) {
 			player.currentGame = null;
-			player.socket.emit('gameEnd');
+			player.socket.emit('gameEnd', winner);
 		}
 		if ((player = this.users.get(game.userRight)) !== undefined) {
 			player.currentGame = null;
-			player.socket.emit('gameEnd');
+			player.socket.emit('gameEnd', winner);
 		}
 		const rOutcome = game.checkWinner();
 		let outcome: PongGameOutcome = 'other';

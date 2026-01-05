@@ -47,7 +47,7 @@ export interface ServerToClient {
 	updateInformation: (info: UpdateInfo) => void,
 	newGame: (initState: GameUpdate) => void,
 	gameUpdate: (state: GameUpdate) => void,
-	gameEnd: () => void;
+	gameEnd: (winner: 'left' | 'right') => void;
 };
 
 export type SSocket = Socket<ClientToServer, ServerToClient>;
