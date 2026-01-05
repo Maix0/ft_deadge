@@ -27,8 +27,7 @@ CREATE TABLE IF NOT EXISTS tictactoe (
     id TEXT PRIMARY KEY NOT NULL,
     player1 TEXT NOT NULL,
     player2 TEXT NOT NULL,
-    outcome TEXT NOT NULL
-
---     FOREIGN KEY(player1) REFERENCES user(id)
---     FOREIGN KEY(player2) REFERENCES user(id)
+    outcome TEXT NOT NULL,
+    FOREIGN KEY(player1) REFERENCES user(id),
+    FOREIGN KEY(player2) REFERENCES user(id)
 );

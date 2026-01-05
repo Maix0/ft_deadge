@@ -1,11 +1,10 @@
+import UUID from '@shared/utils/uuid';
 import type { Database } from './_base';
 import { UserId } from './user';
-// import { UserId } from './user';
 
 // describe every function in the object
 export interface ITicTacToeDb extends Database {
-	setGameOutcome(this: ITicTacToeDb, id: GameId, player1: UserId, player2: UserId, outcome: string): void,
-	// 	asyncFunction(id: TemplateId): Promise<TemplateData | undefined>,
+	setTTTGameOutcome(this: ITicTacToeDb, id: TTTGameId, player1: UserId, player2: UserId, outcome: string): void,
 };
 
 export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
@@ -15,29 +14,18 @@ export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
 	 * @param gameId The game we want to write the outcome of.
 	 *
 	 */
-	setGameOutcome(this: ITicTacToeDb, id: GameId, player1: string, player2: string, outcome: string): void {
+	setTTTGameOutcome(this: ITicTacToeDb, id: TTTGameId, player1: UserId, player2: UserId, outcome: string): void {
 		// Find a way to retrieve the outcome of the game.
 		this.prepare('INSERT INTO tictactoe (id, player1, player2, outcome) VALUES (@id, @player1, @player2, @outcome)').run({ id, player1, player2, outcome });
 	},
-	/**
-	 * whole function description
-	 *
-	 * @param id the argument description
-	 *
-	 * @returns what does the function return ?
-	 */
-	//     async asyncFunction(this: ITemplateDb, id: TemplateId): Promise<TemplateData | undefined> {
-	//         void id;
-	//         return undefined;
-	//     },
 };
 
-export type GameId = string & { readonly __brand: unique symbol };
+export type TTTGameId = UUID & { readonly __brand: unique symbol };
 
-export type TicTacToeData = {
-	readonly id: GameId;
-	readonly player1: string;
-	readonly player2: string;
+export type TicTacToeGame = {
+	readonly id: TTTGameId;
+	readonly player1: UserId;
+	readonly player2: UserId;
 	readonly outcome: string;
 };
 

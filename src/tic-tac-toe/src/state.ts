@@ -98,7 +98,7 @@ export class StateI {
 				this.gameUpdate(gameId, u2.socket);
 				if (g.checkState() !== 'ongoing') {
 					this.cleanupGame(gameId, g);
-					this.fastify.db.setGameOutcome(gameId, u1.userId, u2.userId, g.checkState());
+					this.fastify.db.setTTTGameOutcome(gameId, u1.userId, u2.userId, g.checkState());
 				}
 			}, 100);
 		}
