@@ -238,7 +238,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 
 			socket.on("gameEnd", (winner) => {
-				rdy_btn.classList.remove('hidden');
+				rdy_btn.classList.add('hidden');
 				queueBtn.innerHTML = QueueState.Iddle;
 				queueBtn.style.color = 'white';
 
