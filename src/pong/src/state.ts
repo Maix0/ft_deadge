@@ -69,11 +69,10 @@ class StateI {
 			u1.currentGame = gameId;
 			u2.currentGame = gameId;
 
-			// ---
-			// wait for ready up
-			// ---
-
 			g.gameUpdate = setInterval(() => {
+				// ---
+				// wait for ready up
+				// ---
 				g.tick();
 				this.gameUpdate(gameId, u1.socket);
 				this.gameUpdate(gameId, u2.socket);
@@ -152,6 +151,9 @@ class StateI {
 		socket.on('enqueue', () => this.enqueueUser(socket));
 		socket.on('dequeue', () => this.dequeueUser(socket));
 
+		socket.on('readyUp', () => this.readyupUser(socket));
+		socket.on('readyDown', () => this.readydownUser(socket));
+
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
 		socket.on('localGame', () => this.newLocalGame(socket));
 	}
@@ -215,6 +217,27 @@ class StateI {
 		socket.emit('queueEvent', 'unregistered');
 	}
 
+	private readydownUser(socket: SSocket) : void { //
+		// do we know this user ?
+		if (!this.users.has(socket.authUser.id)) return;
+		const user = this.users.get(socket.authUser.id)!;
+		// does the user have a game and do we know such game ?
+		if (user.currentGame === null || !this.games.has(user.currentGame)) return;
+		const game = this.games.get(user.currentGame)!;
+		// is this a local game?
+		if (game.local === true) return;
+		game.readydown(user.id);
+	}
+	private readyupUser(socket: SSocket) : void { //
+		// do we know this user ?
+		if (!this.users.has(socket.authUser.id)) return;
+		const user = this.users.get(socket.authUser.id)!;
+		// does the user have a game and do we know such game ?
+		if (user.currentGame === null || !this.games.has(user.currentGame)) return;
+		const game = this.games.get(user.currentGame)!;
+		if (game.local === true) return;
+		game.readyup(user.id);
+	}
 
 }
 

@@ -24,6 +24,11 @@ enum QueueState {
 	In_local = "In Local",
 };
 
+enum ReadyState {
+	readyUp = "ready up?",
+	readyDown = "ready down",
+};
+
 document.addEventListener("ft:pageChange", (newUrl) => {
 	if (newUrl.detail.startsWith('/app/pong') || newUrl.detail.startsWith('/pong')) return;
 	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
@@ -49,6 +54,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const user = getUser();
 			let currentGame: GameUpdate | null = null;
 			let opponent: User | null = null;
+			const rdy_btn = document.querySelector<HTMLButtonElement>('#readyup-btn');
 			const batLeft = document.querySelector<HTMLDivElement>("#batleft");
 			const batRight = document.querySelector<HTMLDivElement>("#batright");
 			const ball = document.querySelector<HTMLDivElement>("#ball");
@@ -66,7 +72,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				navigateTo("/app");
 				return ;
 			}
-			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard || !queue_infos || !LocalGameBtn) // sanity check
+			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard || !queue_infos || !LocalGameBtn || !rdy_btn) // sanity check
 				return showError('fatal error');
 
 			// ---
@@ -112,6 +118,18 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				local:false
 			};
 
+			function resetBoard(batLeft : HTMLDivElement, batRight : HTMLDivElement, playerL : HTMLDivElement, playerR : HTMLDivElement) {
+				render(DEFAULT_POSITIONS);
+				batLeft.style.backgroundColor = DEFAULT_COLOR;
+				batRight.style.backgroundColor = DEFAULT_COLOR;
+				playerR.style.color = "";
+				playerL.style.color = "";
+				playerR.innerText = "";
+				playerL.innerText = "";
+				currentGame = null;
+				opponent = null;
+			}
+
 			const render = (state: GameUpdate) => {
 				currentGame = state;
 				batLeft.style.top = `${state.left.paddle.y}px`;
@@ -130,7 +148,10 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 				score.innerText = `${state.left.score} | ${state.right.score}`
 			}
-			socket.on('gameUpdate', (state: GameUpdate) => render(state));
+			socket.on('gameUpdate', (state: GameUpdate) => {
+				// if (rdy_btn)
+				// 	rdy_btn.classList.add('hidden');
+				render(state);});
 			// ---
 			// position logic (client) end
 			// ---
@@ -138,35 +159,13 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// ---
 			// queue evt 
 			// ---
+			// utils
 			function set_pretty(batU : HTMLDivElement, txtU : HTMLDivElement, txtO : HTMLDivElement, colorYou : string) {
 				batU.style.backgroundColor = colorYou;
 				txtU.style.color = colorYou;
 				txtU.innerText = isNullish(user) ? "you" : user.name;
 				txtO.innerText = isNullish(opponent) ? "the mechant" : opponent.name;
 			}
-			queueBtn.addEventListener("click", ()=>{
-				if (queueBtn.innerText !== QueueState.Iddle) {
-					if (queueBtn.innerText === QueueState.InQueu) {
-						socket.emit("dequeue");
-						queueBtn.innerText = QueueState.Iddle;
-					}
-					return ;
-				}
-				queueBtn.innerText = QueueState.InQueu;
-				socket.emit('enqueue');
-			});
-
-			LocalGameBtn.addEventListener("click", () => {
-				if (queueBtn.innerText !== QueueState.Iddle || currentGame !== null) {
-					showError("cant launch a local game while in queue/in game");
-					return ;
-				}
-				socket.emit("localGame");
-				queueBtn.innerText = QueueState.In_local;
-				LocalGameBtn.innerText = "playing";
-			});
-
-
 			async function get_opponent(opponent_id : string) {
 				let t = await client.getUser({user:opponent_id});
 
@@ -178,10 +177,50 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						opponent = null;
 				}
 			}
-			
+
+			// btn setup
+			queueBtn.addEventListener("click", ()=>{
+				if (queueBtn.innerText !== QueueState.Iddle) {
+					if (queueBtn.innerText === QueueState.InQueu) {
+						socket.emit("dequeue");
+						queueBtn.innerText = QueueState.Iddle;
+					}
+					return ;
+				}
+				queueBtn.innerText = QueueState.InQueu;
+				socket.emit('enqueue');
+			});
+			LocalGameBtn.addEventListener("click", () => {
+				if (queueBtn.innerText !== QueueState.Iddle || currentGame !== null) {
+					showError("cant launch a local game while in queue/in game");
+					return ;
+				}
+				socket.emit("localGame");
+				queueBtn.innerText = QueueState.In_local;
+				LocalGameBtn.innerText = "playing";
+			});
+			rdy_btn.addEventListener("click", ()=>{
+				showInfo("rdy-evt");
+				switch (rdy_btn.innerText) {
+					case ReadyState.readyUp:
+						showInfo("sent:rdyup");
+						socket.emit('readyUp');
+						rdy_btn.innerText = ReadyState.readyDown;
+						break ;
+					case ReadyState.readyDown:
+						showInfo("sent:rdydwn");
+						socket.emit('readyDown');
+						rdy_btn.innerText = ReadyState.readyUp;
+						break ;
+					default:
+						showError("error on ready btn");
+				}
+
+			});
 
 			socket.on('newGame', async (state) => {
 				render(state);
+				
 				await get_opponent(state.left.id == user.id ? state.right.id : state.left.id);
 				queueBtn.innerText = QueueState.InGame;
 				queueBtn.style.color = 'red';
@@ -193,7 +232,13 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					set_pretty(batRight, playerR, playerL, SELF_COLOR);
 				} else
 					showError("couldn't find your id in game");
-			}); // TODO: notif user of new game w "ready up" btn
+				
+				rdy_btn.classList.remove('hidden');
+				rdy_btn.innerText = ReadyState.readyUp;
+
+				setTimeout(() => {
+					rdy_btn.classList.add('hidden');}, 2000); // 1500 : pong.CONCEDED_TIMEOUT
+			});
 
 			socket.on("gameEnd", (winner) => {
 				queueBtn.innerHTML = QueueState.Iddle;
@@ -218,33 +263,24 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						LocalGameBtn.innerText = "Local Game"
 					}
 				}
-				render(DEFAULT_POSITIONS);
-				batLeft.style.backgroundColor = DEFAULT_COLOR;
-				batRight.style.backgroundColor = DEFAULT_COLOR;
-				playerR.style.color = "";
-				playerL.style.color = "";
-				playerR.innerText = "";
-				playerL.innerText = "";
-				currentGame = null;
-				opponent = null;
+				resetBoard(batLeft, batRight, playerL, playerR);
 			})
-			// ---
-			// queue evt end
-			// ---
-
-			queueBtn.innerText = QueueState.Iddle;
-			render(DEFAULT_POSITIONS);
-			currentGame = null;
-			batLeft.style.backgroundColor = DEFAULT_COLOR;
-			batRight.style.backgroundColor = DEFAULT_COLOR;
-
+			// pretty info for queue :3
 			socket.on('updateInformation', (e) => {
 				queue_infos.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
 			});
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
+			// ---
+			// queue evt end
+			// ---
+
+			// init
+			rdy_btn.classList.add('hidden');
+			queueBtn.innerText = QueueState.Iddle;
+			rdy_btn.innerText = ReadyState.readyUp;
+			resetBoard(batLeft, batRight, playerL, playerR);
 			showInfo("butter");
 			showInfo("butter-toast");
-			// socket.emit('localGame');
 		}
 	}
 };

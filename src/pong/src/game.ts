@@ -1,5 +1,7 @@
 import { UserId } from '@shared/database/mixin/user';
 
+
+
 export class Paddle {
 	public static readonly DEFAULT_SPEED = 10;
 	public static readonly DEFAULT_HEIGHT = 80;
@@ -94,8 +96,16 @@ function makeAngle(i: number): [number, number, number, number] {
 		-Math.PI / i + Math.PI,
 	];
 }
+const LEFT :number	= 0;
+const RIGHT :number	= 1;
+enum ReadyState {
+	noState,
+	readyUp,
+	readyDown,
+}
 
 export class Pong {
+
 	public gameUpdate: NodeJS.Timeout | null = null;
 
 	public static readonly CONCEDED_TIMEOUT: number = 1500;
@@ -126,6 +136,8 @@ export class Pong {
 		Pong.BALL_START_ANGLES[this.ballAngleIdx++],
 	);
 
+	public ready_checks: [ReadyState, ReadyState] = [ReadyState.noState, ReadyState.noState];
+
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
 
@@ -145,7 +157,44 @@ export class Pong {
 		public userRight: UserId,
 	) { }
 
+	public readyup(uid : UserId)
+	{
+		// debug
+		console.log(this.userLeft + " | " + this.userRight);
+		if (uid === this.userLeft) {
+			console.log("rdy.up : lft " + uid);
+		} else if (uid === this.userRight) {
+			console.log("rdy.up : rgt " + uid);
+		}
+
+		if (uid === this.userLeft) {
+			this.ready_checks[LEFT] = ReadyState.readyUp;
+		} else if (uid === this.userRight) {
+			this.ready_checks[RIGHT] = ReadyState.readyUp;
+		}
+	}
+	public readydown(uid : UserId)
+	{
+		// debug
+		console.log(this.userLeft + " | " + this.userRight);
+		if (uid === this.userLeft) {
+			console.log("rdy.down : lft " + uid);
+		} else if (uid === this.userRight) {
+			console.log("rdy.down : rgt " + uid);
+		}
+
+		// is everyone already ready?
+		if (this.ready_checks[LEFT] === ReadyState.readyUp && this.ready_checks[RIGHT] === ReadyState.readyUp) return ;
+
+		if (uid === this.userLeft)
+			this.ready_checks[LEFT] = ReadyState.readyDown;
+		else if (uid === this.userRight)
+			this.ready_checks[RIGHT] = ReadyState.readyDown;
+	}
+
 	public tick() {
+		if (this.ready_checks[LEFT] !== ReadyState.readyUp || this.ready_checks[RIGHT] !== ReadyState.readyUp)
+			return;
 		if (this.paddleCollision(this.leftPaddle, 'left')) {
 			this.ball.collided(
 				'left',
@@ -254,8 +303,8 @@ export class Pong {
 
 	public checkWinner(): 'left' | 'right' | null {
 		const checkInner = () => {
-			if (this.score[0] >= 5) return 'left';
-			if (this.score[1] >= 5) return 'right';
+			if (this.score[LEFT] >= 5) return 'left';
+			if (this.score[RIGHT] >= 5) return 'right';
 
 			if (
 				this.leftLastSeen !== -1 &&
