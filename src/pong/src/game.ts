@@ -132,6 +132,7 @@ export class Pong {
 		Pong.BALL_START_ANGLES[this.ballAngleIdx++],
 	);
 
+	public	sendSig	: boolean = false;
 	public	ready_checks: [boolean, boolean] = [false, false];
 	public	game_creation	: number = Date.now();
 
@@ -158,7 +159,7 @@ export class Pong {
 	{
 		if (uid === this.userLeft) {
 			this.ready_checks[LEFT] = true;
-		} else if (uid === this.userRight) {
+		} if (uid === this.userRight) {
 			this.ready_checks[RIGHT] = true;
 		}
 	}
@@ -169,12 +170,12 @@ export class Pong {
 
 		if (uid === this.userLeft)
 			this.ready_checks[LEFT] = false;
-		else if (uid === this.userRight)
+		if (uid === this.userRight)
 			this.ready_checks[RIGHT] = false;
 	}
 
 	public tick() {
-		if (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true)
+		if (!this.local && (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true))
 			return;
 		if (this.paddleCollision(this.leftPaddle, 'left')) {
 			this.ball.collided(
@@ -287,7 +288,7 @@ export class Pong {
 			if (this.score[LEFT] >= 5) return 'left';
 			if (this.score[RIGHT] >= 5) return 'right';
 
-			if (this.game_creation !== -1 && Date.now() - this.game_creation > Pong.CONCEDED_TIMEOUT && (!this.ready_checks[0] || !this.ready_checks[1])) {
+			if (this.local !== true && this.game_creation !== -1 && Date.now() - this.game_creation > Pong.CONCEDED_TIMEOUT * 10 && (!this.ready_checks[0] || !this.ready_checks[1])) {
 				if (!this.ready_checks[0] && !this.ready_checks[1]) return (randomInt(1) == 1 ? 'left' : 'right');
 				if (!this.ready_checks[0]) return ('right');
 				if (!this.ready_checks[1]) return ('left');

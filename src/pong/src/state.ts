@@ -74,11 +74,18 @@ class StateI {
 				// wait for ready up
 				// ---
 				g.tick();
-				this.gameUpdate(gameId, u1.socket);
-				this.gameUpdate(gameId, u2.socket);
-				if (g.checkWinner() !== null) {
-					this.cleanupGame(gameId, g);
+				if (g.sendSig === false && g.ready_checks[0] === true && g.ready_checks[1] === true)
+				{
+					u1.socket.emit('rdyEnd');
+					u2.socket.emit('rdyEnd');
+					g.sendSig = true;
 				}
+				if (g.ready_checks[0] === true && g.ready_checks[1] === true)
+				{
+					this.gameUpdate(gameId, u1.socket);
+					this.gameUpdate(gameId, u2.socket);
+				}
+				if (g.checkWinner() !== null) {this.cleanupGame(gameId, g); }
 			}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
 		}
 	}
@@ -98,8 +105,11 @@ class StateI {
 
 		g.gameUpdate = setInterval(() => {
 			g.tick();
-			if (g.ready_checks[0] && g.ready_checks[1])
-				this.gameUpdate(gameId, user.socket);
+			this.gameUpdate(gameId, user.socket);
+			if (g.sendSig === false) {
+				user.socket.emit('rdyEnd');
+				g.sendSig = true;
+			}
 			if (g.checkWinner() !== null) { this.cleanupGame(gameId, g); }
 		}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
 

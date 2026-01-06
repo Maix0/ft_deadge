@@ -44,6 +44,7 @@ export interface ClientToServer {
 export interface ServerToClient {
 	forceDisconnect: (reason: string) => void;
 	queueEvent: (msg: 'registered' | 'unregistered') => void;
+	rdyEnd:() => void,
 	updateInformation: (info: UpdateInfo) => void,
 	newGame: (initState: GameUpdate) => void,
 	gameUpdate: (state: GameUpdate) => void,

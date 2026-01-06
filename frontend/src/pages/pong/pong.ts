@@ -230,15 +230,15 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					set_pretty(batRight, playerR, playerL, SELF_COLOR);
 				} else
 					showError("couldn't find your id in game");
-				
 				rdy_btn.classList.remove('hidden');
 				rdy_btn.innerText = ReadyState.readyUp;
-
-				setTimeout(() => {
-					rdy_btn.classList.add('hidden');}, 2000); // 1500 : pong.CONCEDED_TIMEOUT
+			});
+			socket.on('rdyEnd', () => {
+				rdy_btn.classList.add('hidden');
 			});
 
 			socket.on("gameEnd", (winner) => {
+				rdy_btn.classList.remove('hidden');
 				queueBtn.innerHTML = QueueState.Iddle;
 				queueBtn.style.color = 'white';
 
