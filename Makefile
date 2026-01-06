@@ -44,7 +44,7 @@ prune:
 logs:
 	@$(MAKE) --no-print-directory -f ./Docker.mk logs
 
-sqlite:
+sql:
 	docker compose exec auth apk add sqlite
 	-docker compose exec -it auth sqlite3 /volumes/database/database.db
 
@@ -124,11 +124,6 @@ npm@openapi: openapi.jar
 
 openapi.jar:
 	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.15.0/openapi-generator-cli-7.15.0.jar -O ./openapi.jar
-
-# this convert the .dbml file to an actual sql file that SQLite can handle :)
-sql:
-	@echo "if the command isn't found, contact maieul :)"
-	dbml_sqlite -t -f -w ./src/@shared/src/database/init.sql ./src/@shared/src/database/init.dbml
 
 tmux:
 	@tmux new-session -d -s $(PROJECT)

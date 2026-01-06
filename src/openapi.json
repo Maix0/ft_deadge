@@ -1917,6 +1917,202 @@
         ]
       }
     },
+    "/api/ttt/history/{user}": {
+      "get": {
+        "operationId": "tttHistory",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "user",
+            "required": true,
+            "description": "'me' | <userid>"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "ttthistory.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "gameId",
+                              "playerX",
+                              "playerO",
+                              "date",
+                              "outcome"
+                            ],
+                            "properties": {
+                              "gameId": {
+                                "type": "string",
+                                "description": "gameId"
+                              },
+                              "playerX": {
+                                "type": "object",
+                                "required": [
+                                  "id",
+                                  "name"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "playerO": {
+                                "type": "object",
+                                "required": [
+                                  "id",
+                                  "name"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "date": {
+                                "type": "string"
+                              },
+                              "outcome": {
+                                "enum": [
+                                  "winX",
+                                  "winO",
+                                  "other"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "ttthistory.failure.notfound"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
+    },
     "/api/pong/history/{user}": {
       "get": {
         "operationId": "pongHistory",

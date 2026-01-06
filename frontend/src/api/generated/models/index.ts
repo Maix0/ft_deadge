@@ -65,3 +65,8 @@ export * from './StatusOtp200ResponseAnyOf1';
 export * from './StatusOtp200ResponseAnyOfPayload';
 export * from './StatusOtp401Response';
 export * from './StatusOtp500Response';
+export * from './TttHistory200Response';
+export * from './TttHistory200ResponsePayload';
+export * from './TttHistory200ResponsePayloadDataInner';
+export * from './TttHistory200ResponsePayloadDataInnerPlayerX';
+export * from './TttHistory404Response';

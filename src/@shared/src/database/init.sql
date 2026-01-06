@@ -21,11 +21,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_user_pair ON blocked (user, blocke
 
 CREATE TABLE IF NOT EXISTS tictactoe (
     id TEXT PRIMARY KEY NOT NULL,
-    player1 TEXT NOT NULL,
-    player2 TEXT NOT NULL,
+    time TEXT NOT NULL default (datetime('now')),
+    playerX TEXT NOT NULL,
+    playerO TEXT NOT NULL,
     outcome TEXT NOT NULL,
-    FOREIGN KEY(player1) REFERENCES user(id),
-    FOREIGN KEY(player2) REFERENCES user(id)
+    FOREIGN KEY(playerX) REFERENCES user(id),
+    FOREIGN KEY(playerO) REFERENCES user(id)
 );
 
 CREATE TABLE IF NOT EXISTS pong (

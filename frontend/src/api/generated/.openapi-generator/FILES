@@ -66,5 +66,10 @@ models/StatusOtp200ResponseAnyOf1.ts
 models/StatusOtp200ResponseAnyOfPayload.ts
 models/StatusOtp401Response.ts
 models/StatusOtp500Response.ts
+models/TttHistory200Response.ts
+models/TttHistory200ResponsePayload.ts
+models/TttHistory200ResponsePayloadDataInner.ts
+models/TttHistory200ResponsePayloadDataInnerPlayerX.ts
+models/TttHistory404Response.ts
 models/index.ts
 runtime.ts
