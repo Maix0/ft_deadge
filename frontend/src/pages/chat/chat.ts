@@ -424,7 +424,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								}
 								blockUser(userToBlock, socket);
 								break;
-								
     						case '@notify':
 								if (notify === null) {break;};
 								if (inviteMsgFlag === false) {
