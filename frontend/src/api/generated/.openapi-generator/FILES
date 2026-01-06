@@ -47,6 +47,11 @@ models/LoginOtp500Response.ts
 models/LoginOtpRequest.ts
 models/LoginRequest.ts
 models/Logout200Response.ts
+models/PongHistory200Response.ts
+models/PongHistory200ResponsePayload.ts
+models/PongHistory200ResponsePayloadDataInner.ts
+models/PongHistory200ResponsePayloadDataInnerLeft.ts
+models/PongHistory404Response.ts
 models/ProviderList200Response.ts
 models/ProviderList200ResponsePayload.ts
 models/ProviderList200ResponsePayloadListInner.ts

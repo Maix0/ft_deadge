@@ -1916,6 +1916,214 @@
           "openapi_other"
         ]
       }
+    },
+    "/api/pong/history/{user}": {
+      "get": {
+        "operationId": "pongHistory",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "user",
+            "required": true,
+            "description": "'me' | <userid>"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg",
+                    "payload"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "ponghistory.success"
+                      ]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "gameId",
+                              "left",
+                              "right",
+                              "local",
+                              "date",
+                              "outcome"
+                            ],
+                            "properties": {
+                              "gameId": {
+                                "type": "string",
+                                "description": "gameId"
+                              },
+                              "left": {
+                                "type": "object",
+                                "required": [
+                                  "score",
+                                  "id",
+                                  "name"
+                                ],
+                                "properties": {
+                                  "score": {
+                                    "type": "integer"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "right": {
+                                "type": "object",
+                                "required": [
+                                  "score",
+                                  "id",
+                                  "name"
+                                ],
+                                "properties": {
+                                  "score": {
+                                    "type": "integer"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "local": {
+                                "type": "boolean"
+                              },
+                              "date": {
+                                "type": "string"
+                              },
+                              "outcome": {
+                                "enum": [
+                                  "winL",
+                                  "winR",
+                                  "other"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "kind",
+                        "msg"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "notLoggedIn"
+                          ]
+                        },
+                        "msg": {
+                          "enum": [
+                            "auth.noCookie",
+                            "auth.invalidKind",
+                            "auth.noUser",
+                            "auth.invalid"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "msg"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "failure"
+                      ]
+                    },
+                    "msg": {
+                      "enum": [
+                        "ponghistory.failure.notfound"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "openapi_other"
+        ]
+      }
     }
   },
   "components": {
