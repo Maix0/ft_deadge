@@ -44,6 +44,10 @@ prune:
 logs:
 	@$(MAKE) --no-print-directory -f ./Docker.mk logs
 
+sqlite:
+	docker compose exec auth apk add sqlite
+	-docker compose exec -it auth sqlite3 /volumes/database/database.db
+
 #	Header
 header:
 	@$(ECHO) -e ''
@@ -136,11 +140,15 @@ tmux:
 	@tmux select-window -t $(PROJECT):0
 	@tmux attach-session -t $(PROJECT)
 
+nginx-dev/nginx:
+	wget https://github.com/jirutka/nginx-binaries/raw/refs/heads/binaries/nginx-1.28.0-x86_64-linux -O nginx-dev/nginx
+	chmod +x nginx-dev/nginx
+
 nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key &:
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./nginx-dev/nginx-selfsigned.key -out ./nginx-dev/nginx-selfsigned.crt -subj "/C=FR/OU=student/CN=local.maix.me";
 
-fnginx: nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key
-	nginx -p ./nginx-dev -c nginx.conf -e /dev/stderr &
+fnginx: nginx-dev/nginx nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key
+	nginx-dev/nginx -p ./nginx-dev -c nginx.conf -e /dev/null >/dev/null 2>/dev/null &
 	-(cd ./frontend && pnpm exec tsc --noEmit --watch --preserveWatchOutput) &
 	-(cd ./frontend && pnpm exec vite --clearScreen false)
 	wait

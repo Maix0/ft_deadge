@@ -8,6 +8,8 @@ node_modules/
 *.key
 openapi.jar
 .vscode
+nginx-dev/nginx
+nginx-dev/nginx.deb
 
 # sqlite stuff
 *.db
