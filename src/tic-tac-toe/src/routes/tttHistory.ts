@@ -14,8 +14,8 @@ const TTTHistoryResponse = {
 		data: Type.Array(
 			Type.Object({
 				gameId: Type.String({ description: 'gameId' }),
-				playerX: Type.Object({id: Type.String(), name: Type.String()}),
-                playerO: Type.Object({id: Type.String(), name: Type.String()}),
+				playerX: Type.Object({ id: Type.String(), name: Type.String() }),
+				playerO: Type.Object({ id: Type.String(), name: Type.String() }),
 				date: Type.String(),
 				outcome: Type.Enum(['winX', 'winO', 'other']),
 			}),

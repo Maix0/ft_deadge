@@ -3,7 +3,7 @@ import type { Database } from './_base';
 import { UserId } from './user';
 import { isNullish } from '@shared/utils';
 
-export type TicTacToeOutcome = 'winX' | 'winO' | 'other'; 
+export type TicTacToeOutcome = 'winX' | 'winO' | 'other';
 // describe every function in the object
 export interface ITicTacToeDb extends Database {
 	setTTTGameOutcome(this: ITicTacToeDb, id: TTTGameId, player1: UserId, player2: UserId, outcome: TicTacToeOutcome): void,
@@ -44,16 +44,16 @@ export const TicTacToeImpl: Omit<ITicTacToeDb, keyof Database> = {
 				tictactoe.playerX = @id
 				OR tictactoe.playerO = @id;
 		`);
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				return q.all({ id }).map((s: any) => {
-					const g: (TicTacToeGame & { nameX?: string, nameO?: string }) | undefined = TicTacToeGameFromRow(s);
-					if (isNullish(g)) return undefined;
-					g.nameX = s.nameX;
-					g.nameO = s.nameO;
-					if (isNullish(g.nameO) || isNullish(g.nameO)) return undefined;
-					return g as TicTacToeGame & { nameX: string, nameO: string };
-				}).filter(v => !isNullish(v));
-	}
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return q.all({ id }).map((s: any) => {
+			const g: (TicTacToeGame & { nameX?: string, nameO?: string }) | undefined = TicTacToeGameFromRow(s);
+			if (isNullish(g)) return undefined;
+			g.nameX = s.nameX;
+			g.nameO = s.nameO;
+			if (isNullish(g.nameO) || isNullish(g.nameO)) return undefined;
+			return g as TicTacToeGame & { nameX: string, nameO: string };
+		}).filter(v => !isNullish(v));
+	},
 };
 
 export type TTTGameId = UUID & { readonly __uuid: unique symbol };
