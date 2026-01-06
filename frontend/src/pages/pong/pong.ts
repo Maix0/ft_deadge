@@ -20,6 +20,7 @@ declare module 'ft_state' {
 enum QueueState {
 	InQueu = "In Queue",
 	InGame = "In Game",
+	Ready = "Ready-ing",
 	Iddle = "Queue Up",
 	In_local = "In Local",
 };
@@ -203,19 +204,16 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				showInfo("rdy-evt");
 				switch (rdy_btn.innerText) {
 					case ReadyState.readyUp:
-						showInfo("sent:rdyup");
 						socket.emit('readyUp');
 						rdy_btn.innerText = ReadyState.readyDown;
 						break ;
 					case ReadyState.readyDown:
-						showInfo("sent:rdydwn");
 						socket.emit('readyDown');
 						rdy_btn.innerText = ReadyState.readyUp;
 						break ;
 					default:
 						showError("error on ready btn");
 				}
-
 			});
 
 			socket.on('newGame', async (state) => {

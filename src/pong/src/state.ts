@@ -98,7 +98,8 @@ class StateI {
 
 		g.gameUpdate = setInterval(() => {
 			g.tick();
-			this.gameUpdate(gameId, user.socket);
+			if (g.ready_checks[0] && g.ready_checks[1])
+				this.gameUpdate(gameId, user.socket);
 			if (g.checkWinner() !== null) { this.cleanupGame(gameId, g); }
 		}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
 

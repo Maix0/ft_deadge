@@ -98,11 +98,6 @@ function makeAngle(i: number): [number, number, number, number] {
 }
 const LEFT :number	= 0;
 const RIGHT :number	= 1;
-enum ReadyState {
-	noState,
-	readyUp,
-	readyDown,
-}
 
 export class Pong {
 
@@ -136,7 +131,8 @@ export class Pong {
 		Pong.BALL_START_ANGLES[this.ballAngleIdx++],
 	);
 
-	public ready_checks: [ReadyState, ReadyState] = [ReadyState.noState, ReadyState.noState];
+	public	ready_checks: [boolean, boolean] = [false, false];
+	public	first_rdy	: number = -1;
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
@@ -159,41 +155,27 @@ export class Pong {
 
 	public readyup(uid : UserId)
 	{
-		// debug
-		console.log(this.userLeft + " | " + this.userRight);
+		if (this.first_rdy == -1)
+			this.first_rdy = Date.now();
 		if (uid === this.userLeft) {
-			console.log("rdy.up : lft " + uid);
+			this.ready_checks[LEFT] = true;
 		} else if (uid === this.userRight) {
-			console.log("rdy.up : rgt " + uid);
-		}
-
-		if (uid === this.userLeft) {
-			this.ready_checks[LEFT] = ReadyState.readyUp;
-		} else if (uid === this.userRight) {
-			this.ready_checks[RIGHT] = ReadyState.readyUp;
+			this.ready_checks[RIGHT] = true;
 		}
 	}
 	public readydown(uid : UserId)
 	{
-		// debug
-		console.log(this.userLeft + " | " + this.userRight);
-		if (uid === this.userLeft) {
-			console.log("rdy.down : lft " + uid);
-		} else if (uid === this.userRight) {
-			console.log("rdy.down : rgt " + uid);
-		}
-
 		// is everyone already ready?
-		if (this.ready_checks[LEFT] === ReadyState.readyUp && this.ready_checks[RIGHT] === ReadyState.readyUp) return ;
+		if (this.ready_checks[LEFT] === true && this.ready_checks[RIGHT] === true) return ;
 
 		if (uid === this.userLeft)
-			this.ready_checks[LEFT] = ReadyState.readyDown;
+			this.ready_checks[LEFT] = false;
 		else if (uid === this.userRight)
-			this.ready_checks[RIGHT] = ReadyState.readyDown;
+			this.ready_checks[RIGHT] = false;
 	}
 
 	public tick() {
-		if (this.ready_checks[LEFT] !== ReadyState.readyUp || this.ready_checks[RIGHT] !== ReadyState.readyUp)
+		if (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true)
 			return;
 		if (this.paddleCollision(this.leftPaddle, 'left')) {
 			this.ball.collided(
@@ -306,15 +288,17 @@ export class Pong {
 			if (this.score[LEFT] >= 5) return 'left';
 			if (this.score[RIGHT] >= 5) return 'right';
 
-			if (
-				this.leftLastSeen !== -1 &&
-				Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT
+			if ((this.leftLastSeen !== -1 &&
+				Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT) || 
+				(this.first_rdy !== -1 && (this.ready_checks[0] || this.ready_checks[1])
+				&& Date.now() - this.first_rdy > Pong.CONCEDED_TIMEOUT && this.ready_checks[0] == false)
 			) {
 				return 'right';
 			}
-			if (
-				this.rightLastSeen !== -1 &&
-				Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT
+			if ((this.rightLastSeen !== -1 &&
+				Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT) ||
+				(this.first_rdy !== -1 && (this.ready_checks[0] || this.ready_checks[1])
+				&& Date.now() - this.first_rdy > Pong.CONCEDED_TIMEOUT && this.ready_checks[1] == false)
 			) {
 				return 'left';
 			}
