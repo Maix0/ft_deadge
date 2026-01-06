@@ -6,6 +6,7 @@ import { showError, showInfo } from "@app/toast";
 import { getUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
 import client from "@app/api";
+import "./pong.css";
 
 // get the name of the machine used to connect
 declare module 'ft_state' {
