@@ -11,6 +11,18 @@ function getHHMM(d: Date): string {
 	return `${h < 9 ? '0' : ''}${h}:${m < 9 ? '0' : ''}${m}`
 }
 
+function statusText(side:'X'|'O',status: string): string {
+	if (status === `win${side}`) return 'WIN';
+	if (status === `win${side === 'X'? 'O' : 'X'}`) return 'LOSE';
+	return 'DRAW'
+}
+
+function statusColor(side:'X'|'O',status: string): string {
+	if (status === `win${side}`) return 'text-green-600';
+	if (status === `win${side === 'X'? 'O' : 'X'}`) return 'text-red-600';
+	return 'text-yellow-600'
+}
+
 async function tttHistory(_url: string, args: RouteHandlerParams): Promise<RouteHandlerReturn> {
 	if (isNullish(args.userid))
 		args.userid = 'me';
@@ -42,32 +54,36 @@ async function tttHistory(_url: string, args: RouteHandlerParams): Promise<Route
 		// maybe we do want local games ? then put the check here :D
 		// if (!g.local) {
 		if (true) {
-			let youwin = false;
+			let state: 'win'|'lose'|'draw' = 'lose';
 
-			if (g.playerX.id === user.id && g.outcome === 'winX')
-				youwin = true;
+			if (g.outcome === 'draw')
+				state = 'draw';
+			else if (g.playerX.id === user.id && g.outcome === 'winX')
+				state = 'win';
 			else if (g.playerO.id === user.id && g.outcome === 'winO')
-				youwin = true;
+				state = 'win';
 
-			if (youwin)
+			if (state === 'win')
 				color = 'bg-green-300';
-			else
+			else if (state === 'lose')
 				color = 'bg-red-300';
+			else 
+				color = 'bg-amber-200';
 		}
 		e.className =
 			'grid grid-cols-[1fr_auto_1fr] items-center rounded-lg px-4 py-3 ' + color;
 
 		e.innerHTML = `
 		<div class="text-right">
-			<div class="font-semibold ${g.outcome === 'winX' ? 'text-green-600' : 'text-red-600'}">${g.playerX.name}</div>
-			<div class="text-lg ${g.outcome === 'winX' ? 'text-green-600' : 'text-red-600'}">${g.outcome === 'winX' ? 'WON' : 'LOST'}</div>
+			<div class="font-semibold ${statusColor('X', g.outcome)}">${g.playerX.name}</div>
+			<div class="text-lg ${statusColor('X', g.outcome)}">${statusText('X', g.outcome)}</div>
 		</div>
 
 		<div class="text-center text-sm text-gray-800 px-4 whitespace-nowrap">${date.toDateString()}<br />${getHHMM(date)}</div>
 
 		<div class="text-left">
-			<div class="font-semibold ${g.outcome === 'winO' ? 'text-green-600' : 'text-red-600'}">${g.playerO.name}</div>
-			<div class="text-lg ${g.outcome === 'winO' ? 'text-green-600' : 'text-red-600'}">${g.outcome === 'winO' ? 'WON' : 'LOST'}</div>
+			<div class="font-semibold ${statusColor('O', g.outcome)}">${g.playerO.name}</div>
+			<div class="text-lg ${statusColor('O', g.outcome)}">${statusText('O', g.outcome)}</div>
 		</div>`;
 		return e;
 	}).filter(v => !isNullish(v));
