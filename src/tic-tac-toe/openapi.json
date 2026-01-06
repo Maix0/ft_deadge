@@ -104,7 +104,8 @@
                                                                 "enum": [
                                                                     "winX",
                                                                     "winO",
-                                                                    "other"
+                                                                    "other",
+                                                                    "draw"
                                                                 ]
                                                             }
                                                         }

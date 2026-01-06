@@ -14,7 +14,7 @@ export type GameUpdate = {
 
 	boardState: CellState[];
 	currentPlayer: 'X' | 'O';
-	gameState: 'winX' | 'winO' | 'concededX' | 'concededO' | 'draw' | 'ongoing';
+	gameState: 'winX' | 'winO' | 'draw' | 'ongoing';
 }
 
 export type GameMove = {

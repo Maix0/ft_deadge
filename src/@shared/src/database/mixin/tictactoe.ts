@@ -3,7 +3,7 @@ import type { Database } from './_base';
 import { UserId } from './user';
 import { isNullish } from '@shared/utils';
 
-export type TicTacToeOutcome = 'winX' | 'winO' | 'other';
+export type TicTacToeOutcome = 'winX' | 'winO' | 'draw' | 'other';
 // describe every function in the object
 export interface ITicTacToeDb extends Database {
 	setTTTGameOutcome(this: ITicTacToeDb, id: TTTGameId, player1: UserId, player2: UserId, outcome: TicTacToeOutcome): void,
@@ -82,7 +82,7 @@ function TicTacToeGameFromRow(r: Partial<TicTacToeGameTable> | undefined): TicTa
 	if (isNullish(r.outcome)) return undefined;
 	if (isNullish(r.time)) return undefined;
 
-	if (r.outcome !== 'winX' && r.outcome !== 'winO' && r.outcome !== 'other') return undefined;
+	if (r.outcome !== 'winX' && r.outcome !== 'winO' && r.outcome !== 'other' && r.outcome !== 'draw') return undefined;
 	const date = Date.parse(r.time);
 	if (Number.isNaN(date)) return undefined;
 

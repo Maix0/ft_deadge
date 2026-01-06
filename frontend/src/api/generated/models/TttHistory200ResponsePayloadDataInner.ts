@@ -66,7 +66,8 @@ export interface TttHistory200ResponsePayloadDataInner {
 export const TttHistory200ResponsePayloadDataInnerOutcomeEnum = {
     WinX: 'winX',
     WinO: 'winO',
-    Other: 'other'
+    Other: 'other',
+    Draw: 'draw'
 } as const;
 export type TttHistory200ResponsePayloadDataInnerOutcomeEnum = typeof TttHistory200ResponsePayloadDataInnerOutcomeEnum[keyof typeof TttHistory200ResponsePayloadDataInnerOutcomeEnum];
 
