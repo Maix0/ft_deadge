@@ -1,4 +1,5 @@
 import { UserId } from '@shared/database/mixin/user';
+import { randomInt } from 'crypto';
 
 
 
@@ -132,7 +133,7 @@ export class Pong {
 	);
 
 	public	ready_checks: [boolean, boolean] = [false, false];
-	public	first_rdy	: number = -1;
+	public	game_creation	: number = Date.now();
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
@@ -155,8 +156,6 @@ export class Pong {
 
 	public readyup(uid : UserId)
 	{
-		if (this.first_rdy == -1)
-			this.first_rdy = Date.now();
 		if (uid === this.userLeft) {
 			this.ready_checks[LEFT] = true;
 		} else if (uid === this.userRight) {
@@ -288,20 +287,13 @@ export class Pong {
 			if (this.score[LEFT] >= 5) return 'left';
 			if (this.score[RIGHT] >= 5) return 'right';
 
-			if ((this.leftLastSeen !== -1 &&
-				Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT) || 
-				(this.first_rdy !== -1 && (this.ready_checks[0] || this.ready_checks[1])
-				&& Date.now() - this.first_rdy > Pong.CONCEDED_TIMEOUT && this.ready_checks[0] == false)
-			) {
-				return 'right';
+			if (this.game_creation !== -1 && Date.now() - this.game_creation > Pong.CONCEDED_TIMEOUT && (!this.ready_checks[0] || !this.ready_checks[1])) {
+				if (!this.ready_checks[0] && !this.ready_checks[1]) return (randomInt(1) == 1 ? 'left' : 'right');
+				if (!this.ready_checks[0]) return ('right');
+				if (!this.ready_checks[1]) return ('left');
 			}
-			if ((this.rightLastSeen !== -1 &&
-				Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT) ||
-				(this.first_rdy !== -1 && (this.ready_checks[0] || this.ready_checks[1])
-				&& Date.now() - this.first_rdy > Pong.CONCEDED_TIMEOUT && this.ready_checks[1] == false)
-			) {
-				return 'left';
-			}
+			if (this.leftLastSeen !== -1 && Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT) { return 'right';}
+			if (this.rightLastSeen !== -1 && Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT) {	return 'left';}
 
 			return null;
 		};
