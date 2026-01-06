@@ -14,9 +14,11 @@ import { openProfilePopup } from './chatHelperFunctions/openProfilePopup';
 import { actionBtnPopUpBlock } from './chatHelperFunctions/actionBtnPopUpBlock';
 import { windowStateHidden } from './chatHelperFunctions/windowStateHidden';
 import type { blockedUnBlocked, obj } from './types_front';
+import { blockUser } from './chatHelperFunctions/blockUser';
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
+export let noGuestFlag: boolean = false;
 const machineHostName = window.location.hostname;
 
 export let __socket: Socket | undefined = undefined;
@@ -389,6 +391,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// Send button
 			sendButton?.addEventListener("click", () => {
 				const notify = document.getElementById("notify") ?? null;
+				const noGuest = document.getElementById("guestMsg") ?? null;
 				if (sendtextbox && sendtextbox.value.trim()) {
 					let msgText: string = sendtextbox.value.trim();
 					const msgCommand = parseCmdMsg(msgText) ?? "";
@@ -398,6 +401,30 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 							case '@msg':
 								broadcastMsg(socket, msgCommand);
 								break;
+							case '@block':
+								if (msgCommand[1] === '') {break;};
+								const userAskingToBlock = getUser()?.name;
+								if (!userAskingToBlock) return;
+								const userID1 = getUser()?.id;
+								if (!userID1) return;
+								const userToBlock: ClientProfil = {
+									command: msgCommand[0],
+    								destination: '',
+    								type:  'chat',
+    								user:  msgCommand[1],
+    								loginName:  '',
+    								userID:  userID1,
+    								text:  '',
+    								timestamp:  Date.now(),
+    								SenderWindowID:  '',
+    								SenderName:  userAskingToBlock,
+    								SenderID:  '',
+    								Sendertext:  '',
+    								innerHtml:  '',
+								}
+								blockUser(userToBlock, socket);
+								break;
+								
     						case '@notify':
 								if (notify === null) {break;};
 								if (inviteMsgFlag === false) {
@@ -420,6 +447,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								addMessage('** ********** List of @cmds ********** **');
 								addMessage('\'@cls\' - clear chat screen conversations');
 								addMessage('\'@profile <name>\' - pulls ups user profile');
+								addMessage('\'@block <name>\' - blocks / unblock user');
 								addMessage('\'@notify\' - toggles notifications on / off');
 								addMessage('\'@quit\' - disconnect user from the chat');
 								addMessage('** *********************************** **');

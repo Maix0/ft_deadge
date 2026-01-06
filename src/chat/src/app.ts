@@ -374,6 +374,8 @@ async function onReady(fastify: FastifyInstance) {
 				}
 			}
 		});
+
+
 		socket.on('client_entered', (data) => {
 
     		// data may be undefined (when frontend calls emit with no payload)
