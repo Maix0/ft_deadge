@@ -7,6 +7,7 @@ import './signin/signin.ts'
 import './ttt/ttt.ts'
 import './profile/profile.ts'
 import './logout/logout.ts'
+import './pongHistory/pongHistory.ts'
 
 // ---- Initial load ----
 setTitle("");
