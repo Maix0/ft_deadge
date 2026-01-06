@@ -21,3 +21,14 @@ redirect_url = "https://local.maix.me:8888/api/auth/oauth2/discord/callback"
 scopes = ["identify"] # here no email asked :)
 user = { unique_id = "id", name = "username" } # for example discord provides some stuff, like unique_id and username, such that we dont have to ask additional permission to get the email
 display_name = "Discord"
+
+[providers.ft]
+auth_url  = "https://api.intra.42.fr/oauth/authorize"
+token_url = "https://api.intra.42.fr/oauth/token"
+info_url  = "https://api.intra.42.fr/v2/me"
+client_id = "" # Here the uuid given by the intra
+client_secret.inline = "" # Here the secret given by the intra
+scopes = ["public"] # The only scope allowed give by the api
+redirect_url = "https://local.maix.me:8888/api/auth/oauth2/ft/callback"
+user = { unique_id = "login", name = "login" } # The default name / id will be set to the login field
+display_name = "42"
