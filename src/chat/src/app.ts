@@ -264,11 +264,16 @@ async function onReady(fastify: FastifyInstance) {
 			if (!user) return;
 			if (clientName !== null) {
 				
-				if (profile.guestmsg) {console.log('Data TRUE:', clientName);} else {console.log('Data FALSE'); };
-				
-				
-				if(fastify.db.getGuestMessage(user?.id)) {console.log('TRUE')};
-
+				if (profile.guestmsg) {
+					//console.log('Data TRUE:', clientName);
+					//console.log(user?.id);
+					fastify.db.allowGuestMessage(user?.id);
+				} 
+				else 
+				{
+					//console.log('Data FALSE', clientName); 
+					fastify.db.denyGuestMessage(user?.id);
+				};
 			}
 		});
 

@@ -209,7 +209,11 @@ export const UserImpl: Omit<IUserDb, keyof Database> = {
 	},
 
 	getGuestMessage(this: IUserDb, id: UserId): boolean | undefined {
-		return this.prepare('SELECT allow_guest_message FROM user WHERE id = @id').get({ id }) as boolean | undefined;
+		const result = this.prepare('SELECT allow_guest_message FROM user WHERE id = @id').get({ id }) as {
+			allow_guest_message: number
+		} | undefined
+		
+		return Boolean(result?.allow_guest_message)
 	},
 };
 
