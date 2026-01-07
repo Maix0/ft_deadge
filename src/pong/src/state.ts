@@ -5,6 +5,7 @@ import { Pong } from './game';
 import { GameMove, GameUpdate, SSocket } from './socket';
 import { isNullish } from '@shared/utils';
 import { PongGameId, PongGameOutcome } from '@shared/database/mixin/pong';
+import { Client } from 'socket.io/dist/client';
 
 type PUser = {
 	id: UserId;
@@ -70,9 +71,6 @@ class StateI {
 			u2.currentGame = gameId;
 
 			g.gameUpdate = setInterval(() => {
-				// ---
-				// wait for ready up
-				// ---
 				g.tick();
 				if (g.sendSig === false && g.ready_checks[0] === true && g.ready_checks[1] === true) {
 					u1.socket.emit('rdyEnd');
@@ -202,7 +200,11 @@ class StateI {
 		if (rOutcome === 'right') { outcome = 'winR'; }
 		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
 		this.fastify.log.info('SetGameOutcome !');
-		// do something here with the game result before deleting the game at the end
+		if (!game.local) {
+			let payload = {message:'game finished'}; // TODO: add names of ppl
+			fetch("https://localhost:8888/app/chat/broadcast", {method:'POST', headers:{'Content-type':'application/json'}, body: JSON.stringify(payload)});
+			// announce to chat
+		}
 	}
 
 
