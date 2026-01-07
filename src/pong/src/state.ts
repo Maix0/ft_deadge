@@ -182,15 +182,18 @@ class StateI {
 	}
 
 	private async cleanupGame(gameId: GameId, game: Pong): Promise<void> {
+		let chat_text = 'A game ended between ';
 		clearInterval(game.gameUpdate ?? undefined);
 		this.games.delete(gameId);
 		const winner = game.checkWinner() ?? 'left';
 		let player: PUser | undefined = undefined;
 		if ((player = this.users.get(game.userLeft)) !== undefined) {
+			chat_text += player.id + ' and ';
 			player.currentGame = null;
 			player.socket.emit('gameEnd', winner);
 		}
 		if ((player = this.users.get(game.userRight)) !== undefined) {
+			chat_text += player.id ;
 			player.currentGame = null;
 			player.socket.emit('gameEnd', winner);
 		}
@@ -201,7 +204,7 @@ class StateI {
 		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
 		this.fastify.log.info('SetGameOutcome !');
 		if (!game.local) {
-			let payload = {'nextGame':'game finished'}; // TODO: add names of ppl
+			let payload = {'nextGame':chat_text}; // TODO: add names of ppl
 			try {
 				const resp = await fetch("http://app-chat/api/chat/broadcast", {
 					method:'POST',
