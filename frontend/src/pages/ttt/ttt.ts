@@ -54,7 +54,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			// TODO: Join queue button
 			// When clicking on this button, two scenarios:
 			// not in a game -> Join queue
-			// In a game -> user clicking on the button loses the game and joins the queue, board is cleaned
+			// In a queue -> Leave queue
 			// Should I differentiate the scenarios here or inside the requestNewGame function ?
 			joinQueueBtn.addEventListener("click", () => {
 				console.log('===== JOIN QUEUE BUTTON PRESSED =====');
