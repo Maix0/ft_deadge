@@ -31,6 +31,7 @@ export type ClientProfil = {
 	SenderID: string,
     Sendertext: string,
     innerHtml?: string,
+	guestmsg?: boolean,
 
 };
 

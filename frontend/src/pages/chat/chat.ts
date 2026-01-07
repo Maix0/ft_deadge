@@ -391,7 +391,9 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// Send button
 			sendButton?.addEventListener("click", () => {
 				const notify = document.getElementById("notify") ?? null;
-				const noGuest = document.getElementById("guestMsg") ?? null;
+				const noGuest = document.getElementById("noGuest") ?? null;
+				const userId = getUser()?.id;
+				const userAskingToBlock = getUser()?.name;
 				if (sendtextbox && sendtextbox.value.trim()) {
 					let msgText: string = sendtextbox.value.trim();
 					const msgCommand = parseCmdMsg(msgText) ?? "";
@@ -403,17 +405,15 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								break;
 							case '@block':
 								if (msgCommand[1] === '') {break;};
-								const userAskingToBlock = getUser()?.name;
 								if (!userAskingToBlock) return;
-								const userID1 = getUser()?.id;
-								if (!userID1) return;
+								if (!userId) return;
 								const userToBlock: ClientProfil = {
 									command: msgCommand[0],
     								destination: '',
     								type:  'chat',
     								user:  msgCommand[1],
     								loginName:  '',
-    								userID:  userID1,
+    								userID:  userId,
     								text:  '',
     								timestamp:  Date.now(),
     								SenderWindowID:  '',
@@ -433,7 +433,39 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									notify.innerText = '🔕';
 									inviteMsgFlag = false;
 								}
+
 								break;
+								
+								case '@guest':
+									if (!userId) return;
+									if (!userAskingToBlock) return;
+									if (noGuest === null) {break;};
+									if (noGuestFlag === false) {
+										noGuest.innerText = '❤️​';
+										noGuestFlag = true;
+									} else {
+										noGuest.innerText = '💔';
+										noGuestFlag = false;
+									}
+									const userProfile: ClientProfil = {
+										command: '@noguest',
+    									destination: '',
+    									type:  'chat',
+    									user:  '',
+    									loginName:  '',
+    									userID:  userId,
+    									text:  '',
+    									timestamp:  Date.now(),
+    									SenderWindowID:  '',
+    									SenderName:  userAskingToBlock,
+    									SenderID:  '',
+    									Sendertext:  '',
+    									innerHtml:  '',
+										guestmsg: noGuestFlag,
+									}	
+									socket.emit('guestmsg', JSON.stringify(userProfile));
+									break;
+
 							case '@profile':
 								if (msgCommand[1] === '') {break;};
 								getProfil(socket, msgCommand[1]);
