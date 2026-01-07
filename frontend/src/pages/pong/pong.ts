@@ -1,14 +1,20 @@
-import { addRoute, navigateTo, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
-import authHtml from './pong.html?raw';
-import io from 'socket.io-client';
+import {
+	addRoute,
+	navigateTo,
+	setTitle,
+	type RouteHandlerParams,
+	type RouteHandlerReturn,
+} from "@app/routing";
+import authHtml from "./pong.html?raw";
+import io from "socket.io-client";
 import type { CSocket, GameMove, GameUpdate } from "./socket";
-import { showError, showInfo } from "@app/toast";
+import { showError, showInfo, showSuccess } from "@app/toast";
 import { getUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
 import client from "@app/api";
 import "./pong.css";
 
-declare module 'ft_state' {
+declare module "ft_state" {
 	interface State {
 		pongSock?: CSocket;
 	}
@@ -20,96 +26,176 @@ enum QueueState {
 	Ready = "Ready-ing",
 	Iddle = "Queue Up",
 	In_local = "In Local",
-};
+}
 
 enum ReadyState {
 	readyUp = "ready ok",
 	readyDown = "not ready",
-};
+}
+
+enum TourBtnState {
+	Joined = "Joined",
+	Started = "Started",
+	AbleToJoin = "Join Tournament",
+	AbleToCreate = "Create Tournament",
+	AbleToStart = "Start Tournament",
+	AbeToProcreate = "He would be proud",
+}
 
 document.addEventListener("ft:pageChange", (newUrl) => {
-	if (newUrl.detail.startsWith('/app/pong') || newUrl.detail.startsWith('/pong')) return;
+	if (
+		newUrl.detail.startsWith("/app/pong") ||
+		newUrl.detail.startsWith("/pong")
+	)
+		return;
 	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
 	window.__state.pongSock = undefined;
 });
 
 export function getSocket(): CSocket {
 	if (window.__state.pongSock === undefined)
-		window.__state.pongSock = io(window.location.host, { path: "/api/pong/socket.io/" }) as any as CSocket;
+		window.__state.pongSock = io(window.location.host, {
+			path: "/api/pong/socket.io/",
+		}) as any as CSocket;
 	return window.__state.pongSock;
 }
 
-function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-	setTitle('Pong Game Page');
+function pongClient(
+	_url: string,
+	_args: RouteHandlerParams,
+): RouteHandlerReturn {
+	setTitle("Pong Game Page");
 	return {
-		html: authHtml, postInsert: async (app) => {
+		html: authHtml,
+		postInsert: async (app) => {
 			const DEFAULT_COLOR = "white";
 			const SELF_COLOR = "red";
 
 			const user = getUser();
 			let currentGame: GameUpdate | null = null;
 			let opponent: User | null = null;
-			const rdy_btn = document.querySelector<HTMLButtonElement>('#readyup-btn');
+			const rdy_btn =
+				document.querySelector<HTMLButtonElement>("#readyup-btn");
 			const batLeft = document.querySelector<HTMLDivElement>("#batleft");
-			const batRight = document.querySelector<HTMLDivElement>("#batright");
+			const batRight =
+				document.querySelector<HTMLDivElement>("#batright");
 			const ball = document.querySelector<HTMLDivElement>("#ball");
-			const score = document.querySelector<HTMLDivElement>("#score-board");
-			const playerL = document.querySelector<HTMLDivElement>('#player-left');
-			const playerR = document.querySelector<HTMLDivElement>('#player-right');
-			const queueBtn = document.querySelector<HTMLButtonElement>("#QueueBtn");
-			const LocalGameBtn = document.querySelector<HTMLButtonElement>("#LocalBtn");
-			const gameBoard = document.querySelector<HTMLDivElement>("#pongbox");
-			const queue_infos = document.querySelector<HTMLSpanElement>("#queue-info");
-			const how_to_play_btn = document.querySelector<HTMLButtonElement>("#play-info");
-			const protips = document.querySelector<HTMLDivElement>("#protips-box");
+			const score =
+				document.querySelector<HTMLDivElement>("#score-board");
+			const playerL =
+				document.querySelector<HTMLDivElement>("#player-left");
+			const playerR =
+				document.querySelector<HTMLDivElement>("#player-right");
+			const queueBtn =
+				document.querySelector<HTMLButtonElement>("#QueueBtn");
+			const LocalGameBtn =
+				document.querySelector<HTMLButtonElement>("#LocalBtn");
+			const gameBoard =
+				document.querySelector<HTMLDivElement>("#pongbox");
+			const queue_infos =
+				document.querySelector<HTMLSpanElement>("#queue-info");
+			const how_to_play_btn =
+				document.querySelector<HTMLButtonElement>("#play-info");
+			const protips =
+				document.querySelector<HTMLDivElement>("#protips-box");
+			const tournamentBtn =
+				document.querySelector<HTMLButtonElement>("#TourBtn");
 
 			let socket = getSocket();
 
-			if (isNullish(user)) { // if no user (no loggin / other) : GTFO
+			if (isNullish(user)) {
+				// if no user (no loggin / other) : GTFO
 				navigateTo("/app");
-				return ;
+				return;
 			}
-			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard || !queue_infos || !LocalGameBtn || !rdy_btn) // sanity check
-				return showError('fatal error');
-			if (!how_to_play_btn || !protips)
-				showError('missing protips'); // not a fatal error
+			if (
+				!batLeft ||
+				!batRight ||
+				!ball ||
+				!score ||
+				!queueBtn ||
+				!playerL ||
+				!playerR ||
+				!gameBoard ||
+				!queue_infos ||
+				!LocalGameBtn ||
+				!rdy_btn ||
+				!tournamentBtn
+			)
+				// sanity check
+				return showError("fatal error");
+			if (!how_to_play_btn || !protips) showError("missing protips"); // not a fatal error
+
+			tournamentBtn.addEventListener("click", () => {
+				showInfo(`Button State: ${tournamentBtn.innerText}`);
+
+				switch (tournamentBtn.innerText) {
+					case TourBtnState.AbleToStart:
+						//socket.emit('')
+						break;
+					case TourBtnState.AbleToJoin:
+						socket.emit("tourRegister");
+						break;
+					case TourBtnState.AbleToCreate:
+						socket.emit("tourCreate");
+						break;
+					case TourBtnState.AbeToProcreate:
+						showError("We are developpers, this is impossible !");
+						break;
+					case TourBtnState.Joined:
+						socket.emit("tourUnregister");
+						break;
+					case TourBtnState.Started:
+						showInfo("tournament Started");
+						//socket.emit("tourStart");
+						break;
+				}
+			});
 
 			// ---
 			// keys handler
 			// ---
 			const keys: Record<string, boolean> = {};
 			if (how_to_play_btn && protips)
-				how_to_play_btn.addEventListener("click", ()=>{
+				how_to_play_btn.addEventListener("click", () => {
 					protips.classList.toggle("hidden");
-					how_to_play_btn.innerText = how_to_play_btn.innerText === '?' ? 'x' : '?';
+					how_to_play_btn.innerText =
+						how_to_play_btn.innerText === "?" ? "x" : "?";
 				});
 
-			document.addEventListener("keydown", (e) => {keys[e.key.toLowerCase()] = true;});
-			document.addEventListener("keyup", (e) => {keys[e.key.toLowerCase()] = false;});
+			document.addEventListener("keydown", (e) => {
+				keys[e.key.toLowerCase()] = true;
+			});
+			document.addEventListener("keyup", (e) => {
+				keys[e.key.toLowerCase()] = false;
+			});
 
-			setInterval(() => { // key sender
-				if (keys['escape'] === true && protips && how_to_play_btn) {
+			setInterval(() => {
+				// key sender
+				if (keys["escape"] === true && protips && how_to_play_btn) {
 					protips.classList.add("hidden");
-					how_to_play_btn.innerText = '?';
+					how_to_play_btn.innerText = "?";
 				}
-				if (queueBtn.innerText !== QueueState.InGame)//we're in game ? continue | gtfo 
-					return ;
+				if (queueBtn.innerText !== QueueState.InGame)
+					//we're in game ? continue | gtfo
+					return;
 				if (currentGame === null) return;
 
 				let packet: GameMove = {
 					move: null,
 					moveRight: null,
-				}
+				};
 
-				if (queueBtn.innerText !== QueueState.InGame)//we're in game ? continue | gtfo 
-					return ;
+				if (queueBtn.innerText !== QueueState.InGame)
+					//we're in game ? continue | gtfo
+					return;
 				if (currentGame === null) return;
 
-				if ((keys['w'] !== keys['s']))
-					packet.move = keys['w'] ? 'up' : 'down';
-				if (currentGame.local && (keys['o'] !== keys['l']))
-					packet.moveRight = keys['o'] ? 'up' : 'down';
-				socket.emit('gameMove', packet);
+				if (keys["w"] !== keys["s"])
+					packet.move = keys["w"] ? "up" : "down";
+				if (currentGame.local && keys["o"] !== keys["l"])
+					packet.moveRight = keys["o"] ? "up" : "down";
+				socket.emit("gameMove", packet);
 			}, 1000 / 60);
 			// ---
 			// keys end
@@ -118,15 +204,28 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// ---
 			// position logic (client)
 			// ---
-			const DEFAULT_POSITIONS : GameUpdate = {
-				gameId:"",
-				ball:{size:16, x:800/2, y:450/2},
-				left:{id:"", paddle:{x:40, y:185, width:12, height:80}, score:0},
-				right:{id:"", paddle:{x:748, y:185, width:12, height:80}, score:0},
-				local:false
+			const DEFAULT_POSITIONS: GameUpdate = {
+				gameId: "",
+				ball: { size: 16, x: 800 / 2, y: 450 / 2 },
+				left: {
+					id: "",
+					paddle: { x: 40, y: 185, width: 12, height: 80 },
+					score: 0,
+				},
+				right: {
+					id: "",
+					paddle: { x: 748, y: 185, width: 12, height: 80 },
+					score: 0,
+				},
+				local: false,
 			};
 
-			function resetBoard(batLeft : HTMLDivElement, batRight : HTMLDivElement, playerL : HTMLDivElement, playerR : HTMLDivElement) {
+			function resetBoard(
+				batLeft: HTMLDivElement,
+				batRight: HTMLDivElement,
+				playerL: HTMLDivElement,
+				playerR: HTMLDivElement,
+			) {
 				render(DEFAULT_POSITIONS);
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
 				batRight.style.backgroundColor = DEFAULT_COLOR;
@@ -154,115 +253,131 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				ball.style.height = `${state.ball.size * 2}px`;
 				ball.style.width = `${state.ball.size * 2}px`;
 
-				score.innerText = `${state.left.score} | ${state.right.score}`
-			}
-			socket.on('gameUpdate', (state: GameUpdate) => {
-				render(state);});
+				score.innerText = `${state.left.score} | ${state.right.score}`;
+			};
+			socket.on("gameUpdate", (state: GameUpdate) => {
+				render(state);
+			});
 			// ---
 			// position logic (client) end
 			// ---
 
 			// ---
-			// queue evt 
+			// queue evt
 			// ---
 			// utils
-			function set_pretty(batU : HTMLDivElement, txtU : HTMLDivElement, txtO : HTMLDivElement, colorYou : string) {
+			function set_pretty(
+				batU: HTMLDivElement,
+				txtU: HTMLDivElement,
+				txtO: HTMLDivElement,
+				colorYou: string,
+			) {
 				batU.style.backgroundColor = colorYou;
 				txtU.style.color = colorYou;
 				txtU.innerText = isNullish(user) ? "you" : user.name;
-				txtO.innerText = isNullish(opponent) ? "the mechant" : opponent.name;
+				txtO.innerText = isNullish(opponent)
+					? "the mechant"
+					: opponent.name;
 			}
-			async function get_opponent(opponent_id : string) {
-				let t = await client.getUser({user:opponent_id});
+			async function get_opponent(opponent_id: string) {
+				let t = await client.getUser({ user: opponent_id });
 
 				switch (t.kind) {
-					case "success" :
+					case "success":
 						opponent = t.payload;
-						break ;
-					default :
+						break;
+					default:
 						opponent = null;
 				}
 			}
 
 			// btn setup
-			queueBtn.addEventListener("click", ()=>{
+			queueBtn.addEventListener("click", () => {
 				if (queueBtn.innerText !== QueueState.Iddle) {
 					if (queueBtn.innerText === QueueState.InQueu) {
 						socket.emit("dequeue");
 						queueBtn.innerText = QueueState.Iddle;
 					}
-					return ;
+					return;
 				}
 				queueBtn.innerText = QueueState.InQueu;
-				socket.emit('enqueue');
+				socket.emit("enqueue");
 			});
 			LocalGameBtn.addEventListener("click", () => {
-				if (queueBtn.innerText !== QueueState.Iddle || currentGame !== null) {
-					showError("cant launch a local game while in queue/in game");
-					return ;
+				if (
+					queueBtn.innerText !== QueueState.Iddle ||
+					currentGame !== null
+				) {
+					showError(
+						"cant launch a local game while in queue/in game",
+					);
+					return;
 				}
 				socket.emit("localGame");
 				queueBtn.innerText = QueueState.In_local;
 				LocalGameBtn.innerText = "playing";
 			});
-			rdy_btn.addEventListener("click", ()=>{
+			rdy_btn.addEventListener("click", () => {
 				showInfo("rdy-evt");
 				switch (rdy_btn.innerText) {
 					case ReadyState.readyDown:
-						socket.emit('readyUp');
+						socket.emit("readyUp");
 						rdy_btn.innerText = ReadyState.readyUp;
 						rdy_btn.classList.remove("text-red-600");
 						rdy_btn.classList.add("text-green-600");
-						break ;
+						break;
 					case ReadyState.readyUp:
-						socket.emit('readyDown');
+						socket.emit("readyDown");
 						rdy_btn.innerText = ReadyState.readyDown;
 						rdy_btn.classList.remove("text-green-600");
 						rdy_btn.classList.add("text-red-600");
-						break ;
+						break;
 					default:
 						showError("error on ready btn");
 				}
 			});
 
-			socket.on('newGame', async (state) => {
+			socket.on("newGame", async (state) => {
 				render(state);
-				
-				await get_opponent(state.left.id == user.id ? state.right.id : state.left.id);
+
+				await get_opponent(
+					state.left.id == user.id ? state.right.id : state.left.id,
+				);
 				queueBtn.innerText = QueueState.InGame;
-				queueBtn.style.color = 'red';
+				queueBtn.style.color = "red";
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
 				batRight.style.backgroundColor = DEFAULT_COLOR;
 				if (state.left.id === user.id) {
 					set_pretty(batLeft, playerL, playerR, SELF_COLOR);
 				} else if (state.right.id === user.id) {
 					set_pretty(batRight, playerR, playerL, SELF_COLOR);
-				} else
-					showError("couldn't find your id in game");
-				rdy_btn.classList.remove('hidden');
+				} else showError("couldn't find your id in game");
+				rdy_btn.classList.remove("hidden");
 				rdy_btn.classList.add("text-red-600");
 				rdy_btn.innerText = ReadyState.readyDown;
 			});
-			socket.on('rdyEnd', () => {
+			socket.on("rdyEnd", () => {
 				rdy_btn.classList.remove("text-green-600");
 				rdy_btn.classList.remove("text-red-600");
-				rdy_btn.classList.add('hidden');
+				rdy_btn.classList.add("hidden");
 			});
 
 			socket.on("gameEnd", (winner) => {
-				rdy_btn.classList.add('hidden');
+				rdy_btn.classList.add("hidden");
 				queueBtn.innerHTML = QueueState.Iddle;
-				queueBtn.style.color = 'white';
+				queueBtn.style.color = "white";
 
 				if (!isNullish(currentGame)) {
-					let new_div = document.createElement('div');
+					let new_div = document.createElement("div");
 					let end_txt = "";
-					if ((user.id === currentGame.left.id && winner === 'left') ||
-						(user.id === currentGame.right.id && winner === 'right'))
-						end_txt = 'won! #yippe';
-					else
-						end_txt = 'lost #sadge';
-					new_div.innerText = 'you ' + end_txt; 
+					if (
+						(user.id === currentGame.left.id &&
+							winner === "left") ||
+						(user.id === currentGame.right.id && winner === "right")
+					)
+						end_txt = "won! #yippe";
+					else end_txt = "lost #sadge";
+					new_div.innerText = "you " + end_txt;
 					new_div.className = "pong-end-screen";
 					gameBoard.appendChild(new_div);
 					setTimeout(() => {
@@ -270,25 +385,61 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					}, 3 * 1000);
 
 					if (currentGame.local) {
-						LocalGameBtn.innerText = "Local Game"
+						LocalGameBtn.innerText = "Local Game";
 					}
 				}
 				resetBoard(batLeft, batRight, playerL, playerR);
-			})
-			socket.on('updateInformation', (e) => {
+			});
+			socket.on("updateInformation", (e) => {
 				queue_infos.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
 			});
-			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`)); // MAYBE: play a sound? to notify user that smthing happend
+			socket.on("queueEvent", (e) => showInfo(`QueueEvent: ${e}`)); // MAYBE: play a sound? to notify user that smthing happend
 			// ---
 			// queue evt end
 			// ---
 
+			socket.on("tournamentInfo", (s) => {
+				// no tournament => we can create it !
+				if (s === null) {
+					tournamentBtn.innerText = TourBtnState.AbleToCreate;
+					// create tournament
+					return;
+				}
+
+				let weIn = s.players.some((p) => p.id === user.id);
+				let imOwner = s.ownerId === user.id;
+				switch (s.state) {
+					case "ended":
+						tournamentBtn.innerText = TourBtnState.AbleToCreate;
+						break;
+					case "playing":
+						tournamentBtn.innerText = TourBtnState.Started;
+						break;
+					case "prestart":
+						if (imOwner) {
+							tournamentBtn.innerText = TourBtnState.AbleToStart;
+						} else {
+							tournamentBtn.innerText = weIn
+								? TourBtnState.Joined
+								: TourBtnState.AbleToJoin;
+						}
+						break;
+				}
+
+				console.log(s.players);
+			});
+
+			socket.on("tournamentRegister", ({ kind, msg }) => {
+				if (kind === "success") showSuccess(msg ?? "Success");
+				if (kind === "failure") showError(msg ?? "An error Occured");
+			});
+
 			// init
-			rdy_btn.classList.add('hidden');
+			rdy_btn.classList.add("hidden");
 			queueBtn.innerText = QueueState.Iddle;
 			rdy_btn.innerText = ReadyState.readyUp;
 			resetBoard(batLeft, batRight, playerL, playerR);
-		}
-	}
-};
-addRoute('/pong', pongClient);
+		},
+	};
+}
+addRoute("/pong", pongClient);
