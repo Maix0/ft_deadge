@@ -45,20 +45,20 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			if (user === null)
 				return;
 
-			const newGameBtn = document.querySelector<HTMLButtonElement>("#NewGameBtn");
+			const joinQueueBtn = document.querySelector<HTMLButtonElement>("#JoinQueueBtn");
 
-			if (!newGameBtn) {
+			if (!joinQueueBtn) {
 				return showError('fatal error');
 			}
 			
-			// TODO
+			// TODO: Join queue button
 			// When clicking on this button, two scenarios:
 			// not in a game -> Join queue
 			// In a game -> user clicking on the button loses the game and joins the queue, board is cleaned
 			// Should I differentiate the scenarios here or inside the requestNewGame function ?
-			newGameBtn.addEventListener("click", () => {
-				console.log('===== NEW GAME REQUESTED =====');
-				socket.emit("requestNewGame");
+			joinQueueBtn.addEventListener("click", () => {
+				console.log('===== JOIN QUEUE BUTTON PRESSED =====');
+				socket.emit("joinQueueButton");
 			});
 
 			let curGame: CurrentGameInfo | null = null;
