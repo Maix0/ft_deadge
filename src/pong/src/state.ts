@@ -2,9 +2,10 @@ import { UserId } from '@shared/database/mixin/user';
 import { newUUID } from '@shared/utils/uuid';
 import { FastifyInstance } from 'fastify';
 import { Pong } from './game';
-import { GameMove, GameUpdate, SSocket } from './socket';
-import { isNullish } from '@shared/utils';
+import { GameMove, GameUpdate, SSocket, TourInfo } from './socket';
+import { isNullish, shuffle } from '@shared/utils';
 import { PongGameId, PongGameOutcome } from '@shared/database/mixin/pong';
+import { Tournament } from './tour';
 
 type PUser = {
 	id: UserId;
@@ -23,6 +24,7 @@ class StateI {
 	private queue: Set<UserId> = new Set();
 	private queueInterval: NodeJS.Timeout;
 	private games: Map<GameId, Pong> = new Map();
+	private tournament: Tournament | null = null;
 
 	public constructor(private fastify: FastifyInstance) {
 		this.queueInterval = setInterval(() => this.queuerFunction());
@@ -39,8 +41,71 @@ class StateI {
 		};
 	}
 
+	private registerForTournament(sock: SSocket, name: string | null) {
+		const user = this.users.get(sock.authUser.id);
+		if (isNullish(user)) return;
+
+		if (isNullish(this.tournament)) {
+			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament exists' });
+			return;
+		}
+		if (this.tournament.started) {
+			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament already started' });
+			return;
+		}
+		const udb = this.fastify.db.getUser(user.id);
+		if (isNullish(udb)) {
+			sock.emit('tournamentRegister', { kind: 'failure', msg: 'User not found' });
+			return;
+		}
+
+		this.tournament.addUser(user.id, name ?? udb.name);
+		sock.emit('tournamentRegister', { kind: 'success', msg: 'Registered to Tournament' });
+		return;
+	}
+
+	private unregisterForTournament(sock: SSocket) {
+		const user = this.users.get(sock.authUser.id);
+		if (isNullish(user)) return;
+
+		if (isNullish(this.tournament)) {
+			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament exists' });
+			return;
+		}
+		if (this.tournament.started) {
+			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament already started' });
+			return;
+		}
+
+		this.tournament.removeUser(user.id);
+		sock.emit('tournamentRegister', { kind: 'success', msg: 'Unregistered to Tournament' });
+		return;
+	}
+
+	private createTournament(sock: SSocket) {
+		const user = this.users.get(sock.authUser.id);
+		if (isNullish(user)) return;
+
+		if (this.tournament !== null) {
+			sock.emit('tournamentCreateMsg', { kind: 'failure', msg: 'A tournament already exists' });
+			return ;
+		}
+
+		this.tournament = new Tournament(user.id);
+		this.registerForTournament(sock, null);
+	}
+
+	private tournamentStart(sock: SSocket) {
+		if (isNullish(this.tournament)) return;
+		const user = this.users.get(sock.authUser.id);
+		if (isNullish(user)) return;
+
+		this.tournament.start();
+	}
+
 	private queuerFunction(): void {
 		const values = Array.from(this.queue.values());
+		shuffle(values);
 		while (values.length >= 2) {
 			const id1 = values.pop();
 			const id2 = values.pop();
@@ -80,7 +145,7 @@ class StateI {
 					this.gameUpdate(gameId, u1.socket);
 					this.gameUpdate(gameId, u2.socket);
 				}
-				if (g.checkWinner() !== null) {this.cleanupGame(gameId, g); }
+				if (g.checkWinner() !== null) { this.cleanupGame(gameId, g); }
 			}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
 		}
 	}
@@ -148,7 +213,7 @@ class StateI {
 			socket,
 			id: socket.authUser.id,
 			windowId: socket.id,
-			updateInterval: setInterval(() => this.updateClient(socket), 3000),
+			updateInterval: setInterval(() => this.updateClient(socket), 100),
 			currentGame: null,
 		});
 		this.fastify.log.info('Registered new user');
@@ -162,6 +227,12 @@ class StateI {
 
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
 		socket.on('localGame', () => this.newLocalGame(socket));
+
+		// todo: allow passing nickname
+		socket.on('tourRegister', () => this.registerForTournament(socket, null));
+		socket.on('tourUnregister', () => this.unregisterForTournament(socket));
+
+		socket.on('tourCreate', () => this.createTournament(socket));
 	}
 
 	private updateClient(socket: SSocket): void {
@@ -170,6 +241,21 @@ class StateI {
 			totalUser: this.users.size,
 			totalGames: this.games.size,
 		});
+		let tourInfo: TourInfo | null = null;
+		if (this.tournament !== null) {
+			tourInfo = {
+				ownerId: this.tournament.owner,
+				state: this.tournament.started ? 'playing' : 'prestart',
+				players: this.tournament.users.values().toArray(),
+				currentGameInfo: (() => {
+					if (this.tournament.currentGame === null) return null;
+					const game = this.games.get(this.tournament.currentGame);
+					if (isNullish(game)) return null;
+					return StateI.getGameUpdateData(this.tournament.currentGame, game);
+				})(),
+			};
+		}
+		socket.emit('tournamentInfo', tourInfo);
 	}
 
 	private cleanupUser(socket: SSocket): void {
@@ -203,20 +289,20 @@ class StateI {
 		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
 		this.fastify.log.info('SetGameOutcome !');
 		if (!game.local) {
-			const payload = { 'nextGame':chat_text };
+			const payload = { 'nextGame': chat_text };
 			try {
 				const resp = await fetch('http://app-chat/api/chat/broadcast', {
-					method:'POST',
-					headers:{ 'Content-type':'application/json' },
+					method: 'POST',
+					headers: { 'Content-type': 'application/json' },
 					body: JSON.stringify(payload),
 				});
 
-				if (!resp.ok) {	throw (resp); }
+				if (!resp.ok) { throw (resp); }
 				else { this.fastify.log.info('game-end info to chat success'); }
 			}
 			// disable eslint for err catching
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			catch (e : any) {
+			catch (e: any) {
 				this.fastify.log.error(`game-end info to chat failed: ${e}`);
 			}
 		}
@@ -243,7 +329,7 @@ class StateI {
 		socket.emit('queueEvent', 'unregistered');
 	}
 
-	private readydownUser(socket: SSocket) : void {
+	private readydownUser(socket: SSocket): void {
 		// do we know this user ?
 		if (!this.users.has(socket.authUser.id)) return;
 		const user = this.users.get(socket.authUser.id)!;
@@ -254,7 +340,7 @@ class StateI {
 		if (game.local === true) return;
 		game.readydown(user.id);
 	}
-	private readyupUser(socket: SSocket) : void {
+	private readyupUser(socket: SSocket): void {
 		// do we know this user ?
 		if (!this.users.has(socket.authUser.id)) return;
 		const user = this.users.get(socket.authUser.id)!;

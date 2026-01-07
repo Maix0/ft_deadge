@@ -2,8 +2,13 @@
 	<div id="mainbox" class="mainboxDisplay">
 		<button id="QueueBtn" class="btn-style absolute top-4 left-6">Queue Up</button>
 		<button id="LocalBtn" class="btn-style absolute top-14 left-6">Local Game</button>
-		<span id="queue-info" class="flex rounded-3xl border-7 border-gray-500 bg-gray-500 absolute top-4 right-6">?👤 ?⏳ ?▮•▮</span> <!-- total | in queue | games-->
-		<button id="play-info" class="pong-how-to-play absolute top-14 right-6">?</button> <!-- how to play?-->
+		<span id="queue-info" class="flex rounded-3xl border-7 border-gray-500 bg-gray-500 absolute top-4 right-6">?👤
+			?⏳ ?▮•▮</span> <!-- total | in queue | games-->
+		<button id="TourBtn"
+			class="min-25 min-h-8 border border-gray-500 rounded-3xl bg-gray-500 text-white cursor-pointer shadow-[0_2px_0_0_black] transition-all hover:bg-blue-200 active:bg-gray-400 active:translate-y-px active:shadow-[0_2px_0_0_black] absolute top-16 right-6">
+			<span class="mx-2">Create Tournament</span>
+		</button> <!-- Tournament Button -->
+		<button id="play-info" class="pong-how-to-play absolute top-26 right-6">?</button> <!-- how to play?-->
 		<br>
 		<h1 class="text-3xl font-bold text-gray-800">
 			Pong Box<span id="t-username"></span>
@@ -25,7 +30,8 @@
 						down:
 						<kbd class="pong-protips-key">S</kbd>
 						<br>
-						You are <span class="text-red-500">red</span>. <br> Your goal is to bounce the ball back to the adversary.
+						You are <span class="text-red-500">red</span>. <br> Your goal is to bounce the ball back to the
+						adversary.
 						<br>
 						<span class="text-gray-400">local games keys for the left paddle:<br>
 							up:
@@ -33,7 +39,7 @@
 							down:
 							<kbd class="pong-protips-key">L</kbd>
 						</span>
-					</div>	
+					</div>
 					<button class="pong-rdy-screen" id="readyup-btn">ready!</button>
 					<div class="pong-field">
 						<div id="batleft" class="pong-batleft top-0"></div>

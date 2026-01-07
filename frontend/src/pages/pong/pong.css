@@ -8,8 +8,8 @@
 
 .btn-style {
   @apply
-  w-25
-  h-8
+  min-w-25
+  min-h-8
   border
   border-gray-500
   rounded-3xl
