@@ -149,10 +149,9 @@
     rounded-2xl
     absolute
     justify-center
-    text-black
-    text-center
-    text-base
+    text-center text-lg
     bg-white
+    border-5 border-white
     z-50
 }
 
