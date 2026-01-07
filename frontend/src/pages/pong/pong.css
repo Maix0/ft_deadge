@@ -155,3 +155,38 @@
     bg-white
     z-50
 }
+
+.pong-protips-box {
+  @apply
+    justify-center
+    absolute
+    bg-white
+
+    border-10
+    rounded-3xl
+    border-white
+
+    text-center
+    text-2xl
+    text-black 
+}
+
+.pong-protips-key {
+  @apply
+    inline-flex
+    items-center
+    justify-center
+		min-w-[2rem] h-8 px-2
+		rounded-md border border-gray-300
+		bg-gray-100 text-gray-800
+		font-mono text-sm font-medium
+		shadow-sm
+		select-none  
+}
+
+.pong-how-to-play {
+  @apply
+    inline-flex items-center justify-center
+    rounded-full w-8 h-8 bg-blue-500 
+    border-10 border-blue-500
+}

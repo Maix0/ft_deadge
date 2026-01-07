@@ -66,6 +66,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const LocalGameBtn = document.querySelector<HTMLButtonElement>("#LocalBtn");
 			const gameBoard = document.querySelector<HTMLDivElement>("#pongbox");
 			const queue_infos = document.querySelector<HTMLSpanElement>("#queue-info");
+			const how_to_play_btn = document.querySelector<HTMLButtonElement>("#play-info");
+			const protips = document.querySelector<HTMLDivElement>("#protips-box");
 
 			let socket = getSocket();
 
@@ -75,16 +77,27 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			}
 			if (!batLeft || !batRight || !ball || !score || !queueBtn || !playerL || !playerR || !gameBoard || !queue_infos || !LocalGameBtn || !rdy_btn) // sanity check
 				return showError('fatal error');
+			if (!how_to_play_btn || !protips)
+				showError('missing protips'); // not a fatal error
 
 			// ---
 			// keys handler
 			// ---
 			const keys: Record<string, boolean> = {};
+			if (how_to_play_btn && protips)
+				how_to_play_btn.addEventListener("click", ()=>{
+					protips.classList.toggle("hidden");
+					how_to_play_btn.innerText = how_to_play_btn.innerText === '?' ? 'x' : '?';
+				});
 
 			document.addEventListener("keydown", (e) => {keys[e.key.toLowerCase()] = true;});
 			document.addEventListener("keyup", (e) => {keys[e.key.toLowerCase()] = false;});
 
 			setInterval(() => { // key sender
+				if (keys['escape'] === true && protips && how_to_play_btn) {
+					protips.classList.add("hidden");
+					how_to_play_btn.innerText = '?';
+				}
 				if (queueBtn.innerText !== QueueState.InGame)//we're in game ? continue | gtfo 
 					return ;
 				if (currentGame === null) return;
@@ -150,8 +163,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				score.innerText = `${state.left.score} | ${state.right.score}`
 			}
 			socket.on('gameUpdate', (state: GameUpdate) => {
-				// if (rdy_btn)
-				// 	rdy_btn.classList.add('hidden');
 				render(state);});
 			// ---
 			// position logic (client) end
