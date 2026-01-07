@@ -79,6 +79,7 @@ declare module 'fastify' {
 		io: Server<{
 			MsgObjectServer: (data: { message: ClientMessage }) => void;
 			privMessage: (data: string) => void;
+			guestmsg: (data: string) => void;
 			profilMessage: (data: ClientProfil) => void;
 			inviteGame: (data: ClientProfil) => void;
 			blockUser: (data: ClientProfil) => void;
@@ -254,6 +255,24 @@ async function onReady(fastify: FastifyInstance) {
 				sendPrivMessage(fastify, obj, obj.SenderWindowID);
 			}
 		});
+
+		socket.on('guestmsg', (data) => {
+			const clientName: string = clientChat.get(socket.id)?.user || '';
+			const profile: ClientProfil = JSON.parse(data) || '';
+			const users: User[] = fastify.db.getAllUsers() ?? [];
+			const user: User | null = getUserByName(users, clientName);
+			if (!user) return;
+			if (clientName !== null) {
+				
+				if (profile.guestmsg) {console.log('Data TRUE:', clientName);} else {console.log('Data FALSE'); };
+				
+				
+				if(fastify.db.getGuestMessage(user?.id)) {console.log('TRUE')};
+
+			}
+		});
+
+
 
 
 		socket.on('profilMessage', async (data: string) => {
