@@ -1,17 +1,17 @@
 import { UserId } from '@shared/database/mixin/user';
 import { FastifyInstance } from 'fastify';
-import { GameMove, SSocket } from './socket';
+import { GameMove, GameUpdate, SSocket } from './socket';
 import { isNullish } from '@shared/utils';
 import { newUUID } from '@shared/utils/uuid';
-import { GameId } from '@shared/database/mixin/tictactoe';
+import { TTTGameId } from '@shared/database/mixin/tictactoe';
 import { TTC } from './game';
 
 type TTTUser = {
-    socket: SSocket,
-    userId: UserId,
-    windowId: string,
-    updateInterval: NodeJS.Timeout,
-    currentGame: GameId | null,
+	socket: SSocket,
+	userId: UserId,
+	windowId: string,
+	updateInterval: NodeJS.Timeout,
+	currentGame: TTTGameId | null,
 }
 
 export class StateI {
@@ -21,7 +21,7 @@ export class StateI {
 
 	private queueInterval: NodeJS.Timeout;
 
-	private games: Map<GameId, TTC> = new Map();
+	private games: Map<TTTGameId, TTC> = new Map();
 
 	constructor(private fastify: FastifyInstance) {
 		this.queueInterval = setInterval(() => this.queuerFunction());
@@ -50,6 +50,7 @@ export class StateI {
 		socket.on('debugInfo', () => this.debugSocket(socket));
 
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
+		socket.on('keepalive', () => this.keepAlive(socket));
 		if (socket) {
 			console.log('Socket:', socket.id);
 		}
@@ -75,14 +76,14 @@ export class StateI {
 			this.queue.delete(id1);
 			this.queue.delete(id2);
 
-			const gameId = newUUID() as unknown as GameId;
+			const gameId = newUUID() as TTTGameId;
 			const g = new TTC(u1.userId, u2.userId);
-			const iState = {
+			const iState: GameUpdate = {
 				boardState: g.board,
 				currentPlayer: g.getCurrentState(),
 				playerX: g.playerX,
 				playerO: g.playerO,
-				gameState: g.checkState(),
+				gameState: g.checkWinner() ?? 'ongoing',
 				gameId: gameId,
 			};
 
@@ -96,9 +97,8 @@ export class StateI {
 			g.gameUpdate = setInterval(() => {
 				this.gameUpdate(gameId, u1.socket);
 				this.gameUpdate(gameId, u2.socket);
-				if (g.checkState() !== 'ongoing') {
+				if (g.checkWinner() !== null) {
 					this.cleanupGame(gameId, g);
-					this.fastify.db.setTTTGameOutcome(gameId, u1.userId, u2.userId, g.checkState());
 				}
 			}, 100);
 		}
@@ -111,6 +111,16 @@ export class StateI {
 		});
 	}
 
+	private keepAlive(socket: SSocket): void {
+		const user = this.users.get(socket.authUser.id);
+		if (isNullish(user)) { return; }
+		if (isNullish(user.currentGame)) { return; }
+		const game = this.games.get(user.currentGame);
+		if (isNullish(game)) { return; }
+
+		game.updateKeepAlive(user.userId);
+	}
+
 	private cleanupUser(socket: SSocket): void {
 		if (!this.users.has(socket.authUser.id)) return;
 
@@ -119,7 +129,7 @@ export class StateI {
 		this.queue.delete(socket.authUser.id);
 	}
 
-	private cleanupGame(gameId: GameId, game: TTC): void {
+	private cleanupGame(gameId: TTTGameId, game: TTC): void {
 		clearInterval(game.gameUpdate ?? undefined);
 		this.games.delete(gameId);
 		let player: TTTUser | undefined;
@@ -131,6 +141,7 @@ export class StateI {
 			player.currentGame = null;
 			player.socket.emit('gameEnd');
 		}
+		this.fastify.db.setTTTGameOutcome(gameId, game.playerX, game.playerO, game.checkWinner() ?? 'draw');
 		// do something here with the game result before deleting the game at the end
 	}
 
@@ -163,7 +174,7 @@ export class StateI {
 		}));
 	}
 
-	private gameUpdate(gameId: GameId, socket: SSocket): void {
+	private gameUpdate(gameId: TTTGameId, socket: SSocket): void {
 		if (!this.users.has(socket.authUser.id)) return;
 		const user = this.users.get(socket.authUser.id)!;
 
@@ -176,19 +187,20 @@ export class StateI {
 			currentPlayer: games.getCurrentState(),
 			playerX: games.playerX,
 			playerO: games.playerO,
-			gameState: games.checkState(),
+			gameState: games.checkWinner() ?? 'ongoing',
 			gameId: gameId,
 		});
 	}
 
 	private gameMove(socket: SSocket, update: GameMove) {
-		if (!this.users.has(socket.authUser.id)) return 'unknownError';
+		if (!this.users.has(socket.authUser.id)) return;
 		const user = this.users.get(socket.authUser.id)!;
 
-		if (user.currentGame !== null && !this.games.has(user.currentGame)) return 'unknownError';
-		const game = this.games.get(user.currentGame!)!;
+		if (user.currentGame === null) return;
+		if (!this.games.has(user.currentGame)) return;
+		const game = this.games.get(user.currentGame)!;
 
-		game.makeMove(socket.authUser.id, update.index);
+		game?.makeMove(socket.authUser.id, update.index);
 	}
 }
 

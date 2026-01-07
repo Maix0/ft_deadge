@@ -14,7 +14,7 @@ export type GameUpdate = {
 
 	boardState: CellState[];
 	currentPlayer: 'X' | 'O';
-	gameState: 'winX' | 'winO' | 'draw' | 'ongoing';
+	gameState: 'winX' | 'winO' | 'draw' | 'ongoing' | 'other';
 }
 
 export type GameMove = {
@@ -26,6 +26,7 @@ export interface ClientToServer {
 	dequeue: () => void;
 	debugInfo: () => void;
 	gameMove: (up: GameMove) => void;
+	keepalive: () => void;
 	connectedToGame: (gameId: string) => void;
 };
 

@@ -10,17 +10,22 @@ import { updateUser } from "@app/auth";
 declare module 'ft_state' {
 	interface State {
 		tttSock?: Socket;
+		keepAliveInterval?: ReturnType<typeof setInterval>;
 	}
 }
 
 document.addEventListener("ft:pageChange", () => {
 	if (window.__state.tttSock !== undefined) window.__state.tttSock.close();
+	if (window.__state.keepAliveInterval !== undefined) clearInterval(window.__state.keepAliveInterval);
 	window.__state.tttSock = undefined;
+	window.__state.keepAliveInterval = undefined;
 });
 
 export function getSocket(): Socket {
 	if (window.__state.tttSock === undefined)
 		window.__state.tttSock = io(window.location.host, { path: "/api/ttt/socket.io/" }) as any as Socket;
+	if (window.__state.keepAliveInterval === undefined)
+		window.__state.keepAliveInterval = setInterval(() => window.__state.tttSock?.emit('keepalive'), 100);
 	return window.__state.tttSock;
 }
 
@@ -63,22 +68,13 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				if (type === 'draw') {
 					showWarn('It\'s a draw !')
 				}
-				// if the other player conceded, switch the side so you won
-				if (type === 'conceded') {
-					player = player === 'X' ? 'O' : 'X';
-					const youWin = (curGame?.playerX === user.id);
-					if (youWin)
-						showSuccess('The other player Conceded !');
-					else
-						showError('You Conceded :(');
-				}
 
 				if (type === 'win') {
 					let youWin: boolean;
-					switch(player) {
+					switch (player) {
 						case 'X':
 							youWin = (curGame?.playerX === user.id);
-							break ;
+							break;
 						case 'O':
 							youWin = (curGame?.playerO === user.id);
 							break;
@@ -98,6 +94,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				showInfo('Game is finished, enqueuing directly')
 			})
 
+
 			socket.on('gameBoard', (u) => {
 				if (curGame === null) {
 					return showError('Got game State, but no in a game ?');
@@ -114,11 +111,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 							case 'winO':
 								makeEnd('win', u.gameState[3] as 'X' | 'O');
 								break;
-							case 'concededX':
-							case 'concededO':
-								makeEnd('conceded', u.gameState[8] as 'X' | 'O');
-								break;
-							case 'draw':
+							default:
 								makeEnd('draw', 'X');
 								break;
 						}
@@ -129,7 +122,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			cells?.forEach(function(c, idx) {
 				c.addEventListener("click", () => {
 					if (socket) {
-					socket.emit("gameMove", { index: idx });
+						socket.emit("gameMove", { index: idx });
 					}
 				});
 			});

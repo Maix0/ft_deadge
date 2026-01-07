@@ -1,4 +1,4 @@
-import { type Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 
 export type UpdateInfo = {
 	inQueue: number,
@@ -14,7 +14,7 @@ export type GameUpdate = {
 
 	boardState: CellState[];
 	currentPlayer: 'X' | 'O';
-	gameState: 'winX' | 'winO' | 'concededX' | 'concededO' | 'draw' | 'ongoing';
+	gameState: 'winX' | 'winO' | 'draw' | 'ongoing' | 'other';
 }
 
 export type GameMove = {
@@ -26,6 +26,7 @@ export interface ClientToServer {
 	dequeue: () => void;
 	debugInfo: () => void;
 	gameMove: (up: GameMove) => void;
+	keepalive: () => void;
 	connectedToGame: (gameId: string) => void;
 };
 
