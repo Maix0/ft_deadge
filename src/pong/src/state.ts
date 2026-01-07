@@ -5,7 +5,7 @@ import { Pong } from './game';
 import { GameMove, GameUpdate, SSocket } from './socket';
 import { isNullish } from '@shared/utils';
 import { PongGameId, PongGameOutcome } from '@shared/database/mixin/pong';
-import { Client } from 'socket.io/dist/client';
+import https from 'https';
 
 type PUser = {
 	id: UserId;
@@ -181,7 +181,7 @@ class StateI {
 		this.queue.delete(socket.authUser.id);
 	}
 
-	private cleanupGame(gameId: GameId, game: Pong): void {
+	private async cleanupGame(gameId: GameId, game: Pong): Promise<void> {
 		clearInterval(game.gameUpdate ?? undefined);
 		this.games.delete(gameId);
 		const winner = game.checkWinner() ?? 'left';
@@ -201,8 +201,25 @@ class StateI {
 		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
 		this.fastify.log.info('SetGameOutcome !');
 		if (!game.local) {
-			let payload = {message:'game finished'}; // TODO: add names of ppl
-			fetch("https://localhost:8888/app/chat/broadcast", {method:'POST', headers:{'Content-type':'application/json'}, body: JSON.stringify(payload)});
+			let payload = {'nextGame':'game finished'}; // TODO: add names of ppl
+			try {
+				const resp = await fetch("http://app-chat/api/chat/broadcast", {
+					method:'POST',
+					headers:{'Content-type':'application/json'},
+					body: JSON.stringify(payload),
+					});
+
+				if (!resp.ok) {
+					console.log(`fail :( ${resp}`);
+					console.log('resp:'+resp.body);
+					throw(resp);
+				}
+				else
+					console.log("success");
+			} catch (e : any) {
+				console.log(`error gotten: ${e}`);
+				throw (e);
+			}
 			// announce to chat
 		}
 	}
