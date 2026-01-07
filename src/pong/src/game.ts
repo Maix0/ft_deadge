@@ -1,8 +1,6 @@
 import { UserId } from '@shared/database/mixin/user';
 import { randomInt } from 'crypto';
 
-
-
 export class Paddle {
 	public static readonly DEFAULT_SPEED = 10;
 	public static readonly DEFAULT_HEIGHT = 80;
@@ -155,28 +153,24 @@ export class Pong {
 		public userRight: UserId,
 	) { }
 
-	public readyup(uid : UserId)
-	{
+	public readyup(uid : UserId) {
 		if (uid === this.userLeft) {
 			this.ready_checks[LEFT] = true;
-		} if (uid === this.userRight) {
+		}
+		if (uid === this.userRight) {
 			this.ready_checks[RIGHT] = true;
 		}
 	}
-	public readydown(uid : UserId)
-	{
+	public readydown(uid : UserId) {
 		// is everyone already ready?
 		if (this.ready_checks[LEFT] === true && this.ready_checks[RIGHT] === true) return ;
 
-		if (uid === this.userLeft)
-			this.ready_checks[LEFT] = false;
-		if (uid === this.userRight)
-			this.ready_checks[RIGHT] = false;
+		if (uid === this.userLeft) { this.ready_checks[LEFT] = false; }
+		if (uid === this.userRight) { this.ready_checks[RIGHT] = false; }
 	}
 
 	public tick() {
-		if (!this.local && (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true))
-			return;
+		if (!this.local && (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true)) { return;}
 		if (this.paddleCollision(this.leftPaddle, 'left')) {
 			this.ball.collided(
 				'left',

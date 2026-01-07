@@ -74,14 +74,12 @@ class StateI {
 				// wait for ready up
 				// ---
 				g.tick();
-				if (g.sendSig === false && g.ready_checks[0] === true && g.ready_checks[1] === true)
-				{
+				if (g.sendSig === false && g.ready_checks[0] === true && g.ready_checks[1] === true) {
 					u1.socket.emit('rdyEnd');
 					u2.socket.emit('rdyEnd');
 					g.sendSig = true;
 				}
-				if (g.ready_checks[0] === true && g.ready_checks[1] === true)
-				{
+				if (g.ready_checks[0] === true && g.ready_checks[1] === true) {
 					this.gameUpdate(gameId, u1.socket);
 					this.gameUpdate(gameId, u2.socket);
 				}
@@ -228,7 +226,7 @@ class StateI {
 		socket.emit('queueEvent', 'unregistered');
 	}
 
-	private readydownUser(socket: SSocket) : void { //
+	private readydownUser(socket: SSocket) : void {
 		// do we know this user ?
 		if (!this.users.has(socket.authUser.id)) return;
 		const user = this.users.get(socket.authUser.id)!;
@@ -239,7 +237,7 @@ class StateI {
 		if (game.local === true) return;
 		game.readydown(user.id);
 	}
-	private readyupUser(socket: SSocket) : void { //
+	private readyupUser(socket: SSocket) : void {
 		// do we know this user ?
 		if (!this.users.has(socket.authUser.id)) return;
 		const user = this.users.get(socket.authUser.id)!;
