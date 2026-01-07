@@ -2,14 +2,13 @@
 	<div id="mainbox" class="mainboxDisplay">
 		<button id="QueueBtn" class="btn-style absolute top-4 left-6">Queue Up</button>
 		<button id="LocalBtn" class="btn-style absolute top-14 left-6">Local Game</button>
-		<span id="queue-info" class="flex rounded-3xl border-10 border-gray-500 bg-gray-500 absolute top-4 right-6">?👤 ?⏳ ?▮•▮</span> <!-- total | in queue | playing-->
+		<span id="queue-info" class="flex rounded-3xl border-7 border-gray-500 bg-gray-500 absolute top-4 right-6">?👤 ?⏳ ?▮•▮</span> <!-- total | in queue | games-->
+		<button id="play-info" class="pong-how-to-play absolute top-14 right-6">?</button> <!-- how to play?-->
 		<br>
 		<h1 class="text-3xl font-bold text-gray-800">
 			Pong Box<span id="t-username"></span>
 		</h1><br>
 
-		<!-- todo: print keys for moving -->
-		
 		<!-- Horizontal Message Box -->
 		<div id="score-box" class="grid grid-cols-[1fr_auto_1fr] items-center">
 			<h1 id="player-left"></h1>
@@ -20,6 +19,14 @@
 		<div class="flex justify-center mt-2">
 			<div id="pongspace" class="flex flex-col">
 				<div id="pongbox" class="pongbox-style">
+					<div id="protips-box" class="pong-protips-box z-50 hidden">
+						up:
+						<kbd class="pong-protips-key">W</kbd>
+						down:
+						<kbd class="pong-protips-key">S</kbd>
+						<br>
+						You are <span class="text-red-500">red</span>. <br> Your goal is to bounce the ball back to the adversary.
+					</div>	
 					<button class="pong-rdy-screen" id="readyup-btn">ready!</button>
 					<div class="pong-field">
 						<div id="batleft" class="pong-batleft top-0"></div>
