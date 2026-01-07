@@ -26,8 +26,8 @@ enum QueueState {
 };
 
 enum ReadyState {
-	readyUp = "ready up?",
-	readyDown = "ready down",
+	readyUp = "ready ok",
+	readyDown = "not ready",
 };
 
 document.addEventListener("ft:pageChange", (newUrl) => {
@@ -214,13 +214,17 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			rdy_btn.addEventListener("click", ()=>{
 				showInfo("rdy-evt");
 				switch (rdy_btn.innerText) {
-					case ReadyState.readyUp:
-						socket.emit('readyUp');
-						rdy_btn.innerText = ReadyState.readyDown;
-						break ;
 					case ReadyState.readyDown:
-						socket.emit('readyDown');
+						socket.emit('readyUp');
 						rdy_btn.innerText = ReadyState.readyUp;
+						rdy_btn.classList.remove("text-red-600");
+						rdy_btn.classList.add("text-green-600");
+						break ;
+					case ReadyState.readyUp:
+						socket.emit('readyDown');
+						rdy_btn.innerText = ReadyState.readyDown;
+						rdy_btn.classList.remove("text-green-600");
+						rdy_btn.classList.add("text-red-600");
 						break ;
 					default:
 						showError("error on ready btn");
@@ -242,9 +246,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				} else
 					showError("couldn't find your id in game");
 				rdy_btn.classList.remove('hidden');
-				rdy_btn.innerText = ReadyState.readyUp;
+				rdy_btn.classList.add("text-red-600");
+				rdy_btn.innerText = ReadyState.readyDown;
 			});
 			socket.on('rdyEnd', () => {
+				rdy_btn.classList.remove("text-green-600");
+				rdy_btn.classList.remove("text-red-600");
 				rdy_btn.classList.add('hidden');
 			});
 
