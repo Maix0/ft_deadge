@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import type { User } from '@shared/database/mixin/user';
 import type { BlockedData } from '@shared/database/mixin/blocked';
 import { broadcast } from './chatBackHelperFunctions/broadcast';
-import type { ClientProfil, ClientMessage, obj } from './chat_types';
+import type { ClientProfil, ClientMessage } from './chat_types';
 import { sendPrivMessage } from './chatBackHelperFunctions/sendPrivMessage';
 import { sendBlocked } from './chatBackHelperFunctions/sendBlocked';
 import { sendInvite } from './chatBackHelperFunctions/sendInvite';
@@ -20,6 +20,8 @@ import { sendProfil } from './chatBackHelperFunctions/sendProfil';
 import { setGameLink } from './setGameLink';
 import { nextGame_SocketListener } from './nextGame_SocketListener';
 import { list_SocketListener } from './chatBackHelperFunctions/list_SocketListener';
+import { isUser_BlockedBy_me } from './chatBackHelperFunctions/isUser_BlockedBy_me';
+
 
 declare const __SERVICE_NAME: string;
 
@@ -98,35 +100,6 @@ declare module 'fastify' {
 	}
 }
 
-/**
- * function get the object user in an array of users[] by name
- * @param users
- * @param name
- * @returns
- */
-function getUserById(users: User[], id: string) {
-	return users.find(user => user.id === id) || null;
-};
-
-function isUser_BlockedBy_me(fastify: FastifyInstance, blockedBy_Id : string, isBlocked_Id: string): string {
-	const users: User[] = fastify.db.getAllUsers() ?? [];
-	if (!users) return '';
-	const UserToBlock: User | null = getUserById(users, `${isBlocked_Id}`);
-	const UserAskingToBlock: User | null = getUserById(users, `${blockedBy_Id}`);
-	if (!UserToBlock) {
-		return '';
-	};
-	if (!UserAskingToBlock) {
-		return '';
-	};
-	const usersBlocked: BlockedData[] = fastify.db.getAllBlockedUsers() ?? [];
-	const userAreBlocked: boolean = isBlocked(UserAskingToBlock, UserToBlock, usersBlocked);
-	if (userAreBlocked) {
-		return UserAskingToBlock.name;
-	}
-	return '';
-};
-
 async function onReady(fastify: FastifyInstance) {
 	const session = process.env.SESSION_MANAGER ?? '';
 	if (session) {
@@ -138,6 +111,7 @@ async function onReady(fastify: FastifyInstance) {
 	fastify.io.on('connection', (socket: Socket) => {
 		socket.on('message', (message: string) => {
 			const obj: ClientMessage = JSON.parse(message) as ClientMessage;
+			if (!obj.user || !socket.id) return;
 			clientChat.set(socket.id, { user: obj.user, socket: socket.id, lastSeen: Date.now() });
 			socket.emit('welcome', { msg: 'Welcome to the chat! : ' });
 			broadcast(fastify, obj, obj.SenderWindowID);
@@ -166,16 +140,9 @@ async function onReady(fastify: FastifyInstance) {
 				destination: 'system-info',
 		    	type: 'chat' as const,
 		    	user: clientName,
-		    	token: '',
 		    	text: 'LEFT the chat',
-		    	frontendUserName: '',
-				frontendUser: '',
 				timestamp: Date.now(),
 				SenderWindowID: socket.id,
-				Sendertext: '',
-				userID: '',
-				SenderUserName: '',
-				SenderUserID: '',
 			};
 			broadcast(fastify, obj, socket.id);
 			clientChat.delete(socket.id);
@@ -192,16 +159,9 @@ async function onReady(fastify: FastifyInstance) {
 					destination: 'system-info',
 					type: 'chat',
 					user: clientName,
-					token: '',
 					text: 'LEFT the chat',
-					frontendUserName: '',
-					frontendUser: '',
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
-					Sendertext: '',
-					userID: '',
-					SenderUserName: '',
-					SenderUserID: '',
 				};
 				broadcast(fastify, obj, obj.SenderWindowID);
 			}
@@ -216,16 +176,9 @@ async function onReady(fastify: FastifyInstance) {
 					destination: 'system-info',
 					type: 'chat',
 					user: clientName,
-					token: '',
 					text: 'LEFT the chat but the window is still open',
-					frontendUserName: '',
-					frontendUser: '',
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
-					Sendertext: '',
-					userID: '',
-					SenderUserName: '',
-					SenderUserID: '',
 				};
 				broadcast(fastify, obj, obj.SenderWindowID);
 			}
@@ -241,16 +194,9 @@ async function onReady(fastify: FastifyInstance) {
 					destination: 'privateMsg',
 					type: 'chat',
 					user: clientName,
-					token: '',
 					text: prvMessage.text,
-					frontendUserName: '',
-					frontendUser: '',
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
-					Sendertext: '',
-					userID: '',
-					SenderUserName: '',
-					SenderUserID:'',
 				};
 				sendPrivMessage(fastify, obj, obj.SenderWindowID);
 			}
@@ -275,6 +221,7 @@ async function onReady(fastify: FastifyInstance) {
 		socket.on('profilMessage', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilMessage: ClientMessage = JSON.parse(data) || '';
+			if (!profilMessage.user) return;
 			const profile: ClientProfil = await makeProfil(fastify, profilMessage.user, socket);
 			if (clientName !== null) {
 				sendProfil(fastify, profile, profile.SenderWindowID);
@@ -347,15 +294,11 @@ async function onReady(fastify: FastifyInstance) {
 				if (clientName !== null) {
 					const blockedMessage = 'I have un-blocked you';
 					if (clientName !== null) {
-						const obj: obj = {
+						const obj: ClientProfil = {
 							command: 'message',
 							destination: 'privateMsg',
 							type: 'chat',
 							user: clientName,
-							token: '',
-							text: '',
-							frontendUserName: '',
-							frontendUser: '',
 							timestamp: Date.now(),
 							SenderWindowID: socket.id,
 							Sendertext: 'You have un-blocked',
@@ -368,19 +311,15 @@ async function onReady(fastify: FastifyInstance) {
 			else {
 				fastify.db.addBlockedUserFor(UserAskingToBlock!.id, UserToBlock!.id);
 				if (clientName !== null) {
-					const blockedMessage = 'I have blocked you';
+					const blockedMessage: string = 'I have blocked you';
 					profilBlock.Sendertext = 'You have blocked ';
 					if (clientName !== null) {
-						const obj: obj = {
+						const obj: ClientMessage = {
 							command: 'message',
 							destination: 'privateMsg',
 							type: 'chat',
 							user: clientName,
-							token: '',
-							text: '',
 							timestamp: Date.now(),
-							frontendUserName: '',
-							frontendUser: '',
 							SenderWindowID: socket.id,
 							Sendertext: 'You have blocked',
 						};
@@ -418,14 +357,9 @@ async function onReady(fastify: FastifyInstance) {
     		        user: clientName,
     		        frontendUserName: userNameFromFrontend,
     		        frontendUser: userFromFrontend,
-    		        token: '',
     		        text: text,
     		        timestamp: Date.now(),
     		        SenderWindowID: socket.id,
-					Sendertext: '',
-					userID: '',
-					SenderUserName: '',
-					SenderUserID: '',
     		    };
     		    broadcast(fastify, obj, obj.SenderWindowID);
     		}

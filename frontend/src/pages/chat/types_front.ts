@@ -17,22 +17,28 @@ export type ClientMessage = {
 };
 
 
-export type ClientProfil = {
-	command: string,
-	destination: string,
-   	type: string,
-	user: string, 
-	loginName: string,
-	userID: string,
-	text: string,
-	timestamp: number,
-	SenderWindowID:string,
-	SenderName: string,
-	SenderID: string,
-	Sendertext: string,
+export type ClientProfil = ClientProfilPartial & {
+	loginName?: string,
+	SenderName?: string,
+	Sendertext?: string,
     innerHtml?: string,
-	guestmsg?: boolean,
 }; 	
+
+
+export type ClientProfilPartial = {
+	command: string,
+	type: string,
+	destination: string,
+	user: string, 
+	userID: string,
+	timestamp: number,
+	SenderWindowID?:string,
+	SenderID?: string,
+	text?: string,
+	token?: string
+	guestmsg?: boolean,
+}
+
 
 
 export type blockedUnBlocked = 

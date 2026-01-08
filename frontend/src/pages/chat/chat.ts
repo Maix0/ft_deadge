@@ -9,12 +9,13 @@ import { getProfil } from './chatHelperFunctions/getProfil';
 import { addMessage } from './chatHelperFunctions/addMessage';
 import { broadcastMsg } from './chatHelperFunctions/broadcastMsg';
 import { isLoggedIn } from './chatHelperFunctions/isLoggedIn';
-import type { ClientMessage, ClientProfil } from './types_front';
+import type { ClientMessage, ClientProfil, ClientProfilPartial } from './types_front';
 import { openProfilePopup } from './chatHelperFunctions/openProfilePopup';
 import { actionBtnPopUpBlock } from './chatHelperFunctions/actionBtnPopUpBlock';
 import { windowStateHidden } from './chatHelperFunctions/windowStateHidden';
 import type { blockedUnBlocked, obj } from './types_front';
 import { blockUser } from './chatHelperFunctions/blockUser';
+import type { User } from '@app/auth';
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
@@ -425,6 +426,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 							case '@msg':
 								broadcastMsg(socket, msgCommand);
 								break;
+
 							case '@block':
 								if (msgCommand[1] === '') {break;};
 								if (!userAskingToBlock) return;
@@ -434,18 +436,14 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     								destination: '',
     								type:  'chat',
     								user:  msgCommand[1],
-    								loginName:  '',
     								userID:  userId,
-    								text:  '',
     								timestamp:  Date.now(),
-    								SenderWindowID:  '',
+    								SenderWindowID:  socket.id,
     								SenderName:  userAskingToBlock,
-    								SenderID:  '',
-    								Sendertext:  '',
-    								innerHtml:  '',
 								}
 								blockUser(userToBlock, socket);
 								break;
+
     						case '@notify':
 								if (notify === null) {break;};
 								if (inviteMsgFlag === false) {
@@ -455,40 +453,33 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									notify.innerText = '🔕';
 									inviteMsgFlag = false;
 								}
-
 								break;
 								
-								case '@guest':
-									if (!userId) {return;};
-									if (!userAskingToBlock) {return;};
-									if (noGuest === null) {break;};
-									const guest = getUser()?.guest;
-									if (noGuestFlag === false && noGuest.innerText === '💔') {
-										noGuest.innerText = '❤️​';
-										noGuestFlag = true;
-									} else {
-										noGuest.innerText = '💔';
-										noGuestFlag = false;
-									}
-									if (guest) {noGuestFlag = true; noGuest.innerText = ''; sendtextbox.value = '';};
-									const userProfile: ClientProfil = {
-										command: '@noguest',
-    									destination: '',
-    									type:  'chat',
-    									user:  '',
-    									loginName:  '',
-    									userID:  userId,
-    									text:  '',
-    									timestamp:  Date.now(),
-    									SenderWindowID:  '',
-    									SenderName:  userAskingToBlock,
-    									SenderID:  '',
-    									Sendertext:  '',
-    									innerHtml:  '',
-										guestmsg: noGuestFlag,
-									}	
-									socket.emit('guestmsg', JSON.stringify(userProfile));
-									break;
+							case '@guest':
+								if (!userId) {return;};
+								if (!userAskingToBlock) {return;};
+								if (noGuest === null) {break;};
+								const guest = getUser()?.guest;
+								if (noGuestFlag === false && noGuest.innerText === '💔') {
+									noGuest.innerText = '❤️​';
+									noGuestFlag = true;
+								} else {
+									noGuest.innerText = '💔';
+									noGuestFlag = false;
+								}
+								if (guest) {noGuestFlag = true; noGuest.innerText = ''; sendtextbox.value = '';};
+								const userProfile: ClientProfilPartial = {
+									command: '@noguest',
+    								destination: '',
+    								type:  'chat',
+    								user:  userAskingToBlock,
+    								userID:  userId,
+    								timestamp:  Date.now(),
+    								SenderWindowID:  '',
+									guestmsg: noGuestFlag,
+								}	
+								socket.emit('guestmsg', JSON.stringify(userProfile));
+								break;
 
 							case '@profile':
 								if (msgCommand[1] === '') {break;};
@@ -512,25 +503,26 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								addMessage('** *********************************** **');
 								addMessage('*');
 								break;
+
 							case '@quit':
 								quitChat(socket);
     						    break;
+
     						default:
-								const user = getUser()?.name;
-								const userID = getUser()?.id;
-								// Ensure we have a user AND socket is connected
+								const user: User | null = getUser();
+								if (!user) return;
 								if (!user || !socket.connected) return;
-								const message = {
+								const message: ClientProfilPartial = {
 									command: msgCommand[0],
 									destination: '',
 									type: "chat",
-									user: user,
-									token: document.cookie ?? "",
+									user: user.name,
+									userID: user.id,
+									token: document.cookie ?? '',
 									text: msgCommand[1],
 									timestamp: Date.now(),
-									SenderWindowID: socket.id,
-									SenderID: userID,
-
+									SenderWindowID: socket.id ?? '',
+									SenderID: user.id,
 								};
 								socket.emit('privMessage', JSON.stringify(message));
     						    break;
