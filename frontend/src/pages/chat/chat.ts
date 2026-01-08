@@ -18,7 +18,7 @@ import { blockUser } from './chatHelperFunctions/blockUser';
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
-export let noGuestFlag: boolean = false;
+export let noGuestFlag: boolean = true;
 const machineHostName = window.location.hostname;
 
 export let __socket: Socket | undefined = undefined;
@@ -227,7 +227,25 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			};
 			socket.emit('message', JSON.stringify(message));
 			const guest = getUser()?.guest;
-			if (guest) {noGuestFlag = false; noGuest.innerText = ''; sendtextbox.value = ''; return;};
+			if (guest) {noGuest.innerText = '';} else {noGuest.innerText = '❤️'};
+
+			const userProfile: ClientProfil = {
+				command: '@noguest',
+    			destination: '',
+    			type:  'chat',
+    			user:  '',
+    			loginName:  '',
+    			userID:  '',
+    			text:  '',
+    			timestamp:  Date.now(),
+    			SenderWindowID:  '',
+    			SenderName: '',
+    			SenderID:  '',
+    			Sendertext:  '',
+    			innerHtml:  '',
+				guestmsg: true,
+			}	
+			socket.emit('guestmsg', JSON.stringify(userProfile));
 			const messageElement = document.createElement("div");
     		messageElement.textContent = `${user}: is connected au server`;
     		systemWindow.appendChild(messageElement);
@@ -442,18 +460,18 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								break;
 								
 								case '@guest':
-									if (!userId) return;
-									if (!userAskingToBlock) return;
+									if (!userId) {return;};
+									if (!userAskingToBlock) {return;};
 									if (noGuest === null) {break;};
 									const guest = getUser()?.guest;
-									if (noGuestFlag === false) {
+									if (noGuestFlag === false && noGuest.innerText === '💔') {
 										noGuest.innerText = '❤️​';
 										noGuestFlag = true;
 									} else {
 										noGuest.innerText = '💔';
 										noGuestFlag = false;
 									}
-									if (guest) {noGuestFlag = false; noGuest.innerText = ''; sendtextbox.value = '';};
+									if (guest) {noGuestFlag = true; noGuest.innerText = ''; sendtextbox.value = '';};
 									const userProfile: ClientProfil = {
 										command: '@noguest',
     									destination: '',
@@ -486,6 +504,10 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 								addMessage('\'@cls\' - clear chat screen conversations');
 								addMessage('\'@profile <name>\' - pulls ups user profile');
 								addMessage('\'@block <name>\' - blocks / unblock user');
+								const guestflag = getUser()?.guest;
+								if(!guestflag) {
+									addMessage('\'@guest\' - guest broadcast msgs on / off');
+								}
 								addMessage('\'@notify\' - toggles notifications on / off');
 								addMessage('\'@quit\' - disconnect user from the chat');
 								addMessage('** *********************************** **');

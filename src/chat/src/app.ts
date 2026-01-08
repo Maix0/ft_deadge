@@ -263,27 +263,14 @@ async function onReady(fastify: FastifyInstance) {
 			const user: User | null = getUserByName(users, clientName);
 			if (!user) return;
 			if (clientName !== null) {
-				
 				if (profile.guestmsg) {
-					//console.log('Data TRUE:', clientName);
-					console.log(user?.name);
-					console.log(user?.guest);
-					console.log(user?.allow_guest_message);
 					fastify.db.allowGuestMessage(user?.id);
-				} 
-				else 
-				{
-					//console.log('Data FALSE', clientName); 
-					console.log(user?.name);
-					console.log(user?.guest);
-					console.log(user?.allow_guest_message);
+				}
+				else {
 					fastify.db.denyGuestMessage(user?.id);
 				};
 			}
 		});
-
-
-
 
 		socket.on('profilMessage', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
