@@ -9,30 +9,24 @@ import { whoBlockedMe } from './whoBlockedMe';
 export async function broadcast(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
 	const Allusers: User[] = fastify.db.getAllUsers() ?? [];
-	const UserID = getUserByName(Allusers, data.user)?.id ?? '';
-	const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
+	const senderUser = getUserByName(Allusers, data.user)
+	if (!senderUser) return;
+	const list:BlockRelation[] = whoBlockedMe(fastify, senderUser.id);
 	const sockets = await fastify.io.fetchSockets();
 	for (const socket of sockets) {
-		const clientInfo = clientChat.get(socket.id);
-		if (!clientInfo?.user) {
-			continue;
-		}
+		if (socket.id === sender) continue;
+
+		const socketClientInfo = clientChat.get(socket.id);
+		if (!socketClientInfo?.user) continue;
+
+		const receiverUser: User | null = getUserByName(Allusers, socketClientInfo.user);
+		if (!receiverUser) return;
+
 		let blockMsgFlag: boolean = false;
-		const UserByID = getUserByName(Allusers, clientInfo.user)?.id ?? '';
-		const user: User | null = getUserByName(Allusers, clientInfo.user);
+		blockMsgFlag = checkNamePair(list, senderUser.id, receiverUser.id) || false;
 
-		if (UserByID === '') return;
-		blockMsgFlag = checkNamePair(list, data.SenderUserID, UserByID) || false;
-
-		if (socket.id === sender) {
-			continue;
-		}
-
-		if (!user?.id) return;
-		const guestflag: User | null = getUserByName(Allusers, clientInfo.user);
-		if (!guestflag) return;
-		const boolGuestMsg = fastify.db.getGuestMessage(guestflag?.id);
-		if (!boolGuestMsg) continue;
+		const getReceiverGuestConfig = fastify.db.getGuestMessage(receiverUser?.id);
+		if (!getReceiverGuestConfig && senderUser?.guest) continue;
 		if (!blockMsgFlag) {
 
  			socket.emit('MsgObjectServer', { message: data });
