@@ -58,7 +58,6 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		}
 		let blockMsgFlag: boolean = false;
 		const UserByID = getUserByName(allUsers, clientInfo.user) ?? '';
-		const userfiche: User | null = getUserByName(allUsers, clientInfo.user);
 		if (UserByID === '') {
 			return;
 		}
@@ -73,10 +72,6 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		if (socket.id === sender) {
 			continue;
 		}
-		if (!userfiche?.id) return;
-		const boolGuestMsg = fastify.db.getGuestMessage(userfiche?.id);
-		if (!boolGuestMsg&& userfiche.guest) continue;
-
 		if (!blockMsgFlag) {
 			socket.emit('MsgObjectServer', { message: data });
 			fastify.log.info({ senderID: `${UserID}`, msgPriv: data.text, target: `${UserByID.id}` });
