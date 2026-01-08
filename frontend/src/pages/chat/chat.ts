@@ -206,11 +206,14 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 		// Listen for the 'connect' event
 		socket.on("connect", async () => {
 			const systemWindow = document.getElementById('system-box') as HTMLDivElement;
+			const sendtextbox = document.getElementById('t-chat-window') as HTMLButtonElement;
+			const noGuest = document.getElementById("noGuest") ?? null;
+
 			await waitSocketConnected(socket);
 			const user = getUser()?.name;
 			const userID = getUser()?.id;
 			// Ensure we have a user AND socket is connected
-			if (!user || !socket.connected) return;
+			if (!user || !socket.connected || !noGuest) return;
 			const message = {
 				command: "",
 				destination: 'system-info',
@@ -223,6 +226,8 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				SenderID: userID,
 			};
 			socket.emit('message', JSON.stringify(message));
+			const guest = getUser()?.guest;
+			if (guest) {noGuestFlag = false; noGuest.innerText = ''; sendtextbox.value = ''; return;};
 			const messageElement = document.createElement("div");
     		messageElement.textContent = `${user}: is connected au server`;
     		systemWindow.appendChild(messageElement);
@@ -440,6 +445,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 									if (!userId) return;
 									if (!userAskingToBlock) return;
 									if (noGuest === null) {break;};
+									const guest = getUser()?.guest;
 									if (noGuestFlag === false) {
 										noGuest.innerText = '❤️​';
 										noGuestFlag = true;
@@ -447,6 +453,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 										noGuest.innerText = '💔';
 										noGuestFlag = false;
 									}
+									if (guest) {noGuestFlag = false; noGuest.innerText = ''; sendtextbox.value = '';};
 									const userProfile: ClientProfil = {
 										command: '@noguest',
     									destination: '',

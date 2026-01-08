@@ -266,12 +266,17 @@ async function onReady(fastify: FastifyInstance) {
 				
 				if (profile.guestmsg) {
 					//console.log('Data TRUE:', clientName);
-					//console.log(user?.id);
+					console.log(user?.name);
+					console.log(user?.guest);
+					console.log(user?.allow_guest_message);
 					fastify.db.allowGuestMessage(user?.id);
 				} 
 				else 
 				{
 					//console.log('Data FALSE', clientName); 
+					console.log(user?.name);
+					console.log(user?.guest);
+					console.log(user?.allow_guest_message);
 					fastify.db.denyGuestMessage(user?.id);
 				};
 			}
@@ -409,13 +414,13 @@ async function onReady(fastify: FastifyInstance) {
 			let text = 'is back in the chat';
 
 			if (clientName === null) {
-				fastify.log.error('ERROR: clientName is NULL'); return;
+				fastify.log.error('ERROR1: clientName is NULL'); return;
 			};
 			if (userNameFromFrontend !== userFromFrontend) {
 				text = `'is back in the chat, I used to be called '${userNameFromFrontend}`;
 				clientName = userFromFrontend;
 				if (clientName === null) {
-					fastify.log.error('ERROR: clientName is NULL'); return;
+					fastify.log.error('ERROR2: clientName is NULL'); return;
 				};
 			}
     		if (clientName !== null) {

@@ -29,8 +29,12 @@ export async function broadcast(fastify: FastifyInstance, data: ClientMessage, s
 		}
 
 		if (!user?.id) return;
-		const boolGuestMsg = fastify.db.getGuestMessage(user?.id);
-		if (boolGuestMsg && user.guest) continue;
+		const guestflag: User | null = getUserByName(Allusers,clientInfo.user);
+		if (!guestflag) return;
+		console.log('G Flag Allow:', guestflag?.allow_guest_message);
+		console.log('User:', guestflag?.name);
+		const boolGuestMsg = fastify.db.getGuestMessage(guestflag?.id);
+		if (!boolGuestMsg) continue;
 		if (!blockMsgFlag) {
 
  			socket.emit('MsgObjectServer', { message: data });
