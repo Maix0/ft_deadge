@@ -5,6 +5,7 @@ import { showError, showInfo, showSuccess, showWarn } from "@app/toast";
 import { io } from "socket.io-client";
 import type { GameUpdate, CSocket as Socket } from "./socket";
 import { updateUser } from "@app/auth";
+import client from "@app/api";
 
 
 declare module 'ft_state' {
@@ -45,6 +46,20 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			if (user === null)
 				return;
 
+			// BEGINNING
+
+			const userXString = document.getElementById("playerX-name");
+			const userOString = document.getElementById("playerO-name");
+			if (!userXString || !userOString) {
+				return showError('fatal error');
+			}
+			const currentPlayerIndicator = document.getElementById("currentPlayer");
+			if (!currentPlayerIndicator) {
+				return showError('fatal error');
+			}
+
+			// END
+
 			const joinQueueBtn = document.querySelector<HTMLButtonElement>("#JoinQueueBtn");
 
 			if (!joinQueueBtn) {
@@ -62,12 +77,54 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			});
 
 			let curGame: CurrentGameInfo | null = null;
+			let curGameX: {id: string, name: string}  | null = null;
+			let curGameO: {id: string, name: string}  | null = null;
+			
+
 
 			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
-			socket.on('newGame', (gameState) => {
+			socket.on('newGame', async (gameState) => {
 				showInfo(`newGame: ${gameState.gameId}`)
 				curGame = { ...gameState, lastState: null };
+				
+				let resX = await client.getUser({user: curGame.playerX});
+				
+				curGameX = {id: curGame.playerX, name: 'Player X'}; 
+				if (resX.kind === 'success')
+					curGameX.name = resX.payload.name;
+				else
+					showError(`Unable to get player information: ${resX.msg}`);
+				let resO = await client.getUser({user: curGame.playerO});
+				
+				curGameO = {id: curGame.playerO, name: 'Player O'}; 
+				if (resO.kind === 'success')
+					curGameO.name = resO.payload.name;
+				else
+					showError(`Unable to get player information: ${resO.msg}`);
+
+				if (user.id === curGameO.id)
+				{
+					userOString.classList.add('text-red-800');
+					userOString.classList.remove('text-gray-800');
+
+					userXString.classList.remove('text-red-800');
+					userXString.classList.add('text-gray-800');
+
+				}
+				else if (user.id === curGameX.id)
+				{
+					userXString.classList.add('text-red-800');
+					userXString.classList.remove('text-gray-800');
+
+
+					userOString.classList.remove('text-red-800');
+					userOString.classList.add('text-gray-800');
+				}
+
+				
+				userXString.innerText = curGameX.name;
+				userOString.innerText = curGameO.name;
 			});
 			socket.emit('enqueue');
 
@@ -115,6 +172,16 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				if (curGame === null) {
 					return showError('Got game State, but no in a game ?');
 				}
+
+				curGame = {...u, lastState: curGame.lastState};
+
+				if (curGame.currentPlayer === 'X')
+				{
+					currentPlayerIndicator.innerText = "<";
+				} else if (curGame.currentPlayer === 'O') {
+					currentPlayerIndicator.innerText = ">";
+				}
+
 				updateUI(u.boardState);
 
 				if (u.gameState && u.gameState !== "ongoing") {
