@@ -206,7 +206,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 	socket.once('welcome', (data) => {
 		const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-		const chatWindow = document.getElementById('t-chatbox') as HTMLDivElement;
 		buddies.textContent = '';
 		buddies.innerHTML = '';
 		connected(socket);
@@ -223,7 +222,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const clearText = document.getElementById('b-clear') as HTMLButtonElement;
 			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 			const bquit = document.getElementById('b-quit') as HTMLDivElement;
-			const bnextGame = document.getElementById('b-nextGame') as HTMLDivElement;
 
 			buddies.textContent = '';
 			buddies.innerHTML = '';
@@ -235,9 +233,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				if (profilList) profilList.classList.add("hidden");
 			});
 
-
-
-
 			const buttonMessage = document.getElementById("close-modal-message") ?? null;
 
 			if (buttonMessage)
@@ -248,7 +243,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				if (modalmessage) {modalmessage.innerHTML = "";}
 
 			});
-
 
 			// Send button
 			sendButton?.addEventListener("click", () => {
@@ -364,13 +358,6 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			clearText?.addEventListener("click", () => {
 				if (chatWindow) {
 					chatWindow.innerHTML = '';
-				}
-			});
-
-			// Dev Game message button
-			bnextGame?.addEventListener("click", () => {
-				if (chatWindow) {
-					socket.emit('nextGame');
 				}
 			});
 
