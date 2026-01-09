@@ -46,8 +46,6 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			if (user === null)
 				return;
 
-			// BEGINNING
-
 			const userXString = document.getElementById("playerX-name");
 			const userOString = document.getElementById("playerO-name");
 			if (!userXString || !userOString) {
@@ -58,30 +56,10 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				return showError('fatal error');
 			}
 
-			// END
-
-			const joinQueueBtn = document.querySelector<HTMLButtonElement>("#JoinQueueBtn");
-
-			if (!joinQueueBtn) {
-				return showError('fatal error');
-			}
-			
-			// TODO: Join queue button
-			// When clicking on this button, two scenarios:
-			// not in a game -> Join queue
-			// In a queue -> Leave queue
-			// Should I differentiate the scenarios here or inside the requestNewGame function ?
-			joinQueueBtn.addEventListener("click", () => {
-				console.log('===== JOIN QUEUE BUTTON PRESSED =====');
-				socket.emit("joinQueueButton");
-			});
-
 			let curGame: CurrentGameInfo | null = null;
 			let curGameX: {id: string, name: string}  | null = null;
 			let curGameO: {id: string, name: string}  | null = null;
 			
-
-
 			socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
 			socket.on('newGame', async (gameState) => {
@@ -103,33 +81,23 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				else
 					showError(`Unable to get player information: ${resO.msg}`);
 
-				if (user.id === curGameO.id)
-				{
+				if (user.id === curGameO.id) {
 					userOString.classList.add('text-red-800');
 					userOString.classList.remove('text-gray-800');
-
 					userXString.classList.remove('text-red-800');
 					userXString.classList.add('text-gray-800');
-
-				}
-				else if (user.id === curGameX.id)
-				{
+				} else if (user.id === curGameX.id) {
 					userXString.classList.add('text-red-800');
 					userXString.classList.remove('text-gray-800');
-
-
 					userOString.classList.remove('text-red-800');
 					userOString.classList.add('text-gray-800');
 				}
-
-				
 				userXString.innerText = curGameX.name;
 				userOString.innerText = curGameO.name;
 			});
 			socket.emit('enqueue');
 
 			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-cell");
-			// const grid = app.querySelector(".ttt-grid"); // Not sure about this one
 
 			const updateUI = (boardState: (string | null)[]) => {
 				boardState.forEach((state, idx) => {
