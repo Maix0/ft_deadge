@@ -1,21 +1,27 @@
 import './chat.css';
-import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
-import { showError } from "@app/toast";
-import authHtml from './chat.html?raw';
-import { getUser, updateUser } from "@app/auth";
 import io, { Socket } from 'socket.io-client';
+import type { blockedUnBlocked } from './types_front';
+import type { ClientMessage, ClientProfil, ClientProfilPartial } from './types_front';
+import type { User } from '@app/auth';
+import { addRoute, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
+import authHtml from './chat.html?raw';
+import { getUser } from "@app/auth";
 import { listBuddies } from './chatHelperFunctions/listBuddies';
 import { getProfil } from './chatHelperFunctions/getProfil';
 import { addMessage } from './chatHelperFunctions/addMessage';
 import { broadcastMsg } from './chatHelperFunctions/broadcastMsg';
-import { isLoggedIn } from './chatHelperFunctions/isLoggedIn';
-import type { ClientMessage, ClientProfil, ClientProfilPartial } from './types_front';
 import { openProfilePopup } from './chatHelperFunctions/openProfilePopup';
 import { actionBtnPopUpBlock } from './chatHelperFunctions/actionBtnPopUpBlock';
 import { windowStateHidden } from './chatHelperFunctions/windowStateHidden';
-import type { blockedUnBlocked, obj } from './types_front';
 import { blockUser } from './chatHelperFunctions/blockUser';
-import type { User } from '@app/auth';
+import { parseCmdMsg } from './chatHelperFunctions/parseCmdMsg';
+import { actionBtnPopUpInvite } from './chatHelperFunctions/actionBtnPopUpInvite';
+import { waitSocketConnected } from './chatHelperFunctions/waitSocketConnected'; 
+import { connected } from './chatHelperFunctions/connected';
+import { quitChat } from './chatHelperFunctions/quitChat';
+import { openMessagePopup } from './chatHelperFunctions/openMessagePopup';
+import { windowStateVisable } from './chatHelperFunctions/windowStateVisable';
+import { cmdList } from './chatHelperFunctions/cmdList';
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
@@ -41,164 +47,6 @@ export function getSocket(): Socket {
 		});
 	return __socket;
 };
-
-function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
-	profil.SenderName = getUser()?.name ?? '';
-	if (profil.SenderName === profil.user) return;
-	addMessage(`You invited to play: ${profil.user}🏓`)
-	senderSocket.emit('inviteGame', JSON.stringify(profil));
-};
-
-function actionBtnPopUpInvite(invite: ClientProfil, senderSocket: Socket) {
-		setTimeout(() => {
-			const InvitePongBtn = document.querySelector("#popup-b-invite");
-			InvitePongBtn?.addEventListener("click", () => {
-				inviteToPlayPong(invite, senderSocket);
-			});
-    	}, 0)
-};
-
-async function windowStateVisable() {
-
-	const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-	const socketId = __socket || undefined;
-	let oldName = localStorage.getItem("oldName") || undefined;
-
-	if (socketId === undefined || oldName === undefined) {return;};
-	let user = await updateUser();
-	if(user === null) return;
-	socketId.emit('client_entered', {
-		userName: oldName,
-		user: user?.name,
-	});
-	buddies.innerHTML = '';
-	buddies.textContent = '';
-	setTitle('Chat Page');
-	return;
-};
-
-function parseCmdMsg(msgText: string): string[] | undefined {
-
-	if (!msgText?.trim()) return;
-    msgText = msgText.trim();
-    const command: string[] = ['', ''];
-    if (!msgText.startsWith('@')) {
-        command[0] = '@msg';
-        command[1] = msgText;
-        return command;
-    }
-    const noArgCommands = ['@quit', '@help', '@cls'];
-    if (noArgCommands.includes(msgText)) {
-        command[0] = msgText;
-        command[1] = '';
-        return command;
-    }
-
-	const ArgCommands = ['@profile', '@block'];
-	const userName = msgText.indexOf(" ");
-	const cmd2 = msgText.slice(0, userName).trim() ?? "";
-	const user = msgText.slice(userName + 1).trim();
-	if (ArgCommands.includes(cmd2)) {
-    	    command[0] = cmd2;
-    	    command[1] = user;
-    	    return command;
-	}
-	const colonIndex = msgText.indexOf(":");
-    if (colonIndex === -1) {
-        command[0] = msgText;
-        command[1] = '';
-        return command;
-    }
-    const cmd = msgText.slice(0, colonIndex).trim();
-    const rest = msgText.slice(colonIndex + 1).trim();
-    command[0] = cmd;
-    command[1] = rest;
-    return command;
-}
-
-function waitSocketConnected(socket: Socket): Promise<void> {
-    return new Promise(resolve => {
-        if (socket.connected) return resolve();
-        socket.on("connect", () => resolve());
-    });
-};
-
-function quitChat (socket: Socket) {
-
-	try {
-		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		if (socket) {
-			logout(socket);
-			setTitle('Chat Page');
-			connected(socket);
-		} else {
-			getSocket();
-		}
-	} catch (e) {
-		showError('Failed to Quit Chat: Unknown error');
-	}
-
-};
-
-function logout(socket: Socket) {
-  socket.emit("logout");  // notify server
-  socket.disconnect();    // actually close the socket
-  localStorage.clear();
-  if (__socket !== undefined)
-		__socket.close();
-};
-
-
-async function connected(socket: Socket): Promise<void> {
-
-	setTimeout(async () => {
-	try {
-			const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-			const loggedIn = isLoggedIn();
-			if (!loggedIn) throw('Not Logged in');
-			let oldUser = localStorage.getItem("oldName") ?? "";
-			if (loggedIn?.name === undefined) {return ;};
-				oldUser =  loggedIn.name ?? "";
-				// const res = await client.guestLogin();
-				let user = await updateUser();
-				localStorage.setItem("oldName", oldUser);
-				buddies.textContent = "";
-				socket.emit('list', {
-					oldUser: oldUser,
-					user: user?.name,
-				});
-			} catch (e) {
-				showError('Failed to login: Unknown error');
-			}
-		}, 16);
-	};
-		
-let count = 0;
-function incrementCounter(): number {
-	count += 1;
-	return count;
-}
-
-async function openMessagePopup(message: string) {
-
-	const modalmessage = document.getElementById("modal-message") ?? null;
-	if(!message) return
-	const obj =  JSON.parse(message);
-	if (modalmessage) {
-		const messageElement = document.createElement("div");
-		messageElement.innerHTML = `
-            			<div id="profile-about">Next Game Message ${incrementCounter()}:  ${obj.link}</div>
-        			`;
-		modalmessage.appendChild(messageElement);
-		modalmessage.scrollTop = modalmessage.scrollHeight;
-
-	}
-	const gameMessage = document.getElementById("game-modal") ?? null;
-	if (gameMessage) {
-		gameMessage.classList.remove("hidden");
-	}
-}
 
 function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 	let socket = getSocket();
@@ -233,16 +81,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				command: '@noguest',
     			destination: '',
     			type:  'chat',
-    			user:  '',
-    			loginName:  '',
-    			userID:  '',
-    			text:  '',
     			timestamp:  Date.now(),
-    			SenderWindowID:  '',
-    			SenderName: '',
-    			SenderID:  '',
-    			Sendertext:  '',
-    			innerHtml:  '',
 				guestmsg: true,
 			}	
 			socket.emit('guestmsg', JSON.stringify(userProfile));
@@ -489,19 +328,7 @@ function handleChat(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
     						    chatWindow.innerHTML = '';
     						    break;
 							case '@help':
-								addMessage('*');
-								addMessage('** ********** List of @cmds ********** **');
-								addMessage('\'@cls\' - clear chat screen conversations');
-								addMessage('\'@profile <name>\' - pulls ups user profile');
-								addMessage('\'@block <name>\' - blocks / unblock user');
-								const guestflag = getUser()?.guest;
-								if(!guestflag) {
-									addMessage('\'@guest\' - guest broadcast msgs on / off');
-								}
-								addMessage('\'@notify\' - toggles notifications on / off');
-								addMessage('\'@quit\' - disconnect user from the chat');
-								addMessage('** *********************************** **');
-								addMessage('*');
+								cmdList();
 								break;
 
 							case '@quit':

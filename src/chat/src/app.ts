@@ -21,24 +21,10 @@ import { setGameLink } from './setGameLink';
 import { nextGame_SocketListener } from './nextGame_SocketListener';
 import { list_SocketListener } from './chatBackHelperFunctions/list_SocketListener';
 import { isUser_BlockedBy_me } from './chatBackHelperFunctions/isUser_BlockedBy_me';
+import type { ClientInfo, blockedUnBlocked } from './chat_types';
 
 
 declare const __SERVICE_NAME: string;
-
-interface ClientInfo {
-  user: string;
-  socket: string
-  lastSeen: number;
-}
-
-export type blockedUnBlocked =
-{
-	userState: string,
-	userTarget: string,
-	by: string,
-};
-
-
 export const clientChat = new Map<string, ClientInfo>();
 
 // @ts-expect-error: import.meta.glob is a vite thing. Typescript doesn't know this...

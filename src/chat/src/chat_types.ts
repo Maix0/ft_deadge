@@ -36,6 +36,20 @@ export type ClientProfil = {
 };
 
 
+export interface ClientInfo {
+  user: string;
+  socket: string
+  lastSeen: number;
+}
+
+export type blockedUnBlocked =
+{
+	userState: string,
+	userTarget: string,
+	by: string,
+};
+
+
 // export type obj =
 // {
 // 	command: string,

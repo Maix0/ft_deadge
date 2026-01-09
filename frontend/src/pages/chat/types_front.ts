@@ -18,10 +18,10 @@ export type ClientMessage = {
 
 
 export type ClientProfil = ClientProfilPartial & {
-	loginName?: string,
-	SenderName?: string,
-	Sendertext?: string,
-    innerHtml?: string,
+	loginName?: string | '',
+	SenderName?: string | '',
+	Sendertext?: string | '',
+    innerHtml?: string | '',
 }; 	
 
 
@@ -29,13 +29,13 @@ export type ClientProfilPartial = {
 	command: string,
 	type: string,
 	destination: string,
-	user: string, 
-	userID: string,
+	user?: string | '', 
+	userID?: string | '',
 	timestamp: number,
-	SenderWindowID?:string,
-	SenderID?: string,
-	text?: string,
-	token?: string
+	SenderWindowID?:string | '',
+	SenderID?: string | '',
+	text?: string | '',
+	token?: string | '',
 	guestmsg?: boolean,
 }
 

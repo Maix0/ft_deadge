@@ -9,6 +9,7 @@ import { whoBlockedMe } from './whoBlockedMe';
 export async function broadcast(fastify: FastifyInstance, data: ClientMessage, sender?: string) {
 
 	const Allusers: User[] = fastify.db.getAllUsers() ?? [];
+	if (!data.user) return;
 	const senderUser = getUserByName(Allusers, data.user)
 	if (!senderUser) return;
 	const list:BlockRelation[] = whoBlockedMe(fastify, senderUser.id);
@@ -26,7 +27,7 @@ export async function broadcast(fastify: FastifyInstance, data: ClientMessage, s
 		blockMsgFlag = checkNamePair(list, senderUser.id, receiverUser.id) || false;
 
 		const getReceiverGuestConfig = fastify.db.getGuestMessage(receiverUser?.id);
-		if (!getReceiverGuestConfig && senderUser?.guest) continue;
+		if (!getReceiverGuestConfig && senderUser?.guest && data.destination !== 'system-info') continue;
 		if (!blockMsgFlag) {
 
  			socket.emit('MsgObjectServer', { message: data });
