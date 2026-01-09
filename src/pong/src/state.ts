@@ -187,17 +187,16 @@ class StateI {
 		const winner = game.checkWinner() ?? 'left';
 		let player: PUser | undefined = undefined;
 		if ((player = this.users.get(game.userLeft)) !== undefined) {
-			chat_text += (this.fastify.db.getUser(player.id)?.name ?? player.id) + ' and ';
-			// chat_text += player.id + ' and ';
 			player.currentGame = null;
 			player.socket.emit('gameEnd', winner);
 		}
+		chat_text += (this.fastify.db.getUser(game.userLeft)?.name ?? game.userLeft) +' and ';
 		if ((player = this.users.get(game.userRight)) !== undefined) {
-			chat_text += (this.fastify.db.getUser(player.id)?.name ?? player.id);
-			// chat_text += player.id;
 			player.currentGame = null;
 			player.socket.emit('gameEnd', winner);
 		}
+		chat_text += (this.fastify.db.getUser(game.userRight)?.name ?? game.userRight);
+		this.fastify.log.info('chat_text:'+ chat_text);
 		const rOutcome = game.checkWinner();
 		let outcome: PongGameOutcome = 'other';
 		if (rOutcome === 'left') { outcome = 'winL'; }
