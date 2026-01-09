@@ -48,9 +48,6 @@ export class StateI {
 		socket.on('enqueue', () => this.enqueueUser(socket));
 		socket.on('dequeue', () => this.dequeueUser(socket));
 		socket.on('debugInfo', () => this.debugSocket(socket));
-		// TODO:
-		socket.on('joinQueueButton', () => this.joinQueueButton(socket));
-
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
 		socket.on('keepalive', () => this.keepAlive(socket));
 		if (socket) {
@@ -203,13 +200,6 @@ export class StateI {
 		const game = this.games.get(user.currentGame)!;
 
 		game?.makeMove(socket.authUser.id, update.index);
-	}
-
-	// TODO:
-	private joinQueueButton(socket: SSocket) {
-		void socket;
-		// TODO:
-		this.fastify.log.info('===== JOIN QUEUE BUTTON PRESSED =====');
 	}
 }
 
