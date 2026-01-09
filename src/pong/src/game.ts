@@ -132,7 +132,7 @@ export class Pong {
 
 	public	sendSig	: boolean = false;
 	public	ready_checks: [boolean, boolean] = [false, false];
-	public	game_creation	: number = Date.now();
+	public	rdy_timer	: number = Date.now(); // init rdy timer from class creation start
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
@@ -282,7 +282,7 @@ export class Pong {
 			if (this.score[LEFT] >= 5) return 'left';
 			if (this.score[RIGHT] >= 5) return 'right';
 
-			if (this.local !== true && this.game_creation !== -1 && Date.now() - this.game_creation > Pong.CONCEDED_TIMEOUT * 10 && (!this.ready_checks[0] || !this.ready_checks[1])) {
+			if (this.local !== true && this.rdy_timer !== -1 && Date.now() - this.rdy_timer > Pong.CONCEDED_TIMEOUT * 10 && (!this.ready_checks[0] || !this.ready_checks[1])) {
 				if (!this.ready_checks[0] && !this.ready_checks[1]) return (randomInt(1) == 1 ? 'left' : 'right');
 				if (!this.ready_checks[0]) return ('right');
 				if (!this.ready_checks[1]) return ('left');
