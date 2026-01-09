@@ -205,19 +205,20 @@ class StateI {
 		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
 		this.fastify.log.info('SetGameOutcome !');
 		if (!game.local) {
-			let payload = {'nextGame':chat_text};
+			const payload = { 'nextGame':chat_text };
 			try {
-				const resp = await fetch("http://app-chat/api/chat/broadcast", {
+				const resp = await fetch('http://app-chat/api/chat/broadcast', {
 					method:'POST',
-					headers:{'Content-type':'application/json'},
+					headers:{ 'Content-type':'application/json' },
 					body: JSON.stringify(payload),
-					});
+				});
 
-				if (!resp.ok)
-					throw(resp);
-				else
-					this.fastify.log.info("game-end info to chat success");
-			} catch (e : any) {
+				if (!resp.ok) {	throw (resp); }
+				else { this.fastify.log.info('game-end info to chat success'); }
+			}
+			// disable eslint for err catching
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			catch (e : any) {
 				this.fastify.log.error(`game-end info to chat failed: ${e}`);
 			}
 		}
