@@ -144,8 +144,8 @@ nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key &:
 
 fnginx: nginx-dev/nginx nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigned.key
 	nginx-dev/nginx -p ./nginx-dev -c nginx.conf -e /dev/null >/dev/null 2>/dev/null &
-	-(cd ./frontend && pnpm exec tsc --noEmit --watch --preserveWatchOutput) &
-	-(cd ./frontend && pnpm exec vite --clearScreen false)
+	-(cd ./frontend && npx pnpm exec tsc --noEmit --watch --preserveWatchOutput) &
+	-(cd ./frontend && npx pnpm exec vite --clearScreen false)
 	wait
 
 #	phony
