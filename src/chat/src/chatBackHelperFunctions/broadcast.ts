@@ -10,7 +10,7 @@ export async function broadcast(fastify: FastifyInstance, data: ClientMessage, s
 
 	const Allusers: User[] = fastify.db.getAllUsers() ?? [];
 	if (!data.user) return;
-	const senderUser = getUserByName(Allusers, data.user)
+	const senderUser = getUserByName(Allusers, data.user);
 	if (!senderUser) return;
 	const list:BlockRelation[] = whoBlockedMe(fastify, senderUser.id);
 	const sockets = await fastify.io.fetchSockets();
