@@ -15,6 +15,12 @@ declare module 'ft_state' {
 	}
 }
 
+enum QueueState {
+	InQueue = "In Queue",
+	InGame = "In Game",
+	Idle = "Join Queue",
+};
+
 document.addEventListener("ft:pageChange", () => {
 	if (window.__state.tttSock !== undefined) window.__state.tttSock.close();
 	if (window.__state.keepAliveInterval !== undefined) clearInterval(window.__state.keepAliveInterval);
@@ -48,13 +54,27 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 
 			const userXString = document.getElementById("playerX-name");
 			const userOString = document.getElementById("playerO-name");
-			if (!userXString || !userOString) {
-				return showError('fatal error');
-			}
 			const currentPlayerIndicator = document.getElementById("currentPlayer");
-			if (!currentPlayerIndicator) {
+			const joinQueueBtn = document.getElementById("JoinQueueBtn");
+			const currentPlayerTimer = document.getElementById("currentPlayerTimer")
+			if (!userXString || !userOString || !currentPlayerIndicator || !joinQueueBtn || !currentPlayerTimer) {
 				return showError('fatal error');
 			}
+			
+			joinQueueBtn.addEventListener("click", () => {
+				console.log('===== JOIN QUEUE BUTTON PRESSED =====');
+				if (joinQueueBtn.innerText !== QueueState.Idle) {
+					console.log("== Entering in first if ==");
+					if (joinQueueBtn.innerText === QueueState.InQueue) {
+						console.log("== Entering in second if ==");
+						socket.emit("dequeue");
+						joinQueueBtn.innerText = QueueState.Idle;
+					}					
+					return;
+				}
+				joinQueueBtn.innerText = QueueState.InQueue;
+				socket.emit("enqueue");
+			});
 
 			let curGame: CurrentGameInfo | null = null;
 			let curGameX: {id: string, name: string}  | null = null;
@@ -64,6 +84,9 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
 			socket.on('newGame', async (gameState) => {
 				showInfo(`newGame: ${gameState.gameId}`)
+
+				currentPlayerTimer.innerText = "";
+				joinQueueBtn.innerText = QueueState.InGame;
 				curGame = { ...gameState, lastState: null };
 				
 				let resX = await client.getUser({user: curGame.playerX});
@@ -86,7 +109,8 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 					userOString.classList.remove('text-gray-800');
 					userXString.classList.remove('text-red-800');
 					userXString.classList.add('text-gray-800');
-				} else if (user.id === curGameX.id) {
+				}
+				else if (user.id === curGameX.id) {
 					userXString.classList.add('text-red-800');
 					userXString.classList.remove('text-gray-800');
 					userOString.classList.remove('text-red-800');
@@ -95,7 +119,6 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				userXString.innerText = curGameX.name;
 				userOString.innerText = curGameO.name;
 			});
-			socket.emit('enqueue');
 
 			const cells = app.querySelectorAll<HTMLDivElement>(".ttt-cell");
 
@@ -131,10 +154,9 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 
 			socket.on('gameEnd', () => {
 				curGame = null;
-				socket.emit('enqueue');
-				showInfo('Game is finished, enqueuing directly')
+				currentPlayerTimer.innerText = "Waiting for match...";
+				joinQueueBtn.innerText = QueueState.Idle;
 			})
-
 
 			socket.on('gameBoard', (u) => {
 				if (curGame === null) {
@@ -153,8 +175,6 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 				updateUI(u.boardState);
 
 				if (u.gameState && u.gameState !== "ongoing") {
-					// grid?.classList.add("pointer-events-none");
-
 					if (u.gameState !== curGame.lastState) {
 						curGame.lastState = u.gameState;
 						switch (u.gameState) {

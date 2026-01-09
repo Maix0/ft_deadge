@@ -7,7 +7,35 @@
     "components": {
         "schemas": {}
     },
-    "paths": {},
+    "paths": {
+        "/api/chat/broadcast": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "nextGame"
+                                ],
+                                "properties": {
+                                    "nextGame": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Default Response"
+                    }
+                }
+            }
+        }
+    },
     "servers": [
         {
             "url": "https://local.maix.me:8888",
