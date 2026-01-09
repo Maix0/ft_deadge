@@ -8,15 +8,12 @@ import { isNullish } from "@app/utils";
 import client from "@app/api";
 import "./pong.css";
 
-// get the name of the machine used to connect
 declare module 'ft_state' {
 	interface State {
 		pongSock?: CSocket;
 	}
 }
 
-	// GameRdyDown = "Ready Up?"
-	// GameRdyUp = "Ready down?"
 enum QueueState {
 	InQueu = "In Queue",
 	InGame = "In Game",
@@ -44,9 +41,6 @@ export function getSocket(): CSocket {
 
 function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
 	setTitle('Pong Game Page');
-	// MAYBE: "queue up" btn : adds timer to page for duration of queue
-	// TODO: "local play" btn : emit "local new game" evt to server; play game on single computer (maybe need to change keys-handling logic)
-	
 	return {
 		html: authHtml, postInsert: async (app) => {
 			const DEFAULT_COLOR = "white";
@@ -281,11 +275,10 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				}
 				resetBoard(batLeft, batRight, playerL, playerR);
 			})
-			// pretty info for queue :3
 			socket.on('updateInformation', (e) => {
 				queue_infos.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
 			});
-			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
+			socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`)); // MAYBE: play a sound? to notify user that smthing happend
 			// ---
 			// queue evt end
 			// ---
@@ -295,8 +288,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			queueBtn.innerText = QueueState.Iddle;
 			rdy_btn.innerText = ReadyState.readyUp;
 			resetBoard(batLeft, batRight, playerL, playerR);
-			showInfo("butter");
-			showInfo("butter-toast");
 		}
 	}
 };

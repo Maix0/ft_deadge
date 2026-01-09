@@ -5,7 +5,6 @@ import { Pong } from './game';
 import { GameMove, GameUpdate, SSocket } from './socket';
 import { isNullish } from '@shared/utils';
 import { PongGameId, PongGameOutcome } from '@shared/database/mixin/pong';
-import https from 'https';
 
 type PUser = {
 	id: UserId;
@@ -188,12 +187,14 @@ class StateI {
 		const winner = game.checkWinner() ?? 'left';
 		let player: PUser | undefined = undefined;
 		if ((player = this.users.get(game.userLeft)) !== undefined) {
-			chat_text += player.id + ' and ';
+			chat_text += (this.fastify.db.getUser(player.id)?.name ?? player.id) + ' and ';
+			// chat_text += player.id + ' and ';
 			player.currentGame = null;
 			player.socket.emit('gameEnd', winner);
 		}
 		if ((player = this.users.get(game.userRight)) !== undefined) {
-			chat_text += player.id ;
+			chat_text += (this.fastify.db.getUser(player.id)?.name ?? player.id);
+			// chat_text += player.id;
 			player.currentGame = null;
 			player.socket.emit('gameEnd', winner);
 		}
@@ -204,7 +205,7 @@ class StateI {
 		this.fastify.db.setPongGameOutcome(gameId, { id: game.userLeft, score: game.score[0] }, { id: game.userRight, score: game.score[1] }, outcome, game.local);
 		this.fastify.log.info('SetGameOutcome !');
 		if (!game.local) {
-			let payload = {'nextGame':chat_text}; // TODO: add names of ppl
+			let payload = {'nextGame':chat_text};
 			try {
 				const resp = await fetch("http://app-chat/api/chat/broadcast", {
 					method:'POST',
@@ -212,18 +213,13 @@ class StateI {
 					body: JSON.stringify(payload),
 					});
 
-				if (!resp.ok) {
-					console.log(`fail :( ${resp}`);
-					console.log('resp:'+resp.body);
+				if (!resp.ok)
 					throw(resp);
-				}
 				else
-					console.log("success");
+					this.fastify.log.info("game-end info to chat success");
 			} catch (e : any) {
-				console.log(`error gotten: ${e}`);
-				throw (e);
+				this.fastify.log.error(`game-end info to chat failed: ${e}`);
 			}
-			// announce to chat
 		}
 	}
 
