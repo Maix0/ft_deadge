@@ -35,7 +35,7 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		let blockMsgFlag: boolean = false;
 		const receiverUser: User | null = getUserByName(allUsers, clientInfo.user);
 		if (!receiverUser) return;
-	
+
 
 		const user: string = clientChat.get(socket.id)?.user ?? '';
 		const targetUser = `@${user}`;
@@ -44,7 +44,7 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		}
 
 		blockMsgFlag = checkNamePair(list, UserID, receiverUser.id) || false;
-		
+
 		if (!blockMsgFlag) {
 			socket.emit('MsgObjectServer', { message: data });
 			fastify.log.info({ senderID: `${UserID}`, msgPriv: data.text, target: `${receiverUser.id}` });
