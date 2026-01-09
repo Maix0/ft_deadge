@@ -103,6 +103,52 @@ class StateI {
 		this.tournament.start();
 	}
 
+	public newPausedGame(suid1 : string, suid2 : string) : GameId | undefined {
+		if (!this.users.has(suid1 as UserId) || !this.users.has(suid2 as UserId))
+			return (undefined);
+		const uid1 : UserId = suid1 as UserId;
+		const uid2 : UserId = suid2 as UserId;
+		const g = new Pong(uid1, uid2);
+		g.rdy_timer = -1;
+		const gameId = newUUID() as unknown as GameId;
+
+		this.games.set(gameId, g);
+		return (gameId);
+	}
+	public startPausedGame(g_id: PongGameId) : boolean {
+		let game : Pong | undefined;
+
+		if (!this.games.has(g_id) || (game = this.games.get(g_id)) === undefined) { return (false); }
+		game.rdy_timer = Date.now();
+		
+		let id1 = game.userLeft;
+		let id2 = game.userRight;
+
+		if (!this.users.has(id1) || !this.users.has(id2)) { return (false); }
+		let usr1 = this.users.get(id1);
+		let usr2 = this.users.get(id2);
+		if (isNullish(usr1) || isNullish(usr2)) { return (false); }
+
+		const iState: GameUpdate = StateI.getGameUpdateData(g_id, game);
+
+		usr1.socket.emit('newGame', iState); usr1.currentGame = g_id;
+		usr2.socket.emit('newGame', iState); usr2.currentGame = g_id;
+		game.gameUpdate = setInterval(() => {
+			game.tick();
+			if (game.sendSig === false && game.ready_checks[0] === true && game.ready_checks[1] === true) {
+				usr1.socket.emit('rdyEnd');
+				usr2.socket.emit('rdyEnd');
+				game.sendSig = true;
+			}
+			if (game.ready_checks[0] === true && game.ready_checks[1] === true) {
+				this.gameUpdate(g_id, usr1.socket);
+				this.gameUpdate(g_id, usr2.socket);
+			}
+			if (game.checkWinner() !== null) {this.cleanupGame(g_id, game); }
+		}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
+		return (true);
+	}
+
 	private queuerFunction(): void {
 		const values = Array.from(this.queue.values());
 		shuffle(values);
@@ -307,7 +353,6 @@ class StateI {
 			}
 		}
 	}
-
 
 	private enqueueUser(socket: SSocket): void {
 		if (!this.users.has(socket.authUser.id)) return;
