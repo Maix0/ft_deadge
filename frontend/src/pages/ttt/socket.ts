@@ -28,8 +28,6 @@ export interface ClientToServer {
 	gameMove: (up: GameMove) => void;
 	keepalive: () => void;
 	connectedToGame: (gameId: string) => void;
-	// TODO:
-	joinQueueButton: () => void;
 };
 
 export interface ServerToClient {
