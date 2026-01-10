@@ -6,7 +6,7 @@
 
 @tailwind utilities;
 
-.btn-style {
+.pong-btn-style {
   @apply
   min-w-25
   min-h-8

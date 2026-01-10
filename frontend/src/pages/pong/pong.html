@@ -1,18 +1,19 @@
 <div class="displaybox">
-	<div id="mainbox" class="mainboxDisplay">
-		<button id="QueueBtn" class="btn-style absolute top-4 left-6">Queue Up</button>
-		<button id="LocalBtn" class="btn-style absolute top-14 left-6">Local Game</button>
-		<span id="queue-info" class="flex rounded-3xl border-7 border-gray-500 bg-gray-500 absolute top-4 right-6">?👤
-			?⏳ ?▮•▮</span> <!-- total | in queue | games-->
-		<button id="TourBtn"
-			class="min-25 min-h-8 border border-gray-500 rounded-3xl bg-gray-500 text-white cursor-pointer shadow-[0_2px_0_0_black] transition-all hover:bg-blue-200 active:bg-gray-400 active:translate-y-px active:shadow-[0_2px_0_0_black] absolute top-16 right-6">
-			<span class="mx-2">Create Tournament</span>
-		</button> <!-- Tournament Button -->
-		<button id="play-info" class="pong-how-to-play absolute top-26 right-6">?</button> <!-- how to play?-->
+	<div id="mainbox" class="
+  min-w-25 min-h-8 border border-gray-500 rounded-3xl bg-gray-500
+  text-white cursor-pointer shadow-[0_2px_0_0_black] transition-all hover:bg-blue-200 active:bg-gray-400
+  active:translate-y-px active:shadow-[0_2px_0_0_black];">
+		<div class="flex flex-col gap-2">
+				<button id="QueueBtn" class="pong-btn-style top-4 left-6">Queue Up</button>
+				<button id="LocalBtn" class="pong-btn-style top-14 left-6">Local Game</button>
+		</div>
+		<div class="flex flex-col gap-2 items-end">
+				<span id="queue-info" class="flex rounded-3xl border-7 border-gray-500 bg-gray-500 top-4 right-6">?👤 ?⏳ ?▮•▮</span> <!-- total | in queue | games-->
+				<button id="play-info" class="pong-how-to-play top-14 right-6">?</button> <!-- how to play?-->
+		</div>	
 		<br>
-		<h1 class="text-3xl font-bold text-gray-800">
-			Pong Box<span id="t-username"></span>
-		</h1><br>
+		<h1 class="text-3xl font-bold text-gray-800">Pong Box</h1>
+		<br>
 
 		<!-- Horizontal Message Box -->
 		<div id="score-box" class="grid grid-cols-[1fr_auto_1fr] items-center">
