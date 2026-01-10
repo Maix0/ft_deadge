@@ -1,7 +1,7 @@
 import "./ttt.css"
 import {addRoute, type RouteHandlerReturn} from "@app/routing";
 import tttPage from "./ttt.html?raw";
-import {showError, showInfo, showSuccess, showWarn} from "@app/toast";
+import {showError, showInfo} from "@app/toast";
 import {io} from "socket.io-client";
 import type {CSocket as Socket, GameUpdate} from "./socket";
 import {updateUser} from "@app/auth";
@@ -57,7 +57,8 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             const currentPlayerIndicator = document.getElementById("currentPlayer");
             const joinQueueBtn = document.getElementById("JoinQueueBtn");
             const currentPlayerTimer = document.getElementById("currentPlayerTimer")
-            if (!userXString || !userOString || !currentPlayerIndicator || !joinQueueBtn || !currentPlayerTimer) {
+            const result_message = document.getElementById("ttt-end-screen");
+            if (!userXString || !userOString || !currentPlayerIndicator || !joinQueueBtn || !currentPlayerTimer || !result_message) {
                 return showError('fatal error');
             }
 
@@ -128,9 +129,12 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             };
 
             const makeEnd = (type: 'win' | 'conceded' | 'draw', player: 'X' | 'O') => {
-                // TODO: Enhance the draw notification
                 if (type === 'draw') {
-                    showWarn('It\'s a draw !')
+                    result_message.innerText = "It's a draw! :/";
+                    result_message.classList.remove("hidden");
+                    setTimeout(() => {
+                        result_message.classList.add("hidden");
+                    }, 3 * 1000);
                 }
 
                 if (type === 'win') {
@@ -145,11 +149,19 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                         default:
                             return;
                     }
-                    // TODO: Enhance the win/loss notification
-                    if (youWin)
-                        showSuccess('You won the game !');
-                    else
-                        showError('You lost the game :(');
+                    if (youWin) {
+                        result_message.innerText = "You won the game! :)";
+                        result_message.classList.remove("hidden");
+                        setTimeout(() => {
+                            result_message.classList.add("hidden");
+                        }, 3 * 1000);
+                    } else {
+                        result_message.innerText = "You lost the game! :(";
+                        result_message.classList.remove("hidden");
+                        setTimeout(() => {
+                            result_message.classList.add("hidden");
+                        }, 3 * 1000);
+                    }
                 }
             };
 

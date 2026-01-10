@@ -1,6 +1,6 @@
 <div class="displaybox">
-    <div id="mainbox" class="mainboxDisplay">
-        <button id="JoinQueueBtn" class="btn-style absolute top-4 right-6">Join Queue</button>
+    <div class="mainboxDisplay" id="mainbox">
+        <button class="btn-style absolute top-4 right-6" id="JoinQueueBtn">Join Queue</button>
         <h1 class="text-3xl font-bold text-gray-800">
             Tic-tac-toe Box<span id="t-username"></span>
         </h1><br>
@@ -14,7 +14,7 @@
             </div>
 
             <div class="text-center text-sm text-gray-800 px-4 whitespace-nowrap">
-                <div id="currentPlayer" class='text-7xl font-bold'></div>
+                <div class='text-7xl font-bold' id="currentPlayer"></div>
                 <div id="currentPlayerTimer">Waiting for match...</div>
             </div>
 
@@ -27,17 +27,21 @@
             </div>
         </div>
         <div class="grid-box mt-2">
-            <div class="grid-layout">
-                <div id="cell1" class="ttt-cell"></div>
-                <div id="cell2" class="ttt-cell"></div>
-                <div id="cell3" class="ttt-cell"></div>
-                <div id="cell4" class="ttt-cell"></div>
-                <div id="cell5" class="ttt-cell"></div>
-                <div id="cell6" class="ttt-cell"></div>
-                <div id="cell7" class="ttt-cell"></div>
-                <div id="cell8" class="ttt-cell"></div>
-                <div id="cell9" class="ttt-cell"></div>
+            <div class="grid-layout relative rounded-lg overflow-hidden">
+                <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-gray-900/85 text-white hidden"
+                     id="ttt-end-screen">
+                    outcome
+                </div>
+                <div class="ttt-cell" id="cell1"></div>
+                <div class="ttt-cell" id="cell2"></div>
+                <div class="ttt-cell" id="cell3"></div>
+                <div class="ttt-cell" id="cell4"></div>
+                <div class="ttt-cell" id="cell5"></div>
+                <div class="ttt-cell" id="cell6"></div>
+                <div class="ttt-cell" id="cell7"></div>
+                <div class="ttt-cell" id="cell8"></div>
+                <div class="ttt-cell" id="cell9"></div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
