@@ -104,8 +104,7 @@ class StateI {
 	}
 
 	public newPausedGame(suid1 : string, suid2 : string) : GameId | undefined {
-		if (!this.users.has(suid1 as UserId) || !this.users.has(suid2 as UserId))
-			return (undefined);
+		if (!this.users.has(suid1 as UserId) || !this.users.has(suid2 as UserId)) { return (undefined); }
 		const uid1 : UserId = suid1 as UserId;
 		const uid2 : UserId = suid2 as UserId;
 		const g = new Pong(uid1, uid2);
@@ -120,13 +119,13 @@ class StateI {
 
 		if (!this.games.has(g_id) || (game = this.games.get(g_id)) === undefined) { return (false); }
 		game.rdy_timer = Date.now();
-		
-		let id1 = game.userLeft;
-		let id2 = game.userRight;
+
+		const id1 = game.userLeft;
+		const id2 = game.userRight;
 
 		if (!this.users.has(id1) || !this.users.has(id2)) { return (false); }
-		let usr1 = this.users.get(id1);
-		let usr2 = this.users.get(id2);
+		const usr1 = this.users.get(id1);
+		const usr2 = this.users.get(id2);
 		if (isNullish(usr1) || isNullish(usr2)) { return (false); }
 
 		const iState: GameUpdate = StateI.getGameUpdateData(g_id, game);

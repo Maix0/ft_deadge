@@ -132,7 +132,7 @@ export class Pong {
 
 	public	sendSig	: boolean = false;
 	public	ready_checks: [boolean, boolean] = [false, false];
-	public	rdy_timer	: number = Date.now(); // init rdy timer from class creation start
+	public	rdy_timer	: number = Date.now();
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
