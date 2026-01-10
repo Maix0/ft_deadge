@@ -10,27 +10,33 @@ type TourUser = {
 	name: string;
 };
 
+type TournamentState = 'prestart' | 'playing' | 'ended' | 'canceled';
 export class Tournament {
 	public users: Map<UserId, TourUser> = new Map();
 	public currentGame: PongGameId | null = null;
 	public games: Map<PongGameId, Pong> = new Map();
-	public started: boolean = false;
-	public gameUpdate: NodeJS.Timeout | undefined;
+	public state: TournamentState = 'prestart';
+	public startTimeout: NodeJS.Timeout | undefined;
 
 	constructor(public owner: UserId) { }
 
 	public addUser(id: UserId, name: string) {
-		if (this.started) return;
+		if (this.state !== 'prestart') return;
 		this.users.set(id, { id, name, score: 0 });
 	}
 
 	public removeUser(id: UserId) {
-		if (this.started) return;
+		if (this.state !== 'prestart') return;
 		this.users.delete(id);
 	}
 
 	public start() {
-		this.started = true;
+		if (this.state !== 'prestart') return;
+		if (this.users.size < 2) {
+			this.state = 'canceled';
+			return;
+		}
+		this.state = 'playing';
 		const users = Array.from(this.users.keys());
 		const comb: [UserId, UserId][] = [];
 
@@ -48,7 +54,12 @@ export class Tournament {
 			const g = new Pong(u1, u2);
 
 			this.games.set(gameId, g);
+
 		});
 		this.currentGame = this.games.keys().next().value ?? null;
+	}
+
+	public checkCurrentGame() {
+		void 0;
 	}
 }

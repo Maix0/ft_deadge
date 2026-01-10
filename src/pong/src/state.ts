@@ -13,22 +13,29 @@ type PUser = {
 	socket: SSocket,
 	windowId: string,
 	updateInterval: NodeJS.Timeout,
+	killSelfInterval: NodeJS.Timeout,
+	lastSeen: number,
 };
 
 type GameId = PongGameId;
 
 class StateI {
 	public static readonly UPDATE_INTERVAL_FRAMES: number = 60;
+	public static readonly KEEP_ALIVE_MS: number = 30 * 1000;
+	public static readonly START_TIMER_TOURNAMENT: number = 60 * 2 * 1000;
 
 	private users: Map<UserId, PUser> = new Map();
 	private queue: Set<UserId> = new Set();
 	private queueInterval: NodeJS.Timeout;
+	private tournamentInterval: NodeJS.Timeout;
 	private games: Map<GameId, Pong> = new Map();
 	private tournament: Tournament | null = null;
 
 	public constructor(private fastify: FastifyInstance) {
 		this.queueInterval = setInterval(() => this.queuerFunction());
+		this.tournamentInterval = setInterval(() => this.tournamentIntervalFunc());
 		void this.queueInterval;
+		void this.tournamentInterval;
 	}
 
 	private static getGameUpdateData(id: GameId, g: Pong): GameUpdate {
@@ -49,7 +56,7 @@ class StateI {
 			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament exists' });
 			return;
 		}
-		if (this.tournament.started) {
+		if (this.tournament.state !== 'prestart') {
 			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament already started' });
 			return;
 		}
@@ -72,7 +79,7 @@ class StateI {
 			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament exists' });
 			return;
 		}
-		if (this.tournament.started) {
+		if (this.tournament.state !== 'prestart') {
 			sock.emit('tournamentRegister', { kind: 'failure', msg: 'No tournament already started' });
 			return;
 		}
@@ -88,25 +95,36 @@ class StateI {
 
 		if (this.tournament !== null) {
 			sock.emit('tournamentCreateMsg', { kind: 'failure', msg: 'A tournament already exists' });
-			return ;
+			return;
 		}
 
 		this.tournament = new Tournament(user.id);
 		this.registerForTournament(sock, null);
+		this.tournament.startTimeout = setTimeout(() => this.tournament?.start(), StateI.START_TIMER_TOURNAMENT);
 	}
 
-	private tournamentStart(sock: SSocket) {
+	private cleanupTournament() {
+		if (this.tournament === null) return;
+		// we remove all the games we might have done for the tournament, and voila :D
+		this.tournament.games.keys().forEach((g) => this.games.delete(g));
+
+		this.tournament = null;
+	}
+
+	private startTournament(sock: SSocket) {
 		if (isNullish(this.tournament)) return;
 		const user = this.users.get(sock.authUser.id);
 		if (isNullish(user)) return;
+		if (user.id !== this.tournament.owner) return;
 
+		clearInterval(this.tournament.startTimeout);
 		this.tournament.start();
 	}
 
-	public newPausedGame(suid1 : string, suid2 : string) : GameId | undefined {
+	public newPausedGame(suid1: string, suid2: string): GameId | undefined {
 		if (!this.users.has(suid1 as UserId) || !this.users.has(suid2 as UserId)) { return (undefined); }
-		const uid1 : UserId = suid1 as UserId;
-		const uid2 : UserId = suid2 as UserId;
+		const uid1: UserId = suid1 as UserId;
+		const uid2: UserId = suid2 as UserId;
 		const g = new Pong(uid1, uid2);
 		g.rdy_timer = -1;
 		const gameId = newUUID() as unknown as GameId;
@@ -114,8 +132,8 @@ class StateI {
 		this.games.set(gameId, g);
 		return (gameId);
 	}
-	public startPausedGame(g_id: PongGameId) : boolean {
-		let game : Pong | undefined;
+	public startPausedGame(g_id: PongGameId): boolean {
+		let game: Pong | undefined;
 
 		if (!this.games.has(g_id) || (game = this.games.get(g_id)) === undefined) { return (false); }
 		game.rdy_timer = Date.now();
@@ -143,9 +161,28 @@ class StateI {
 				this.gameUpdate(g_id, usr1.socket);
 				this.gameUpdate(g_id, usr2.socket);
 			}
-			if (game.checkWinner() !== null) {this.cleanupGame(g_id, game); }
+			if (game.checkWinner() !== null) { this.cleanupGame(g_id, game); }
 		}, 1000 / StateI.UPDATE_INTERVAL_FRAMES);
 		return (true);
+	}
+
+	private tournamentIntervalFunc() {
+		const broadcastTourEnding = (msg: string) => {
+			this.users.forEach((u) => { u.socket.emit('tourEnding', msg); });
+		};
+		if (this.tournament) {
+			if (this.tournament.state === 'canceled') {
+				broadcastTourEnding('Tournament was canceled');
+				this.cleanupTournament();
+			}
+			else if (this.tournament.state === 'ended') {
+				broadcastTourEnding('Tournament is finished !');
+				this.cleanupTournament();
+			}
+			else if (this.tournament.state === 'playing') {
+				this.tournament.checkCurrentGame();
+			}
+		}
 	}
 
 	private queuerFunction(): void {
@@ -246,6 +283,15 @@ class StateI {
 		game.updateLastSeen(user.id);
 	}
 
+	public checkKillSelf(sock: SSocket) {
+		const user = this.users.get(sock.authUser.id);
+		if (isNullish(user)) return;
+
+		if (Date.now() - user.lastSeen < StateI.KEEP_ALIVE_MS) return;
+
+		this.cleanupUser(sock);
+	}
+
 
 	public registerUser(socket: SSocket): void {
 		this.fastify.log.info('Registering new user');
@@ -259,7 +305,9 @@ class StateI {
 			id: socket.authUser.id,
 			windowId: socket.id,
 			updateInterval: setInterval(() => this.updateClient(socket), 100),
+			killSelfInterval: setInterval(() => this.checkKillSelf(socket), 100),
 			currentGame: null,
+			lastSeen: Date.now(),
 		});
 		this.fastify.log.info('Registered new user');
 
@@ -278,6 +326,7 @@ class StateI {
 		socket.on('tourUnregister', () => this.unregisterForTournament(socket));
 
 		socket.on('tourCreate', () => this.createTournament(socket));
+		socket.on('tourStart', () => this.startTournament(socket));
 	}
 
 	private updateClient(socket: SSocket): void {
@@ -290,7 +339,7 @@ class StateI {
 		if (this.tournament !== null) {
 			tourInfo = {
 				ownerId: this.tournament.owner,
-				state: this.tournament.started ? 'playing' : 'prestart',
+				state: this.tournament.state,
 				players: this.tournament.users.values().toArray(),
 				currentGameInfo: (() => {
 					if (this.tournament.currentGame === null) return null;
@@ -307,8 +356,15 @@ class StateI {
 		if (!this.users.has(socket.authUser.id)) return;
 
 		clearInterval(this.users.get(socket.authUser.id)?.updateInterval);
+		clearInterval(this.users.get(socket.authUser.id)?.killSelfInterval);
 		this.users.delete(socket.authUser.id);
 		this.queue.delete(socket.authUser.id);
+
+
+		// if the user is in the tournament, and the tournament owner isn't the owner => we remove the user from the tournament !
+		if (this.tournament?.users.has(socket.authUser.id) && this.tournament?.owner !== socket.authUser.id) {
+			this.tournament.removeUser(socket.authUser.id);
+		}
 	}
 
 	private async cleanupGame(gameId: GameId, game: Pong): Promise<void> {

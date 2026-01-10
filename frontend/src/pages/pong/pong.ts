@@ -42,6 +42,14 @@ enum TourBtnState {
 	AbeToProcreate = "He would be proud",
 }
 
+enum TourInfoState {
+	Running = "🟢",
+	Owner = "👑",
+	Registered = "✅",
+	NotRegisted = "❌",
+	NoTournament = "⚪️",
+}
+
 document.addEventListener("ft:pageChange", (newUrl) => {
 	if (
 		newUrl.detail.startsWith("/app/pong") ||
@@ -105,6 +113,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				document.querySelector<HTMLDivElement>("#pong-end-screen");
 			const tournamentBtn =
 				document.querySelector<HTMLButtonElement>("#TourBtn");
+			const tour_infos =
+				document.querySelector<HTMLSpanElement>("#tour-info");
 
 			let socket = getSocket();
 
@@ -126,7 +136,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				!LocalGameBtn ||
 				!rdy_btn ||
 				!end_scr ||
-				!tournamentBtn
+				!tournamentBtn ||
+				!tour_infos
 			)
 				// sanity check
 				return showError("fatal error");
@@ -137,7 +148,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 				switch (tournamentBtn.innerText) {
 					case TourBtnState.AbleToStart:
-						//socket.emit('')
+						socket.emit('tourStart')
 						break;
 					case TourBtnState.AbleToJoin:
 						socket.emit("tourRegister");
@@ -152,8 +163,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						socket.emit("tourUnregister");
 						break;
 					case TourBtnState.Started:
-						showInfo("tournament Started");
-						//socket.emit("tourStart");
 						break;
 				}
 			});
@@ -264,6 +273,10 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			socket.on("gameUpdate", (state: GameUpdate) => {
 				render(state);
 			});
+
+			socket.on("tourEnding", (ending) => {
+				showInfo(ending);
+			})
 			// ---
 			// position logic (client) end
 			// ---
@@ -405,19 +418,23 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				if (s === null) {
 					tournamentBtn.innerText = TourBtnState.AbleToCreate;
 					// create tournament
+					tour_infos.innerText = `${TourInfoState.NoTournament} 0👤 0▮•▮`;
 					return;
 				}
 
 				let weIn = s.players.some((p) => p.id === user.id);
 				let imOwner = s.ownerId === user.id;
+				// TODO: fix this so the number of remaining games are correct
 				switch (s.state) {
 					case "ended":
 						tournamentBtn.innerText = TourBtnState.AbleToCreate;
 						break;
 					case "playing":
 						tournamentBtn.innerText = TourBtnState.Started;
+						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ?▮•▮`;
 						break;
 					case "prestart":
+						tour_infos.innerText = `${imOwner ? TourInfoState.Owner : (weIn ? TourInfoState.Registered : TourInfoState.NotRegisted)} ${s.players.length}👤 ?▮•▮`;
 						if (imOwner) {
 							tournamentBtn.innerText = TourBtnState.AbleToStart;
 						} else {
@@ -427,8 +444,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						}
 						break;
 				}
-
-				console.log(s.players);
 			});
 
 			socket.on("tournamentRegister", ({ kind, msg }) => {

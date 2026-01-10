@@ -32,7 +32,7 @@ export type GameMove = {
 
 export type TourInfo = {
 	ownerId: string;
-	state: 'prestart' | 'playing' | 'ended';
+	state: 'prestart' | 'playing' | 'ended' | 'canceled';
 	players: { id: string; name: string; score: number }[];
 	currentGameInfo: GameUpdate | null;
 };
@@ -42,10 +42,11 @@ export interface ClientToServer {
 	dequeue: () => void;
 	readyUp: () => void;
 	readyDown: () => void;
-	debugInfo: () => void;
 	gameMove: (up: GameMove) => void;
 	connectedToGame: (gameId: string) => void;
 	localGame: () => void;
+
+	hello: () => void;
 
 	// TOURNAMENT
 
@@ -53,7 +54,7 @@ export interface ClientToServer {
 	tourUnregister: () => void;
 
 	tourCreate: () => void;
-	// tourStart: () => void;
+	tourStart: () => void;
 }
 
 export interface ServerToClient {
@@ -75,6 +76,8 @@ export interface ServerToClient {
 		msg?: string;
 	}) => void;
 	tournamentInfo: (info: TourInfo | null) => void;
+
+	tourEnding: (msg: string) => void;
 }
 
 export type SSocket = Socket<ClientToServer, ServerToClient>;
