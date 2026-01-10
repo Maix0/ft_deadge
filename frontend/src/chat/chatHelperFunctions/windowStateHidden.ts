@@ -1,8 +1,7 @@
-import { __socket } from '../chat';
 import { updateUser } from "@app/auth";
 
 export async function windowStateHidden() {		
-	const socketId = __socket || undefined;
+	const socketId = window.__state.chatSock || undefined;
 	// let oldName = localStorage.getItem("oldName") ??  undefined;
 	let oldName: string;
 	if (socketId === undefined) return;

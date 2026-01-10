@@ -34,13 +34,14 @@
 			<a href="/" class="hover:bg-gray-700 rounded-md px-3 py-2">🏠 Home</a>
 			<a href="/login" class="hover:bg-gray-700 rounded-md px-3 py-2">👤 Login</a>
 			<a href="/signin" class="hover:bg-gray-700 rounded-md px-3 py-2">👤 Signin</a>
-			<a href="/chat" class="hover:bg-gray-700 rounded-md px-3 py-2">👤 Chat</a>
 			<a href="/ttt" class="hover:bg-gray-700 rounded-md px-3 py-2">⭕ Tic-Tac-Toe</a>
 			<a href="/pong" class="hover:bg-gray-700 rounded-md px-3 py-2">▮•▮ Ping Pong</a>
 			<a href="/contact" class="hover:bg-gray-700 rounded-md px-3 py-2">⚙️ Settings</a>
 			<a href="/logout" class="hover:bg-gray-700 rounded-md px-3 py-2">🚪 Logout</a>
 		</nav>
 	</aside>
+	<div id="chatBox"> </div>
+
 	<div class="fixed top-0 left-0 opacity-40" hidden>
 		<!-- >this is used so tailwind create the class styles... -->
 	</div>
@@ -51,12 +52,14 @@
 	<!-- Main content -->
 	<main class="pt-16 px-6 pb-8 w-full h-full container" id="app">
 	</main>
+	<button id="chatButton" class="chat-button transition">💬</button>
 	<!-- Scripts -->
 	<script type="module" src="/src/pages/"></script>
 	<script type="module" src="/src/carousel"></script>
 	<script type="module" src="/src/routing"></script>
 	<script type="module" src="/src/toast"></script>
 	<script type="module" src="/src/auth"></script>
+	<script type="module" src="/src/chat/chat.ts"> </script>
 </body>
 
 </html>

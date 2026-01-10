@@ -282,6 +282,22 @@ div-private {
   items-center;
 }
 
+.chat-button {
+  @apply
+  z-100 
+  text-3xl 
+  fixed bottom-6 
+  right-6 
+  w-14 
+  h-14 
+  rounded-full 
+  bg-gray-600 
+  text-white 
+  shadow-lg 
+  flex items-center 
+  justify-center 
+  hover:bg-red-700
+}
 
 
 

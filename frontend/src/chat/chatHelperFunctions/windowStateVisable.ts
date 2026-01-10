@@ -1,4 +1,3 @@
-import { __socket } from "../chat";
 import { setTitle } from "@app/routing";
 import { updateUser } from "@app/auth";
 
@@ -11,7 +10,7 @@ import { updateUser } from "@app/auth";
 export async function windowStateVisable() {
 
 	const buddies = document.getElementById('div-buddies') as HTMLDivElement;
-	const socketId = __socket || undefined;
+	const socketId = window.__state.chatSock || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;
 
 	if (socketId === undefined || oldName === undefined) {return;};
