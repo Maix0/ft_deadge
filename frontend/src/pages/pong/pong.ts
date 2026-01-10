@@ -125,7 +125,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				navigateTo("/app");
 				return;
 			}
-
 			if (
 				!batLeft ||
 				!batRight ||
@@ -143,8 +142,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				!tour_infos
 			)
 				// sanity check
-				return showError("fatal error");			<a href="/chat" class="hover:bg-gray-700 rounded-md px-3 py-2">👤 Chat</a>
-
+				return showError("fatal error");
 			if (!how_to_play_btn || !protips) showError("missing protips"); // not a fatal error
 
 			tournamentBtn.addEventListener("click", () => {
@@ -181,16 +179,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					how_to_play_btn.innerText =
 						how_to_play_btn.innerText === "?" ? "x" : "?";
 				});
-			}
-			
-				document.addEventListener("keydown", (e) => {keys[e.key.toLowerCase()] = true;});
-				document.addEventListener("keyup", (e) => {keys[e.key.toLowerCase()] = false;});
-				
-				setInterval(() => { // key sender
-					if (keys['escape'] === true && protips && how_to_play_btn) {
-						protips.classList.add("hidden");
-						how_to_play_btn.innerText = '?';
-					}
 
 			document.addEventListener("keydown", (e) => {
 				keys[e.key.toLowerCase()] = true;
@@ -336,7 +324,6 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				queueBtn.innerText = QueueState.InQueu;
 				socket.emit("enqueue");
 			});
-
 			LocalGameBtn.addEventListener("click", () => {
 				if (
 					queueBtn.innerText !== QueueState.Iddle ||
