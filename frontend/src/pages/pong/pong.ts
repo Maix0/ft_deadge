@@ -60,11 +60,14 @@ export function getSocket(): CSocket {
 	return window.__state.pongSock;
 }
 
-function pongClient(
-	_url: string,
-	_args: RouteHandlerParams,
-): RouteHandlerReturn {
-	setTitle("Pong Game Page");
+function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
+	setTitle('Pong Game Page');
+	const urlParams = new URLSearchParams(window.location.search);
+	const game_req_join = urlParams.get("game");
+	if (game_req_join) {
+		showError("currently not supporting the act of joining game (even as a spectator)");
+	}
+
 	return {
 		html: authHtml,
 		postInsert: async (app) => {
@@ -98,6 +101,8 @@ function pongClient(
 				document.querySelector<HTMLButtonElement>("#play-info");
 			const protips =
 				document.querySelector<HTMLDivElement>("#protips-box");
+			const end_scr =
+				document.querySelector<HTMLDivElement>("#pong-end-screen");
 			const tournamentBtn =
 				document.querySelector<HTMLButtonElement>("#TourBtn");
 
@@ -120,6 +125,7 @@ function pongClient(
 				!queue_infos ||
 				!LocalGameBtn ||
 				!rdy_btn ||
+				!end_scr ||
 				!tournamentBtn
 			)
 				// sanity check
@@ -368,20 +374,16 @@ function pongClient(
 				queueBtn.style.color = "white";
 
 				if (!isNullish(currentGame)) {
-					let new_div = document.createElement("div");
-					let end_txt = "";
-					if (
-						(user.id === currentGame.left.id &&
-							winner === "left") ||
-						(user.id === currentGame.right.id && winner === "right")
-					)
-						end_txt = "won! #yippe";
-					else end_txt = "lost #sadge";
-					new_div.innerText = "you " + end_txt;
-					new_div.className = "pong-end-screen";
-					gameBoard.appendChild(new_div);
+					let end_txt : string = '';
+					if ((user.id === currentGame.left.id && winner === 'left') ||
+						(user.id === currentGame.right.id && winner === 'right'))
+						end_txt = 'won! #yippe';
+					else
+						end_txt = 'lost #sadge';
+					end_scr.innerText = 'you ' + end_txt;
+					end_scr.classList.remove("hidden");
 					setTimeout(() => {
-						new_div.remove();
+						end_scr.classList.add("hidden");
 					}, 3 * 1000);
 
 					if (currentGame.local) {

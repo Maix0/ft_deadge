@@ -6,186 +6,112 @@
 
 @tailwind utilities;
 
-.pong-btn-style {
-  @apply
-  min-w-25
-  min-h-8
-  border
-  border-gray-500
-  rounded-3xl
-  bg-gray-500
-  text-white
-  cursor-pointer
-  shadow-[0_2px_0_0_black]
-  transition-all
-  hover:bg-blue-200
-  active:bg-gray-400
-  active:translate-y-px
-  active:shadow-[0_2px_0_0_black];
-}
-
-.chatbox-style {
-  @apply
-  w-162.5
-  h-75 /* increase height if needed */
-  p-2
-  border
-  border-black
-  shadow-2xl
-  text-left
-  text-gray-700
-  bg-white
-  rounded-3xl
-  overflow-y-auto
-  whitespace-pre-line
-  flex
-  flex-col
-  mx-auto;
-}
-
-.system-info {
-  @apply
-  h-10
-  bg-gray-200
-  text-gray-700
-  p-3
-  rounded-3xl
-  mb-2 border
-  border-gray-200
-  text-center
-  shadow
-  overflow-y-auto
-  justify-end    /* 👈 forces text to bottom */
-  relative; /* needed for overlay */
-}
-
-.displaybox {
-  @apply
-  fixed
-  inset-0
-  flex
-  items-center
-  justify-center
-  bg-[#43536b];
-
-}
-
-.mainboxDisplay {
-  @apply
-  fixed
-  top-1/2
-  left-1/2
-  -translate-x-1/2
-  -translate-y-1/2
-  bg-gray-200 w-212.5
-  p-6 rounded-xl
-  shadow-2xl
-  text-center
-  z-50;
-}
-
-.mainboxDisplay button {
-  @apply
-  cursor-pointer
-}
-
-.pongbox-style {
-  @apply
-  h-112.5
-  w-200
-  bg-gray-400
-  text-6xl
-  flex
-  items-center
-  justify-center;
-}
-
-.text-style {
-  @apply
-  text-black
-}
-
-.pong-field {
-  @apply relative w-200 h-112.5 bg-black;
-}
-
-.pong-bat {
-  @apply absolute w-3 h-20 bg-white;
-}
-
-.pong-batleft {
-  @apply absolute left-4 w-3 h-20 top-0;
-}
-
-.pong-batright {
-  @apply absolute right-4 w-3 h-20 top-0;
-}
-
-.pong-center-line {
-  @apply
-    absolute
-    left-1/2
-    top-0
-    h-full
-    w-1
-    -translate-x-1/2
-    bg-[linear-gradient(to_bottom,white_50%,transparent_50%)]
-    bg-size-[4px_20px];
-}
-
-.pong-end-screen {
-  @apply 
-    rounded-2xl
-    absolute
-    justify-center
+@layer utilities {
+  .gray-color {
+    @apply border-gray-500 bg-gray-500
+  }
+  .white-color {
+    @apply border-white bg-white
+  }
+  .fit-all {
+    @apply
+    w-fit h-fit
+  }
+  .blue-hover {
+    @apply
+    hover:bg-blue-200
+    hover:border-blue-200
+  }
+  .rounded-elem {
+    @apply
+    border-6 rounded-3xl
+  }
+  .circle-8 {
+    @apply w-8 h-8 rounded-full
+  }
+  .base-box {
+    @apply
+    flex items-center justify-center
+  }
+  .focus-elem {
+    @apply
+    z-50
+    shadow-2xl
+    text-center
     text-black
-    text-center
-    bg-white
-    z-50
-}
-
-.pong-rdy-screen {
-  @apply 
-    rounded-2xl
     absolute
-    justify-center
-    text-center text-lg
-    bg-white
-    border-5 border-white
-    z-50
+    text-xl
+  }
+  .pong-bat {
+    @apply absolute w-3 h-20 bg-white;
+  }
+  .disp-key {
+    @apply
+      inline-flex
+      items-center
+      justify-center
+      min-w-[2rem] h-8 px-2
+      rounded-md border border-gray-300
+      bg-gray-100 text-gray-800
+      font-mono text-sm font-medium
+      select-none  
+  }
 }
-
-.pong-protips-box {
-  @apply
-    justify-center
-    absolute
-    bg-white
-
-    border-10
-    rounded-3xl
-    border-white
-
-    text-center
-    text-2xl
-    text-black 
-}
-
-.pong-protips-key {
-  @apply
-    inline-flex
-    items-center
-    justify-center
-		min-w-[2rem] h-8 px-2
-		rounded-md border border-gray-300
-		bg-gray-100 text-gray-800
-		font-mono text-sm font-medium
-		shadow-sm
-		select-none  
-}
-
-.pong-how-to-play {
-  @apply
-    inline-flex items-center justify-center
-    rounded-full w-8 h-8 bg-blue-500 
-    border-10 border-blue-500
+@layer components {
+  .pong-btn-style {
+    @apply
+    text-white
+    cursor-pointer
+    shadow-[0_2px_0_0_black]
+    transition-all
+    active:bg-gray-400
+    active:translate-y-px
+    active:shadow-[0_2px_0_0_black];
+  }
+  .page-title {
+    @apply text-3xl font-bold text-gray-800
+  }
+  .displaybox {
+    @apply bg-[#43536b];
+  }
+  /* pong decorative */
+  .pong-mainboxDisplay {
+    @apply
+    fixed
+    top-1/2
+    left-1/2
+    -translate-x-1/2
+    -translate-y-1/2
+    w-212.5
+    bg-gray-200 border-gray-200
+    p-6
+  }
+  .pongbox-style {
+    @apply
+    h-112.5
+    w-200
+  }
+  .pong-field {
+    @apply relative w-200 h-112.5 bg-black;
+  }
+  .pong-center-line {
+    @apply
+      absolute
+      left-1/2
+      top-0
+      h-full
+      w-1
+      -translate-x-1/2
+      bg-[linear-gradient(to_bottom,white_50%,transparent_50%)]
+      bg-size-[4px_20px];
+  }
+  /* game pong moving elements */
+  .pong-batleft {
+    @apply
+    absolute left-4 top-0;
+  }
+  .pong-batright {
+    @apply
+    absolute right-4 top-0;
+  }
 }
