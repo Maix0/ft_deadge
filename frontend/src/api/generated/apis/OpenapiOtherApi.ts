@@ -55,8 +55,14 @@ import type {
   LoginOtpRequest,
   LoginRequest,
   Logout200Response,
+  PongCreatePauseGame200Response,
+  PongCreatePauseGame404Response,
+  PongCreatePauseGameRequest,
   PongHistory200Response,
   PongHistory404Response,
+  PongstartPauseGame200Response,
+  PongstartPauseGame404Response,
+  PongstartPauseGameRequest,
   ProviderList200Response,
   Signin200Response,
   Signin400Response,
@@ -148,10 +154,22 @@ import {
     LoginRequestToJSON,
     Logout200ResponseFromJSON,
     Logout200ResponseToJSON,
+    PongCreatePauseGame200ResponseFromJSON,
+    PongCreatePauseGame200ResponseToJSON,
+    PongCreatePauseGame404ResponseFromJSON,
+    PongCreatePauseGame404ResponseToJSON,
+    PongCreatePauseGameRequestFromJSON,
+    PongCreatePauseGameRequestToJSON,
     PongHistory200ResponseFromJSON,
     PongHistory200ResponseToJSON,
     PongHistory404ResponseFromJSON,
     PongHistory404ResponseToJSON,
+    PongstartPauseGame200ResponseFromJSON,
+    PongstartPauseGame200ResponseToJSON,
+    PongstartPauseGame404ResponseFromJSON,
+    PongstartPauseGame404ResponseToJSON,
+    PongstartPauseGameRequestFromJSON,
+    PongstartPauseGameRequestToJSON,
     ProviderList200ResponseFromJSON,
     ProviderList200ResponseToJSON,
     Signin200ResponseFromJSON,
@@ -204,8 +222,16 @@ export interface LoginOtpOperationRequest {
     loginOtpRequest: LoginOtpRequest;
 }
 
+export interface PongCreatePauseGameOperationRequest {
+    pongCreatePauseGameRequest: PongCreatePauseGameRequest;
+}
+
 export interface PongHistoryRequest {
     user: string;
+}
+
+export interface PongstartPauseGameOperationRequest {
+    pongstartPauseGameRequest: PongstartPauseGameRequest;
 }
 
 export interface SigninRequest {
@@ -899,6 +925,58 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
+    async pongCreatePauseGameRaw(requestParameters: PongCreatePauseGameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PongCreatePauseGame200Response | PongCreatePauseGame404Response>> {
+        if (requestParameters['pongCreatePauseGameRequest'] == null) {
+            throw new runtime.RequiredError(
+                'pongCreatePauseGameRequest',
+                'Required parameter "pongCreatePauseGameRequest" was null or undefined when calling pongCreatePauseGame().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/createPausedGame`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PongCreatePauseGameRequestToJSON(requestParameters['pongCreatePauseGameRequest']),
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => PongCreatePauseGame200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 404) {
+            // Object response for status 404
+            return new runtime.JSONApiResponse(response, (jsonValue) => PongCreatePauseGame404ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 404`);
+    }
+
+    /**
+     */
+    async pongCreatePauseGame(requestParameters: PongCreatePauseGameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PongCreatePauseGame200Response | PongCreatePauseGame404Response> {
+        const response = await this.pongCreatePauseGameRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async pongHistoryRaw(requestParameters: PongHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PongHistory200Response | StatusOtp401Response | PongHistory404Response>> {
         if (requestParameters['user'] == null) {
             throw new runtime.RequiredError(
@@ -948,6 +1026,58 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
      */
     async pongHistory(requestParameters: PongHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PongHistory200Response | StatusOtp401Response | PongHistory404Response> {
         const response = await this.pongHistoryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async pongstartPauseGameRaw(requestParameters: PongstartPauseGameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PongstartPauseGame200Response | PongstartPauseGame404Response>> {
+        if (requestParameters['pongstartPauseGameRequest'] == null) {
+            throw new runtime.RequiredError(
+                'pongstartPauseGameRequest',
+                'Required parameter "pongstartPauseGameRequest" was null or undefined when calling pongstartPauseGame().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/startPausedGame`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PongstartPauseGameRequestToJSON(requestParameters['pongstartPauseGameRequest']),
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => PongstartPauseGame200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 404) {
+            // Object response for status 404
+            return new runtime.JSONApiResponse(response, (jsonValue) => PongstartPauseGame404ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 404`);
+    }
+
+    /**
+     */
+    async pongstartPauseGame(requestParameters: PongstartPauseGameOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PongstartPauseGame200Response | PongstartPauseGame404Response> {
+        const response = await this.pongstartPauseGameRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

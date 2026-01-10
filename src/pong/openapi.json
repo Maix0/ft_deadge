@@ -8,6 +8,102 @@
         "schemas": {}
     },
     "paths": {
+        "/createPausedGame": {
+            "post": {
+                "operationId": "pongCreatePauseGame",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user1",
+                                    "user2"
+                                ],
+                                "properties": {
+                                    "user1": {
+                                        "type": "string",
+                                        "description": "'id' | <userid>"
+                                    },
+                                    "user2": {
+                                        "type": "string",
+                                        "description": "'id' | <userid>"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg",
+                                        "payload"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "createPausedGame.success"
+                                            ]
+                                        },
+                                        "payload": {
+                                            "type": "object",
+                                            "required": [
+                                                "gameId"
+                                            ],
+                                            "properties": {
+                                                "gameId": {
+                                                    "type": "string",
+                                                    "description": "gameId"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "createPausedGame.generic.fail"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/pong/history/{user}": {
             "get": {
                 "operationId": "pongHistory",
@@ -203,6 +299,89 @@
                                         "msg": {
                                             "enum": [
                                                 "ponghistory.failure.notfound"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/startPausedGame": {
+            "post": {
+                "operationId": "pongstartPauseGame",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "gameId"
+                                ],
+                                "properties": {
+                                    "gameId": {
+                                        "type": "string",
+                                        "description": "'id' | <gameid>"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg",
+                                        "payload"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "startPausedGame.success"
+                                            ]
+                                        },
+                                        "payload": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "startPausedGame.no_such_game"
                                             ]
                                         }
                                     }
