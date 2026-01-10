@@ -48,6 +48,13 @@ class StateI {
 		};
 	}
 
+	private getHello(socket: SSocket) {
+		const user = this.users.get(socket.authUser.id);
+		if (isNullish(user)) return;
+
+		user.lastSeen = Date.now();
+	}
+
 	private registerForTournament(sock: SSocket, name: string | null) {
 		const user = this.users.get(sock.authUser.id);
 		if (isNullish(user)) return;
@@ -327,6 +334,7 @@ class StateI {
 
 		socket.on('tourCreate', () => this.createTournament(socket));
 		socket.on('tourStart', () => this.startTournament(socket));
+		socket.on('hello', () => this.getHello(socket));
 	}
 
 	private updateClient(socket: SSocket): void {

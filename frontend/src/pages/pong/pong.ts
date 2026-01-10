@@ -17,6 +17,7 @@ import "./pong.css";
 declare module "ft_state" {
 	interface State {
 		pongSock?: CSocket;
+		pongKeepAliveInterval?: ReturnType<typeof setInterval>;
 	}
 }
 
@@ -51,20 +52,21 @@ enum TourInfoState {
 }
 
 document.addEventListener("ft:pageChange", (newUrl) => {
-	if (
-		newUrl.detail.startsWith("/app/pong") ||
-		newUrl.detail.startsWith("/pong")
-	)
-		return;
 	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
+	if (window.__state.pongKeepAliveInterval !== undefined) clearInterval(window.__state.pongKeepAliveInterval);
 	window.__state.pongSock = undefined;
+	window.__state.pongKeepAliveInterval = undefined;
 });
 
 export function getSocket(): CSocket {
-	if (window.__state.pongSock === undefined)
+	if (window.__state.pongSock === undefined) {
 		window.__state.pongSock = io(window.location.host, {
 			path: "/api/pong/socket.io/",
 		}) as any as CSocket;
+	}
+	if (window.__state.pongKeepAliveInterval === undefined) {
+		window.__state.pongKeepAliveInterval = setInterval(() => { window.__state.pongSock?.emit("hello") }, 100);
+	}
 	return window.__state.pongSock;
 }
 
@@ -387,7 +389,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				queueBtn.style.color = "white";
 
 				if (!isNullish(currentGame)) {
-					let end_txt : string = '';
+					let end_txt: string = '';
 					if ((user.id === currentGame.left.id && winner === 'left') ||
 						(user.id === currentGame.right.id && winner === 'right'))
 						end_txt = 'won! #yippe';

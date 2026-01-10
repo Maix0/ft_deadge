@@ -11,7 +11,7 @@ import client from "@app/api";
 declare module 'ft_state' {
 	interface State {
 		tttSock?: Socket;
-		keepAliveInterval?: ReturnType<typeof setInterval>;
+		tttkeepAliveInterval?: ReturnType<typeof setInterval>;
 	}
 }
 
@@ -23,16 +23,16 @@ enum QueueState {
 
 document.addEventListener("ft:pageChange", () => {
 	if (window.__state.tttSock !== undefined) window.__state.tttSock.close();
-	if (window.__state.keepAliveInterval !== undefined) clearInterval(window.__state.keepAliveInterval);
+	if (window.__state.tttkeepAliveInterval !== undefined) clearInterval(window.__state.tttkeepAliveInterval);
 	window.__state.tttSock = undefined;
-	window.__state.keepAliveInterval = undefined;
+	window.__state.tttkeepAliveInterval = undefined;
 });
 
 export function getSocket(): Socket {
 	if (window.__state.tttSock === undefined)
 		window.__state.tttSock = io(window.location.host, { path: "/api/ttt/socket.io/" }) as any as Socket;
-	if (window.__state.keepAliveInterval === undefined)
-		window.__state.keepAliveInterval = setInterval(() => window.__state.tttSock?.emit('keepalive'), 100);
+	if (window.__state.tttkeepAliveInterval === undefined)
+		window.__state.tttkeepAliveInterval = setInterval(() => window.__state.tttSock?.emit('keepalive'), 100);
 	return window.__state.tttSock;
 }
 
