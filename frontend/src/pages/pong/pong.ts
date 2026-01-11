@@ -9,7 +9,7 @@ import authHtml from "./pong.html?raw";
 import io from "socket.io-client";
 import type { CSocket, GameMove, GameUpdate } from "./socket";
 import { showError, showInfo, showSuccess } from "@app/toast";
-import { getUser, type User } from "@app/auth";
+import { getUser as getSelfUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
 import client from "@app/api";
 import "./pong.css";
@@ -84,9 +84,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const DEFAULT_COLOR = "white";
 			const SELF_COLOR = "red";
 
-			const user = getUser();
-			let currentGame: GameUpdate | null = null;
-			let opponent: User | null = null;
+			const user = getSelfUser();
+			let currentGame: { game: GameUpdate, spectating: boolean, playerL: { id: string, name: string, self: boolean }, playerR: { id: string, name: string, self: boolean } } | null = null;
 			const rdy_btn =
 				document.querySelector<HTMLButtonElement>("#readyup-btn");
 			const batLeft = document.querySelector<HTMLDivElement>("#batleft");
@@ -145,6 +144,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				return showError("fatal error");
 			if (!how_to_play_btn || !protips) showError("missing protips"); // not a fatal error
 
+
 			tournamentBtn.addEventListener("click", () => {
 				showInfo(`Button State: ${tournamentBtn.innerText}`);
 
@@ -196,7 +196,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				if (queueBtn.innerText !== QueueState.InGame)
 					//we're in game ? continue | gtfo
 					return;
-				if (currentGame === null) return;
+				// we are not in a game OR we are spectating a game => gtfo
+				if (currentGame === null || currentGame.spectating) return;
 
 				let packet: GameMove = {
 					move: null,
@@ -210,7 +211,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 				if (keys["w"] !== keys["s"])
 					packet.move = keys["w"] ? "up" : "down";
-				if (currentGame.local && keys["o"] !== keys["l"])
+				if (currentGame.game.local && keys["o"] !== keys["l"])
 					packet.moveRight = keys["o"] ? "up" : "down";
 				socket.emit("gameMove", packet);
 			}, 1000 / 60);
@@ -251,11 +252,9 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				playerR.innerText = "";
 				playerL.innerText = "";
 				currentGame = null;
-				opponent = null;
 			}
 
 			const render = (state: GameUpdate) => {
-				currentGame = state;
 				batLeft.style.top = `${state.left.paddle.y}px`;
 				batLeft.style.left = `${state.left.paddle.x}px`;
 				batLeft.style.width = `${state.left.paddle.width}px`;
@@ -273,6 +272,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				score.innerText = `${state.left.score} | ${state.right.score}`;
 			};
 			socket.on("gameUpdate", (state: GameUpdate) => {
+				updateCurrentGame(state);
 				render(state);
 			});
 
@@ -287,29 +287,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// queue evt
 			// ---
 			// utils
-			function set_pretty(
-				batU: HTMLDivElement,
-				txtU: HTMLDivElement,
-				txtO: HTMLDivElement,
-				colorYou: string,
-			) {
-				batU.style.backgroundColor = colorYou;
-				txtU.style.color = colorYou;
-				txtU.innerText = isNullish(user) ? "you" : user.name;
-				txtO.innerText = isNullish(opponent)
-					? "the mechant"
-					: opponent.name;
-			}
-			async function get_opponent(opponent_id: string) {
-				let t = await client.getUser({ user: opponent_id });
+			async function getUser(user: string): Promise<{ id: string, name: string | null }> {
+				let t = await client.getUser({ user });
 
-				switch (t.kind) {
-					case "success":
-						opponent = t.payload;
-						break;
-					default:
-						opponent = null;
-				}
+				if (t.kind === "success")
+					return { id: user, name: t.payload.name };
+				return { id: user, name: null };
 			}
 
 			// btn setup
@@ -358,21 +341,39 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				}
 			});
 
+			const updateCurrentGame = async (state: GameUpdate) => {
+				const normalizeUser = (u: { id: string, name: string | null }, d: string) => {
+					return { id: u.id, name: u.name ?? d, self: u.id === user.id };
+				};
+				if (currentGame === null)
+					currentGame = {
+						spectating: !(state.left.id === user.id || state.right.id === user.id),
+						game: state,
+						playerL: normalizeUser(await getUser(state.left.id), "left"),
+						playerR: normalizeUser(await getUser(state.right.id), "right"),
+					}
+				else currentGame.game = state;
+				if (currentGame && currentGame?.game.local || currentGame?.playerL.self) {
+					batLeft!.style.backgroundColor = SELF_COLOR;
+					playerL!.style.color = SELF_COLOR;
+				}
+				if (currentGame && (!currentGame?.game.local && currentGame?.playerR.self)) {
+					batRight!.style.backgroundColor = SELF_COLOR;
+					playerR!.style.color = SELF_COLOR;
+				}
+				playerL!.innerText = currentGame!.playerL.name;
+				playerR!.innerText = currentGame!.playerR.name;
+			}
+
 			socket.on("newGame", async (state) => {
+				currentGame = null;
+				updateCurrentGame(state);
 				render(state);
 
-				await get_opponent(
-					state.left.id == user.id ? state.right.id : state.left.id,
-				);
 				queueBtn.innerText = QueueState.InGame;
 				queueBtn.style.color = "red";
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
 				batRight.style.backgroundColor = DEFAULT_COLOR;
-				if (state.left.id === user.id) {
-					set_pretty(batLeft, playerL, playerR, SELF_COLOR);
-				} else if (state.right.id === user.id) {
-					set_pretty(batRight, playerR, playerL, SELF_COLOR);
-				} else showError("couldn't find your id in game");
 				rdy_btn.classList.remove("hidden");
 				rdy_btn.classList.add("text-red-600");
 				rdy_btn.innerText = ReadyState.readyDown;
@@ -390,8 +391,8 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 				if (!isNullish(currentGame)) {
 					let end_txt: string = '';
-					if ((user.id === currentGame.left.id && winner === 'left') ||
-						(user.id === currentGame.right.id && winner === 'right'))
+					if ((user.id === currentGame.game.left.id && winner === 'left') ||
+						(user.id === currentGame.game.right.id && winner === 'right'))
 						end_txt = 'won! #yippe';
 					else
 						end_txt = 'lost #sadge';
@@ -401,7 +402,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						end_scr.classList.add("hidden");
 					}, 3 * 1000);
 
-					if (currentGame.local) {
+					if (currentGame.game.local) {
 						LocalGameBtn.innerText = "Local Game";
 					}
 				}
