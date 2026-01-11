@@ -8,22 +8,22 @@ import { setTitle } from "@app/routing";
 /**
  * function to quit the chat - leaves the ping-Buddies list
  * @param socket 
- */
+*/
 
 export function quitChat (socket: Socket) {
-
+	const chatBox = document.getElementById("chatBox")!;
+	const overlay = document.querySelector('#overlay')!;
+	
 	try {
-		const systemWindow = document.getElementById('system-box') as HTMLDivElement;
-		const chatWindow = document.getElementById("t-chatbox") as HTMLDivElement;
-		if (socket) {
-			logout(socket);
-			setTitle('Chat Page');
-			connected(socket);
+		if (chatBox.classList.contains('hidden')) {
+			// chatBox.classList.toggle('hidden');
+			// overlay.classList.add('opacity-60');
 		} else {
-			getSocket();
+			chatBox.classList.toggle('hidden');
+			overlay.classList.remove('opacity-60');
 		}
 	} catch (e) {
 		showError('Failed to Quit Chat: Unknown error');
 	}
-
+	
 };
