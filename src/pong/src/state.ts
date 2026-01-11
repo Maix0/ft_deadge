@@ -2,7 +2,7 @@ import { UserId } from '@shared/database/mixin/user';
 import { newUUID } from '@shared/utils/uuid';
 import { FastifyInstance } from 'fastify';
 import { Pong } from './game';
-import { GameMove, GameUpdate, SSocket, TourInfo } from './socket';
+import { GameMove, GameUpdate, JoinRes, SSocket, TourInfo } from './socket';
 import { isNullish, shuffle } from '@shared/utils';
 import { PongGameId, PongGameOutcome } from '@shared/database/mixin/pong';
 import { Tournament } from './tour';
@@ -385,6 +385,18 @@ class StateI {
 		this.cleanupUser(sock);
 	}
 
+	private tryJoinGame(g_id : string, sock : SSocket) : JoinRes {
+		const game_id : PongGameId = g_id as PongGameId;
+		let game : Pong;
+
+		if (this.games.has(game_id) === false)
+			return (JoinRes.no);
+		game = this.games.get(game_id)!;
+		if (game.local || game.userLeft !== sock.authUser.id || game.userRight !== sock.authUser.id)
+			return  (JoinRes.no);
+		return  (JoinRes.dev);
+	}
+
 	public registerUser(socket: SSocket): void {
 		this.fastify.log.info('Registering new user');
 		if (this.users.has(socket.authUser.id)) {
@@ -415,7 +427,7 @@ class StateI {
 
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
 		socket.on('localGame', () => this.newLocalGame(socket));
-
+		socket.on('joinGame', (g_id, ack) => {return (ack(this.tryJoinGame(g_id, socket)));});
 		// todo: allow passing nickname
 		socket.on('tourRegister', () =>
 			this.registerForTournament(socket, null),

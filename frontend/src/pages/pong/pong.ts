@@ -7,7 +7,7 @@ import {
 } from "@app/routing";
 import authHtml from "./pong.html?raw";
 import io from "socket.io-client";
-import type { CSocket, GameMove, GameUpdate, TourInfo } from "./socket";
+import { JoinRes, type CSocket, type GameMove, type GameUpdate, type TourInfo } from "./socket";
 import { showError, showInfo, showSuccess } from "@app/toast";
 import { getUser as getSelfUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
@@ -79,12 +79,11 @@ function pongClient(
 ): RouteHandlerReturn {
 	setTitle("Pong Game Page");
 	const urlParams = new URLSearchParams(window.location.search);
-	const game_req_join = urlParams.get("game");
-	if (game_req_join) {
-		showError(
-			"currently not supporting the act of joining game (even as a spectator)",
-		);
-	}
+	let game_req_join = urlParams.get("game");
+	// todo:
+	// [ ] shape sock
+	// 	- [ ] joinGame (guid) -> ["ok"|"no, dont ever talk to my kid or me ever again you creep"];
+	//	- [ ] launch newgame evt?
 
 	return {
 		html: authHtml,
@@ -238,6 +237,30 @@ function pongClient(
 			}, 1000 / 60);
 			// ---
 			// keys end
+			// ---
+
+			// ---
+			// join game
+			// ---
+			if (game_req_join != null) {
+				socket.emit('joinGame', game_req_join, 
+					(res : JoinRes) => {
+						switch (res) {
+							case JoinRes.yes :
+								showInfo('JoinRes = yes');
+								break;
+							case JoinRes.no :
+								showInfo('JoinRes = no');
+								break;
+							default:
+								showError('JoinRes switch fail:' + res);
+						}
+					}
+				)
+				game_req_join = null;
+			}
+			// ---
+			// join game end
 			// ---
 
 			// ---

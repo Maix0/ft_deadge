@@ -37,6 +37,12 @@ export type TourInfo = {
 	remainingMatches: number | null,
 };
 
+export enum JoinRes {
+	yes = 'yes',
+	no = 'dont ever talk to me or my kid ever again',
+	dev = 'yaaaaaaaaaaaaaaaaaaaaaaaa',
+};
+
 export interface ClientToServer {
 	enqueue: () => void;
 	dequeue: () => void;
@@ -45,6 +51,8 @@ export interface ClientToServer {
 	gameMove: (up: GameMove) => void;
 	connectedToGame: (gameId: string) => void;
 	localGame: () => void;
+
+	joinGame: (guid : string, ack:(result:JoinRes) => void) => void;
 
 	hello: () => void;
 
