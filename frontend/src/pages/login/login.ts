@@ -249,7 +249,6 @@ async function handleLogin(
 			if (dOtherLoginArea) {
 				let styleSheetElement = document.createElement("style");
 				styleSheetElement.innerText = "";
-				// TODO: fetch all the providers from an API ?
 				const providersReq = await client.providerList();
 				const providers = providersReq.payload.list;
 				/*const providers: Providers[] = [

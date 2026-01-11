@@ -34,7 +34,7 @@ export type TourInfo = {
 	ownerId: string;
 	state: 'prestart' | 'playing' | 'ended' | 'canceled';
 	players: { id: string; name: string; score: number }[];
-	currentGameInfo: GameUpdate | null;
+	remainingMatches: number | null,
 };
 
 export interface ClientToServer {

@@ -7,7 +7,7 @@ import {
 } from "@app/routing";
 import authHtml from "./pong.html?raw";
 import io from "socket.io-client";
-import type { CSocket, GameMove, GameUpdate } from "./socket";
+import type { CSocket, GameMove, GameUpdate, TourInfo } from "./socket";
 import { showError, showInfo, showSuccess } from "@app/toast";
 import { getUser as getSelfUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
@@ -53,7 +53,8 @@ enum TourInfoState {
 
 document.addEventListener("ft:pageChange", (newUrl) => {
 	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
-	if (window.__state.pongKeepAliveInterval !== undefined) clearInterval(window.__state.pongKeepAliveInterval);
+	if (window.__state.pongKeepAliveInterval !== undefined)
+		clearInterval(window.__state.pongKeepAliveInterval);
 	window.__state.pongSock = undefined;
 	window.__state.pongKeepAliveInterval = undefined;
 });
@@ -65,17 +66,24 @@ export function getSocket(): CSocket {
 		}) as any as CSocket;
 	}
 	if (window.__state.pongKeepAliveInterval === undefined) {
-		window.__state.pongKeepAliveInterval = setInterval(() => { window.__state.pongSock?.emit("hello") }, 100);
+		window.__state.pongKeepAliveInterval = setInterval(() => {
+			window.__state.pongSock?.emit("hello");
+		}, 100);
 	}
 	return window.__state.pongSock;
 }
 
-function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn {
-	setTitle('Pong Game Page');
+function pongClient(
+	_url: string,
+	_args: RouteHandlerParams,
+): RouteHandlerReturn {
+	setTitle("Pong Game Page");
 	const urlParams = new URLSearchParams(window.location.search);
 	const game_req_join = urlParams.get("game");
 	if (game_req_join) {
-		showError("currently not supporting the act of joining game (even as a spectator)");
+		showError(
+			"currently not supporting the act of joining game (even as a spectator)",
+		);
 	}
 
 	return {
@@ -85,7 +93,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const SELF_COLOR = "red";
 
 			const user = getSelfUser();
-			let currentGame: { game: GameUpdate, spectating: boolean, playerL: { id: string, name: string, self: boolean }, playerR: { id: string, name: string, self: boolean } } | null = null;
+			let currentGame: {
+				game: GameUpdate;
+				spectating: boolean;
+				playerL: { id: string; name: string; self: boolean };
+				playerR: { id: string; name: string; self: boolean };
+			} | null = null;
 			const rdy_btn =
 				document.querySelector<HTMLButtonElement>("#readyup-btn");
 			const batLeft = document.querySelector<HTMLDivElement>("#batleft");
@@ -115,7 +128,9 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			const tournamentBtn =
 				document.querySelector<HTMLButtonElement>("#TourBtn");
 			const tour_infos =
-				document.querySelector<HTMLSpanElement>("#tour-info");
+				document.querySelector<HTMLButtonElement>("#tour-info");
+			const tour_scores =
+				document.querySelector<HTMLDivElement>("#tourscore-box");
 
 			let socket = getSocket();
 
@@ -138,19 +153,20 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				!rdy_btn ||
 				!end_scr ||
 				!tournamentBtn ||
-				!tour_infos
+				!tour_infos ||
+				!tour_scores ||
+				!how_to_play_btn ||
+				!protips
 			)
 				// sanity check
 				return showError("fatal error");
-			if (!how_to_play_btn || !protips) showError("missing protips"); // not a fatal error
-
 
 			tournamentBtn.addEventListener("click", () => {
 				showInfo(`Button State: ${tournamentBtn.innerText}`);
 
 				switch (tournamentBtn.innerText) {
 					case TourBtnState.AbleToStart:
-						socket.emit('tourStart')
+						socket.emit("tourStart");
 						break;
 					case TourBtnState.AbleToJoin:
 						socket.emit("tourRegister");
@@ -187,10 +203,15 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				keys[e.key.toLowerCase()] = false;
 			});
 
+			tour_infos.addEventListener("click", () => {
+				tour_scores.classList.toggle("hidden");
+			});
+
 			setInterval(() => {
 				// key sender
-				if (keys["escape"] === true && protips && how_to_play_btn) {
+				if (keys["escape"] === true) {
 					protips.classList.add("hidden");
+					tour_scores.classList.add("hidden");
 					how_to_play_btn.innerText = "?";
 				}
 				if (queueBtn.innerText !== QueueState.InGame)
@@ -254,6 +275,42 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 				currentGame = null;
 			}
 
+			const renderTournamentScores = (info: TourInfo) => {
+				let players = info.players.sort((l, r) => r.score - l.score);
+
+				tour_scores.innerHTML = `
+	<div class="overflow-x-auto">
+      <table class="min-w-full border border-gray-200 rounded-lg shadow-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border-b">
+              Name
+            </th>
+            <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700 border-b">
+              Score
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${players
+						.map(
+							(player) => `
+              <tr class="hover:bg-gray-50" key="${player.id}">
+                <td class="px-4 py-2 text-sm text-gray-800 border-b">
+                  ${player.name}
+                </td>
+                <td class="px-4 py-2 text-sm text-gray-800 text-right border-b">
+                  ${player.score}
+                </td>
+              </tr>
+            `,
+						)
+						.join("")}
+        </tbody>
+      </table>
+    </div>`;
+			};
+
 			const render = (state: GameUpdate) => {
 				batLeft.style.top = `${state.left.paddle.y}px`;
 				batLeft.style.left = `${state.left.paddle.x}px`;
@@ -278,7 +335,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 			socket.on("tourEnding", (ending) => {
 				showInfo(ending);
-			})
+			});
 			// ---
 			// position logic (client) end
 			// ---
@@ -287,7 +344,9 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			// queue evt
 			// ---
 			// utils
-			async function getUser(user: string): Promise<{ id: string, name: string | null }> {
+			async function getUser(
+				user: string,
+			): Promise<{ id: string; name: string | null }> {
 				let t = await client.getUser({ user });
 
 				if (t.kind === "success")
@@ -342,28 +401,51 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 			});
 
 			const updateCurrentGame = async (state: GameUpdate) => {
-				const normalizeUser = (u: { id: string, name: string | null }, d: string) => {
-					return { id: u.id, name: u.name ?? d, self: u.id === user.id };
+				const normalizeUser = (
+					u: { id: string; name: string | null },
+					d: string,
+				) => {
+					return {
+						id: u.id,
+						name: u.name ?? d,
+						self: u.id === user.id,
+					};
 				};
 				if (currentGame === null)
 					currentGame = {
-						spectating: !(state.left.id === user.id || state.right.id === user.id),
+						spectating: !(
+							state.left.id === user.id ||
+							state.right.id === user.id
+						),
 						game: state,
-						playerL: normalizeUser(await getUser(state.left.id), "left"),
-						playerR: normalizeUser(await getUser(state.right.id), "right"),
-					}
+						playerL: normalizeUser(
+							await getUser(state.left.id),
+							"left",
+						),
+						playerR: normalizeUser(
+							await getUser(state.right.id),
+							"right",
+						),
+					};
 				else currentGame.game = state;
-				if (currentGame && currentGame?.game.local || currentGame?.playerL.self) {
+				if (
+					(currentGame && currentGame?.game.local) ||
+					currentGame?.playerL.self
+				) {
 					batLeft!.style.backgroundColor = SELF_COLOR;
 					playerL!.style.color = SELF_COLOR;
 				}
-				if (currentGame && (!currentGame?.game.local && currentGame?.playerR.self)) {
+				if (
+					currentGame &&
+					!currentGame?.game.local &&
+					currentGame?.playerR.self
+				) {
 					batRight!.style.backgroundColor = SELF_COLOR;
 					playerR!.style.color = SELF_COLOR;
 				}
 				playerL!.innerText = currentGame!.playerL.name;
 				playerR!.innerText = currentGame!.playerR.name;
-			}
+			};
 
 			socket.on("newGame", async (state) => {
 				currentGame = null;
@@ -393,10 +475,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					let end_txt: string = '';
 					if ((user.id === currentGame.game.left.id && winner === 'left') ||
 						(user.id === currentGame.game.right.id && winner === 'right'))
-						end_txt = 'won! #yippe';
+						end_txt = 'you won! #yippe';
 					else
-						end_txt = 'lost #sadge';
-					end_scr.innerText = 'you ' + end_txt;
+						end_txt = 'you lost #sadge';
+					if (currentGame.spectating)
+						end_txt = `${winner === 'left' ? currentGame.playerL.name : currentGame.playerR.name} won #gg`;
+					end_scr.innerText = end_txt;
 					end_scr.classList.remove("hidden");
 					setTimeout(() => {
 						end_scr.classList.add("hidden");
@@ -427,17 +511,16 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 
 				let weIn = s.players.some((p) => p.id === user.id);
 				let imOwner = s.ownerId === user.id;
-				// TODO: fix this so the number of remaining games are correct
 				switch (s.state) {
 					case "ended":
 						tournamentBtn.innerText = TourBtnState.AbleToCreate;
 						break;
 					case "playing":
 						tournamentBtn.innerText = TourBtnState.Started;
-						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ?▮•▮`;
+						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ${s.remainingMatches ?? "?"}▮•▮`;
 						break;
 					case "prestart":
-						tour_infos.innerText = `${imOwner ? TourInfoState.Owner : (weIn ? TourInfoState.Registered : TourInfoState.NotRegisted)} ${s.players.length}👤 ?▮•▮`;
+						tour_infos.innerText = `${imOwner ? TourInfoState.Owner : weIn ? TourInfoState.Registered : TourInfoState.NotRegisted} ${s.players.length}👤 ?▮•▮`;
 						if (imOwner) {
 							tournamentBtn.innerText = TourBtnState.AbleToStart;
 						} else {
@@ -447,6 +530,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						}
 						break;
 				}
+				renderTournamentScores(s);
 			});
 
 			socket.on("tournamentRegister", ({ kind, msg }) => {
