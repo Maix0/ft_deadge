@@ -10,7 +10,7 @@ import { setTitle } from "@app/routing";
  * @param socket 
 */
 
-export function quitChat (socket: Socket) {
+export function quitChat () {
 	const chatBox = document.getElementById("chatBox")!;
 	const overlay = document.querySelector('#overlay')!;
 	
