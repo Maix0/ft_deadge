@@ -2,6 +2,7 @@ import { type State } from "ft_state";
 
 interface CustomEventMap {
 	"ft:pageChange": CustomEvent<string>;
+	"ft:userChange": CustomEvent<{id: user, name: string} | null>;
 }
 
 declare global {

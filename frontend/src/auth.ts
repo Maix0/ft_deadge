@@ -1,7 +1,7 @@
 import { showError } from "@app/toast";
 import client from "@app/api";
 import cookie from "js-cookie";
-import { ensureWindowState } from "@app/utils";
+import { ensureWindowState, isNullish } from "@app/utils";
 import { navigateTo } from "./routing";
 
 
@@ -40,8 +40,14 @@ export function isLogged(): boolean {
 }
 
 export function setUser(newUser: User | null) {
+	let sendEvent = (window.__state.user?.id !== newUser?.id);
 	window.__state.user = newUser;
 	updateHeaderProfile();
+
+	if (sendEvent) {
+		const event = new CustomEvent("ft:userChange", { detail: isNullish(newUser) ? null : { id: newUser.id, name: newUser.name } });
+		document.dispatchEvent(event);
+	}
 }
 
 export function updateHeaderProfile() {
