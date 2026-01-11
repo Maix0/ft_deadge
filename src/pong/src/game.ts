@@ -95,8 +95,8 @@ function makeAngle(i: number): [number, number, number, number] {
 		-Math.PI / i + Math.PI,
 	];
 }
-const LEFT :number	= 0;
-const RIGHT :number	= 1;
+const LEFT: number = 0;
+const RIGHT: number = 1;
 
 export class Pong {
 
@@ -130,9 +130,9 @@ export class Pong {
 		Pong.BALL_START_ANGLES[this.ballAngleIdx++],
 	);
 
-	public	sendSig	: boolean = false;
-	public	ready_checks: [boolean, boolean] = [false, false];
-	public	rdy_timer	: number = Date.now();
+	public sendSig: boolean = false;
+	public ready_checks: [boolean, boolean] = [false, false];
+	public rdy_timer: number = Date.now();
 
 	public score: [number, number] = [0, 0];
 	public local: boolean = false;
@@ -141,6 +141,8 @@ export class Pong {
 	public leftLastSeen: number = -1;
 
 	private cachedWinner: 'left' | 'right' | null = null;
+
+	public onEnd: (() => void) | null = null;
 
 	public static makeLocal(owner: UserId): Pong {
 		const game = new Pong(owner, owner);
@@ -153,7 +155,7 @@ export class Pong {
 		public userRight: UserId,
 	) { }
 
-	public readyup(uid : UserId) {
+	public readyup(uid: UserId) {
 		if (uid === this.userLeft) {
 			this.ready_checks[LEFT] = true;
 		}
@@ -161,16 +163,16 @@ export class Pong {
 			this.ready_checks[RIGHT] = true;
 		}
 	}
-	public readydown(uid : UserId) {
+	public readydown(uid: UserId) {
 		// is everyone already ready?
-		if (this.ready_checks[LEFT] === true && this.ready_checks[RIGHT] === true) return ;
+		if (this.ready_checks[LEFT] === true && this.ready_checks[RIGHT] === true) return;
 
 		if (uid === this.userLeft) { this.ready_checks[LEFT] = false; }
 		if (uid === this.userRight) { this.ready_checks[RIGHT] = false; }
 	}
 
 	public tick() {
-		if (!this.local && (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true)) { return;}
+		if (!this.local && (this.ready_checks[LEFT] !== true || this.ready_checks[RIGHT] !== true)) { return; }
 		if (this.paddleCollision(this.leftPaddle, 'left')) {
 			this.ball.collided(
 				'left',
@@ -287,8 +289,8 @@ export class Pong {
 				if (!this.ready_checks[0]) return ('right');
 				if (!this.ready_checks[1]) return ('left');
 			}
-			if (this.leftLastSeen !== -1 && Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT) { return 'right';}
-			if (this.rightLastSeen !== -1 && Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT) {	return 'left';}
+			if (this.leftLastSeen !== -1 && Date.now() - this.leftLastSeen > Pong.CONCEDED_TIMEOUT) { return 'right'; }
+			if (this.rightLastSeen !== -1 && Date.now() - this.rightLastSeen > Pong.CONCEDED_TIMEOUT) { return 'left'; }
 
 			return null;
 		};
