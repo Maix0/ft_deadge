@@ -393,7 +393,7 @@ clearText?.addEventListener("click", () => {
 });
 
 bquit?.addEventListener("click", () => {
-  showInfo('Nigel close the chat overlay please')
+  quitChat(socket);
 });
 
 // Enter key to send message
@@ -418,3 +418,8 @@ chatButton!.addEventListener("click", () => {
   }
 });
 
+document.addEventListener('click', () => {
+  if (socket) {
+    connected(socket);
+  }
+});

@@ -4,6 +4,7 @@ import cookie from "js-cookie";
 import { ensureWindowState } from "@app/utils";
 import { navigateTo } from "./routing";
 
+
 cookie.remove("pkce");
 const headerProfile =
 	document.querySelector<HTMLDivElement>("#header-profile")!;
