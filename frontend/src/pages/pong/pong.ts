@@ -393,10 +393,12 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 					let end_txt: string = '';
 					if ((user.id === currentGame.game.left.id && winner === 'left') ||
 						(user.id === currentGame.game.right.id && winner === 'right'))
-						end_txt = 'won! #yippe';
+						end_txt = 'you won! #yippe';
 					else
-						end_txt = 'lost #sadge';
-					end_scr.innerText = 'you ' + end_txt;
+						end_txt = 'you lost #sadge';
+					if (currentGame.spectating)
+						end_txt = `${winner === 'left' ? currentGame.playerL.name : currentGame.playerR.name} won #gg`;
+					end_scr.innerText = end_txt;
 					end_scr.classList.remove("hidden");
 					setTimeout(() => {
 						end_scr.classList.add("hidden");
@@ -434,7 +436,7 @@ function pongClient(_url: string, _args: RouteHandlerParams): RouteHandlerReturn
 						break;
 					case "playing":
 						tournamentBtn.innerText = TourBtnState.Started;
-						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ?▮•▮`;
+						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ${s.remainingMatches ?? "?"}▮•▮`;
 						break;
 					case "prestart":
 						tour_infos.innerText = `${imOwner ? TourInfoState.Owner : (weIn ? TourInfoState.Registered : TourInfoState.NotRegisted)} ${s.players.length}👤 ?▮•▮`;
