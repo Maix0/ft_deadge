@@ -17,6 +17,7 @@ export class Tournament {
 	public matchup: [UserId, UserId][] = [];
 	public state: TournamentState = 'prestart';
 	public startTimeout: NodeJS.Timeout | undefined;
+	public games: PongGameId[] = [];
 
 	constructor(public owner: UserId) { }
 
@@ -69,6 +70,7 @@ export class Tournament {
 				game.onEnd = () => this.gameEnd();
 			}
 			this.currentGame = gameId;
+			this.games.push(gameId);
 		}
 		else {
 			this.state = 'ended';
@@ -78,15 +80,9 @@ export class Tournament {
 	}
 
 	public gameEnd() {
-		console.log(this);
-		State.fastify.log.info('tournament game ended');
 		if (!isNullish(this.currentGame)) {
-			State.fastify.log.info('HERE2');
-			State.fastify.log.info(State.games);
-			State.fastify.log.info(this.currentGame);
 			const game = State.games.get(this.currentGame);
 			if (game) {
-				State.fastify.log.info('HERE3');
 				const winner = game.checkWinner();
 				const winnerId = winner === 'left' ? game.userLeft : game.userRight;
 

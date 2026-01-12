@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface GuestLogin200ResponsePayload {
     /**
-     * JWT that represent a logged in user
+     * 
      * @type {string}
      * @memberof GuestLogin200ResponsePayload
      */

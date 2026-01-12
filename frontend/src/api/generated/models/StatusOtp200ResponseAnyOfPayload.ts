@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface StatusOtp200ResponseAnyOfPayload {
     /**
-     * The otp secret
+     * 
      * @type {string}
      * @memberof StatusOtp200ResponseAnyOfPayload
      */

@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface ChangeDisplayNameRequest {
     /**
-     * New Display Name
+     * 
      * @type {string}
      * @memberof ChangeDisplayNameRequest
      */

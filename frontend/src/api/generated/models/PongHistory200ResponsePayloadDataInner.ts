@@ -28,7 +28,7 @@ import {
  */
 export interface PongHistory200ResponsePayloadDataInner {
     /**
-     * gameId
+     * 
      * @type {string}
      * @memberof PongHistory200ResponsePayloadDataInner
      */
