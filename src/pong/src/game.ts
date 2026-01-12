@@ -101,6 +101,7 @@ const RIGHT: number = 1;
 export class Pong {
 
 	public gameUpdate: NodeJS.Timeout | null = null;
+	public userOnPage : [boolean, boolean] = [false, false];
 
 	public static readonly CONCEDED_TIMEOUT: number = 1500;
 

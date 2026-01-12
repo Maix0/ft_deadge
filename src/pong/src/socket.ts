@@ -40,7 +40,6 @@ export type TourInfo = {
 export enum JoinRes {
 	yes = 'yes',
 	no = 'dont ever talk to me or my kid ever again',
-	dev = 'yaaaaaaaaaaaaaaaaaaaaaaaa',
 };
 
 export interface ClientToServer {

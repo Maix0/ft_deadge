@@ -223,12 +223,9 @@ class StateI {
 	}
 
 	public newPausedGame(suid1: string, suid2: string): GameId | undefined {
-		// if (
-		// 	!this.users.has(suid1 as UserId) ||
-		// 	!this.users.has(suid2 as UserId)
-		// ) {
-		// 	return undefined;
-		// }
+		if (!this.fastify.db.getUser(suid1) || !this.fastify.db.getUser(suid2)) {
+			return undefined;
+		}
 		const uid1: UserId = suid1 as UserId;
 		const uid2: UserId = suid2 as UserId;
 		const g = new Pong(uid1, uid2);
@@ -236,17 +233,8 @@ class StateI {
 		const gameId = newUUID() as unknown as GameId;
 
 		this.games.set(gameId, g);
+		this.fastify.log.info('new paused game \'' + gameId + '\'');
 		return gameId;
-	}
-
-	public startPausedGame(g_id: PongGameId): boolean {
-		let game: Pong | undefined;
-
-		if ((game = this.games.get(g_id)) === undefined) {
-			return false;
-		}
-		this.initGame(game, g_id, game.userLeft, game.userRight);
-		return true;
 	}
 
 	private tournamentIntervalFunc() {
@@ -387,14 +375,17 @@ class StateI {
 
 	private tryJoinGame(g_id : string, sock : SSocket) : JoinRes {
 		const game_id : PongGameId = g_id as PongGameId;
-		let game : Pong;
 
-		if (this.games.has(game_id) === false)
+		if (this.games.has(game_id) === false) { return (JoinRes.no); }
+		const game : Pong = this.games.get(game_id)!;
+		if (game.local || (game.userLeft !== sock.authUser.id && game.userRight !== sock.authUser.id)) {
 			return (JoinRes.no);
-		game = this.games.get(game_id)!;
-		if (game.local || game.userLeft !== sock.authUser.id || game.userRight !== sock.authUser.id)
-			return  (JoinRes.no);
-		return  (JoinRes.dev);
+		}
+		game.userOnPage[game.userLeft === sock.authUser.id ? 0 : 1] = true;
+		if (game.userOnPage[0] === game.userOnPage[1]) {
+			this.initGame(game, game_id, game.userLeft, game.userRight);
+		}
+		return (JoinRes.yes);
 	}
 
 	public registerUser(socket: SSocket): void {
