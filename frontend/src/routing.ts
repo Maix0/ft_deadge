@@ -235,7 +235,7 @@ if (!window.__state._routingHandler) {
 
 		if (sameOrigin) {
 			e.preventDefault();
-			navigateTo(url.pathname);
+			navigateTo(`${url.pathname}${url.search}`);
 		}
 	});
 

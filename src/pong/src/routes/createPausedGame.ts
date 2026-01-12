@@ -31,13 +31,10 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 			},
 		},
 		async function(req, res) {
-			console.log('herererererererererer');
 			const resp = State.newPausedGame(req.body.user1 as UserId, req.body.user2 as UserId);
-			console.log('resp - game id: ',resp );
-
 			if (isNullish(resp)) { return (res.makeResponse(404, 'failure', 'createPausedGame.generic.fail')); }
 			// else
-			return (res.makeResponse(200, 'success', 'createPausedGame.success', {gameId: resp}));
+			return (res.makeResponse(200, 'success', 'createPausedGame.success', { gameId: resp }));
 		},
 	);
 };

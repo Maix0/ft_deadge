@@ -3,7 +3,7 @@ import type { ClientProfil } from '../chat_types';
 import type { User } from '@shared/database/mixin/user';
 import { getUserByName } from './getUserByName';
 import { Socket } from 'socket.io';
-import { escape } from '@shared/utils';
+import { e } from '@shared/utils';
 
 /**
  * function makeProfil - translates the Users[] to a one user looking by name
@@ -32,7 +32,7 @@ export async function makeProfil(fastify: FastifyInstance, user: string, socket:
 			user: `${allUsers.name}`,
 			loginName: loginState,
 			userID: `${allUsers?.id ?? ''}`,
-			text: escape(allUsers.desc),
+			text: e(allUsers.desc),
 			timestamp: Date.now(),
 			SenderWindowID: socket.id,
 			SenderName: '',
