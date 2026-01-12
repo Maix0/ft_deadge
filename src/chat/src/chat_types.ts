@@ -16,7 +16,6 @@ export type ClientMessage = {
 	innerHtml?: string,
 };
 
-
 export type ClientProfil = {
 	command: string,
 	destination: string,
@@ -35,7 +34,6 @@ export type ClientProfil = {
 
 };
 
-
 export interface ClientInfo {
   user: string;
   socket: string
@@ -49,21 +47,11 @@ export type blockedUnBlocked =
 	by: string,
 };
 
-
-// export type obj =
-// {
-// 	command: string,
-// 	destination: string,
-// 	type: string,
-// 	user: string,
-// 	frontendUserName: string,
-// 	frontendUser: string,
-// 	token: string,
-// 	text: string,
-// 	timestamp: number,
-// 	SenderWindowID: string,
-// 	Sendertext: string,
-// };
+export type inviteUserTOGame = {
+	user1: string,
+	user2: string,
+	gameId: string
+}
 
 export type BlockRelation = {
 	blocked: string;

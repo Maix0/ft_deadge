@@ -223,12 +223,12 @@ class StateI {
 	}
 
 	public newPausedGame(suid1: string, suid2: string): GameId | undefined {
-		if (
-			!this.users.has(suid1 as UserId) ||
-			!this.users.has(suid2 as UserId)
-		) {
-			return undefined;
-		}
+		// if (
+		// 	!this.users.has(suid1 as UserId) ||
+		// 	!this.users.has(suid2 as UserId)
+		// ) {
+		// 	return undefined;
+		// }
 		const uid1: UserId = suid1 as UserId;
 		const uid2: UserId = suid2 as UserId;
 		const g = new Pong(uid1, uid2);

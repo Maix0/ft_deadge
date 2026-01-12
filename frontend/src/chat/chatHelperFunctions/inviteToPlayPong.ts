@@ -13,6 +13,5 @@ import { addMessage } from './addMessage';
 export function inviteToPlayPong(profil: ClientProfil, senderSocket: Socket) {
 	profil.SenderName = getUser()?.name ?? '';
 	if (profil.SenderName === profil.user) return;
-	addMessage(`You invited to play: ${profil.user}🏓`)
 	senderSocket.emit('inviteGame', JSON.stringify(profil));
 };

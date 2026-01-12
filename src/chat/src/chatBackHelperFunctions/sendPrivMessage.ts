@@ -27,7 +27,7 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 
 	for (const socket of sockets) {
 		if (socket.id === sender) continue;
-		const UserID = getUserByName(allUsers, data.user)?.id ?? '';
+		const UserID: string = getUserByName(allUsers, data.user as string)?.id as string ?? undefined;
 		const list:BlockRelation[] = whoBlockedMe(fastify, UserID);
 		const clientInfo = clientChat.get(socket.id);
 		if (!clientInfo) continue;

@@ -26,7 +26,7 @@ export async function sendInvite(fastify: FastifyInstance, innerHtml: string, pr
 	const sockets = await fastify.io.fetchSockets();
 	let targetSocket;
 	for (const socket of sockets) {
-		const clientInfo: string = clientChat.get(socket.id)?.user || '';
+		const clientInfo: string | undefined = clientChat.get(socket.id)?.user || undefined;
 		targetSocket = socket || null;
 		if (!targetSocket) continue;
 		if (clientInfo === profil.user) {
@@ -36,12 +36,12 @@ export async function sendInvite(fastify: FastifyInstance, innerHtml: string, pr
 					command: `@${clientInfo}`,
 					destination: 'inviteMsg',
 					type: 'chat',
-					user: profil.SenderName,
+					user: profil.user,
 					token: '',
 					text: getGameNumber(),
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
-					userID: '',
+					userID: profil.userID,
 					frontendUserName: '',
 					frontendUser: '',
 					SenderUserName: profil.SenderName,

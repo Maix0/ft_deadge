@@ -43,6 +43,14 @@ declare module "ft_state" {
 	}
 }
 
+class DivPrivate extends HTMLElement {
+	constructor() {
+		super();
+	}
+}
+
+customElements.define("div-private", DivPrivate);
+
 export function getSocket(): Socket {
 	if (window.__state.chatSock === undefined)
 		window.__state.chatSock = io(window.location.host, {

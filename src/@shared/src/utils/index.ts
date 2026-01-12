@@ -143,7 +143,7 @@ export function isNullish<T>(v: T | undefined | null): v is null | undefined {
 	return v === null || v === undefined;
 }
 
-export function escape(s: string): string {
+export function e(s: string): string {
 	return s.replace(
 		/[^0-9A-Za-z ]/g,
 		c => '&#' + c.charCodeAt(0) + ';',

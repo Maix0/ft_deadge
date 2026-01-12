@@ -22,20 +22,19 @@ type CreatePausedGameResponse = MakeStaticResponse<typeof CreatePausedGameRespon
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	fastify.post<{ Body: CreatePausedGameParam }>(
-		'/createPausedGame',
+		'/api/pong/createPausedGame',
 		{
 			schema: {
 				body: CreatePausedGameParam,
 				response: CreatePausedGameResponse,
-				operationId: 'pongCreatePauseGame',
+				operationId: 'createPauseGame',
 			},
 		},
 		async function(req, res) {
 			const resp = State.newPausedGame(req.body.user1 as UserId, req.body.user2 as UserId);
-
 			if (isNullish(resp)) { return (res.makeResponse(404, 'failure', 'createPausedGame.generic.fail')); }
 			// else
-			return (res.makeResponse(200, 'success', 'createPausedGame.success'));
+			return (res.makeResponse(200, 'success', 'createPausedGame.success', { gameId: resp }));
 		},
 	);
 };
