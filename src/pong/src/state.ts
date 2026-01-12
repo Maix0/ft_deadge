@@ -223,12 +223,8 @@ class StateI {
 	}
 
 	public newPausedGame(suid1: string, suid2: string): GameId | undefined {
-
-		this.fastify.log.info('suid1:' + suid1);
-		this.fastify.log.info('suid2:' + suid2);
-		// if (!this.fastify.db.getUser(suid1) || !this.fastify.db.getUser(suid2)) {
-		// 	return undefined;
-		// }
+		this.fastify.log.info('new game request: suid1: ' + suid1 + '\tsuid2: ' + suid2);
+		if (!this.fastify.db.getUser(suid1) || !this.fastify.db.getUser(suid2)) { return undefined; }
 		this.fastify.log.info('new paused start');
 		const uid1: UserId = suid1 as UserId;
 		const uid2: UserId = suid2 as UserId;
@@ -380,13 +376,18 @@ class StateI {
 	private tryJoinGame(g_id : string, sock : SSocket) : JoinRes {
 		const game_id : PongGameId = g_id as PongGameId;
 
-		if (this.games.has(game_id) === false) { return (JoinRes.no); }
+		if (this.games.has(game_id) === false) {
+			this.fastify.log.warn('gameId:' + g_id + ' is unknown!');
+			return (JoinRes.no);
+		}
 		const game : Pong = this.games.get(game_id)!;
-		if (game.local || (game.userLeft !== sock.authUser.id && game.userRight !== sock.authUser.id)) {
+		if (game.local === true || (game.userLeft !== sock.authUser.id && game.userRight !== sock.authUser.id)) {
+			this.fastify.log.warn('user trying to connect to a game he\'s not part of: gameId:' + g_id + ' userId:' + sock.authUser.id);
 			return (JoinRes.no);
 		}
 		game.userOnPage[game.userLeft === sock.authUser.id ? 0 : 1] = true;
 		if (game.userOnPage[0] === game.userOnPage[1]) {
+			this.fastify.log.info('Paused game start: gameId:' + g_id);
 			this.initGame(game, game_id, game.userLeft, game.userRight);
 		}
 		return (JoinRes.yes);
