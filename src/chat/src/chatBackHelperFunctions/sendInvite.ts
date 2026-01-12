@@ -25,6 +25,11 @@ function getGameNumber():string {
 export async function sendInvite(fastify: FastifyInstance, innerHtml: string, profil: ClientProfil) {
 	const sockets = await fastify.io.fetchSockets();
 	let targetSocket;
+	const senderSocket = sockets.find(socket => {
+		const clientInfo = clientChat.get(socket.id);
+
+		return clientInfo?.user === profil.SenderName
+	});
 	for (const socket of sockets) {
 		const clientInfo: string | undefined = clientChat.get(socket.id)?.user || undefined;
 		targetSocket = socket || null;
@@ -33,23 +38,19 @@ export async function sendInvite(fastify: FastifyInstance, innerHtml: string, pr
 			profil.innerHtml = innerHtml ?? '';
 			if (targetSocket.id) {
 				const data: ClientMessage = {
+					...profil,
 					command: `@${clientInfo}`,
 					destination: 'inviteMsg',
 					type: 'chat',
 					user: profil.user,
-					token: '',
 					text: getGameNumber(),
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
 					userID: profil.userID,
-					frontendUserName: '',
-					frontendUser: '',
 					SenderUserName: profil.SenderName,
-					SenderUserID: '',
-					Sendertext: '',
 					innerHtml: innerHtml,
 				};
-				sendPrivMessage(fastify, data, '');
+				sendPrivMessage(fastify, data, senderSocket?.id);
 			}
 			return;
 		}

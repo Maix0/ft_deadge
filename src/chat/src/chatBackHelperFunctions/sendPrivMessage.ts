@@ -49,7 +49,11 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 			socket.emit('MsgObjectServer', { message: data });
 			fastify.log.info({ senderID: `${UserID}`, msgPriv: data.text, target: `${receiverUser.id}` });
 			if (senderSocket) {
-				senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
+				if (!data.innerHtml)
+					senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
+				else
+					senderSocket.emit('privMessageCopy', `${data.command}: ${data.innerHtml}🔒`);
+
 			}
 		}
 	}

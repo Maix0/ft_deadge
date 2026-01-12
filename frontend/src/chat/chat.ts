@@ -17,7 +17,7 @@ import authHtml from "./chat.html?raw";
 import { getUser } from "@app/auth";
 import { listBuddies } from "./chatHelperFunctions/listBuddies";
 import { getProfil } from "./chatHelperFunctions/getProfil";
-import { addMessage } from "./chatHelperFunctions/addMessage";
+import { addInviteMessage, addMessage } from "./chatHelperFunctions/addMessage";
 import { broadcastMsg } from "./chatHelperFunctions/broadcastMsg";
 import { openProfilePopup } from "./chatHelperFunctions/openProfilePopup";
 import { actionBtnPopUpBlock } from "./chatHelperFunctions/actionBtnPopUpBlock";
@@ -209,7 +209,13 @@ function initChatSocket() {
 	});
 
 	socket.on("privMessageCopy", (message: string) => {
-		addMessage(message);
+		const htmlBaliseRegex = /<a\b[^>]*>[\s\S]*?<\/a>/;
+		const htmlBaliseMatch = message.match(htmlBaliseRegex);
+
+		if (htmlBaliseMatch)
+			addInviteMessage(message);
+		else 
+			addMessage(message);
 	});
 
 	//receives broadcast of the next GAME
