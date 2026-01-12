@@ -174,6 +174,10 @@ async function onReady(fastify: FastifyInstance) {
 		socket.on('privMessage', (data) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const prvMessage: ClientMessage = JSON.parse(data) || '';
+			console.log("------------------------------------------------")
+			console.log("PRUV GAME")
+			console.log(data)
+			console.log("------------------------------------------------")
 			if (clientName !== null) {
 				const obj: ClientMessage = {
 					command: prvMessage.command,
@@ -183,7 +187,7 @@ async function onReady(fastify: FastifyInstance) {
 					text: prvMessage.text,
 					timestamp: Date.now(),
 					SenderWindowID: socket.id,
-				};
+				};``
 				sendPrivMessage(fastify, obj, obj.SenderWindowID);
 			}
 		});
@@ -217,12 +221,18 @@ async function onReady(fastify: FastifyInstance) {
 		socket.on('inviteGame', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilInvite: ClientProfil = JSON.parse(data) || '';
+			console.log("------------------------------------------------")
+			console.log("INVITE GAME")
+			console.log(data)
+			console.log("------------------------------------------------")
+
 			const linkGame: PongGameId | undefined = await setGameLink(fastify, data);
 			if (!linkGame) return;
 			const link: string = `<a href="https://localhost:8888/app/pong?game=${linkGame}" style="color: blue; text-decoration: underline; cursor: pointer;">Click me</a>`;
 			const inviteHtml: string = 'invites you to a game ' + link;
+
 			if (clientName !== null) {
-				sendInvite(fastify, inviteHtml, profilInvite);
+				sendInvite(fastify, inviteHtml, profilInvite, socket.id);
 			}
 		});
 
