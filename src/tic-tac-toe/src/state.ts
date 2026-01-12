@@ -47,7 +47,6 @@ export class StateI {
 		socket.on('disconnect', () => this.cleanupUser(socket));
 		socket.on('enqueue', () => this.enqueueUser(socket));
 		socket.on('dequeue', () => this.dequeueUser(socket));
-		socket.on('debugInfo', () => this.debugSocket(socket));
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
 		socket.on('keepalive', () => this.keepAlive(socket));
 		if (socket) {
@@ -162,15 +161,6 @@ export class StateI {
 
 		this.queue.delete(socket.authUser.id);
 		socket.emit('queueEvent', 'unregistered');
-	}
-
-	private debugSocket(socket: SSocket): void {
-		console.log(({
-			message: `socket debug for ${socket.id}`,
-			userid: socket.authUser.id,
-			queue: this.queue,
-			users: this.users,
-		}));
 	}
 
 	private gameUpdate(gameId: TTTGameId, socket: SSocket): void {

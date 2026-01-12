@@ -75,7 +75,6 @@ export class Tournament {
 		else {
 			this.state = 'ended';
 		}
-		console.log('next matchup ?:', this.matchup);
 		if (this.currentGame === null) { this.state = 'ended'; }
 	}
 

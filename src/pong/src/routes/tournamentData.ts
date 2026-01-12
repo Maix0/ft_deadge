@@ -91,7 +91,6 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 					outcome: v.outcome,
 				})),
 			};
-			console.log(JSON.stringify(typed_res));
 			return res.makeResponse(200, 'success', 'tournamentData.success', {
 				data: typed_res,
 			});
