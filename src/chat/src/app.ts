@@ -20,7 +20,7 @@ import { sendProfil } from './chatBackHelperFunctions/sendProfil';
 import { setGameLink } from './setGameLink';
 import { list_SocketListener } from './chatBackHelperFunctions/list_SocketListener';
 import { isUser_BlockedBy_me } from './chatBackHelperFunctions/isUser_BlockedBy_me';
-import type { inviteUserTOGame, ClientInfo, blockedUnBlocked } from './chat_types';
+import type { ClientInfo, blockedUnBlocked } from './chat_types';
 import { PongGameId } from '@shared/database/mixin/pong';
 
 

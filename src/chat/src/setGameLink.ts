@@ -6,7 +6,7 @@ import { PongGameId } from '@shared/database/mixin/pong';
 export async function setGameLink(fastify: FastifyInstance, data: string): Promise<PongGameId | undefined> {
 	const profilInvite: ClientProfil = JSON.parse(data) || '';
 
-	const payload = { 'user1': `'${profilInvite.SenderID}'`, 'user2':`'${profilInvite.userID}'` };
+	const payload = { 'user1': profilInvite.SenderID, 'user2':profilInvite.userID };
 	try {
 		const resp = await fetch('http://app-pong/api/pong/createPausedGame', {
 			method: 'POST',
@@ -14,13 +14,12 @@ export async function setGameLink(fastify: FastifyInstance, data: string): Promi
 			body: JSON.stringify(payload),
 		});
 		if (!resp.ok) {
-			fastify.log.info("HELLO ?");
 			throw (resp);
 		}
 		else {
 			fastify.log.info('game-end info to chat success');
 		}
-		
+
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const json = await resp.json() as any;
 		fastify.log.info(json);
