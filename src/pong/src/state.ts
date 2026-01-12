@@ -208,6 +208,7 @@ class StateI {
 
 	private cleanupTournament() {
 		if (this.tournament === null) return;
+		if (this.tournament.state === 'ended') { this.fastify.db.createNewTournamentById(this.tournament.owner, this.tournament.users.values().toArray(), this.tournament.games); }
 		this.tournament = null;
 		this.fastify.log.info('Tournament has been ended');
 	}
@@ -304,6 +305,8 @@ class StateI {
 	private newLocalGame(sock: SSocket) {
 		const user = this.users.get(sock.authUser.id);
 		if (!user) return;
+
+		if (this.tournament && this.tournament.users.has(sock.authUser.id)) return;
 
 		const gameId = newUUID() as unknown as GameId;
 		const g = Pong.makeLocal(user.id);
@@ -537,6 +540,8 @@ class StateI {
 		if (this.queue.has(socket.authUser.id)) return;
 
 		if (this.users.get(socket.authUser.id)?.currentGame !== null) return;
+
+		if (this.tournament && this.tournament.users.has(socket.authUser.id)) return;
 
 		this.queue.add(socket.authUser.id);
 		socket.emit('queueEvent', 'registered');

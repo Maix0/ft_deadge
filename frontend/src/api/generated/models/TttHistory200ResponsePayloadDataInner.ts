@@ -28,7 +28,7 @@ import {
  */
 export interface TttHistory200ResponsePayloadDataInner {
     /**
-     * gameId
+     * 
      * @type {string}
      * @memberof TttHistory200ResponsePayloadDataInner
      */

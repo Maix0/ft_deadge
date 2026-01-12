@@ -20,13 +20,13 @@ import { mapValues } from '../runtime';
  */
 export interface ProviderList200ResponsePayloadListInnerColors {
     /**
-     * Default color for the provider
+     * 
      * @type {string}
      * @memberof ProviderList200ResponsePayloadListInnerColors
      */
     normal: string;
     /**
-     * Hover color for the provider
+     * 
      * @type {string}
      * @memberof ProviderList200ResponsePayloadListInnerColors
      */

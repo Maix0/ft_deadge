@@ -20,13 +20,13 @@ import { mapValues } from '../runtime';
  */
 export interface LoginOtpRequest {
     /**
-     * The token given at the login phase
+     * 
      * @type {string}
      * @memberof LoginOtpRequest
      */
     token: string;
     /**
-     * The OTP given by the user
+     * 
      * @type {string}
      * @memberof LoginOtpRequest
      */

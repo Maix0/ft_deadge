@@ -108,7 +108,7 @@ type PongGameTable = {
 	local: number,
 };
 
-function pongGameFromRow(r: Partial<PongGameTable> | undefined): PongGame | undefined {
+export function pongGameFromRow(r: Partial<PongGameTable> | undefined): PongGame | undefined {
 	if (isNullish(r)) return undefined;
 	if (isNullish(r.id)) return undefined;
 	if (isNullish(r.playerL)) return undefined;

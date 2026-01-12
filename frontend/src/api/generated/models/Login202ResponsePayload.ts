@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface Login202ResponsePayload {
     /**
-     * JWT to send with the OTP to finish login
+     * 
      * @type {string}
      * @memberof Login202ResponsePayload
      */

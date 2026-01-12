@@ -28,13 +28,13 @@ import {
  */
 export interface ProviderList200ResponsePayloadListInner {
     /**
-     * Name to display to the user
+     * 
      * @type {string}
      * @memberof ProviderList200ResponsePayloadListInner
      */
     displayName: string;
     /**
-     * internal Name of the provider
+     * 
      * @type {string}
      * @memberof ProviderList200ResponsePayloadListInner
      */

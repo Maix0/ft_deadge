@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface EnableOtp200ResponsePayload {
     /**
-     * The otp url to feed into a 2fa app
+     * 
      * @type {string}
      * @memberof EnableOtp200ResponsePayload
      */

@@ -6,6 +6,7 @@ import {
 	type RouteHandlerReturn,
 } from "@app/routing";
 import authHtml from "./pong.html?raw";
+import tourScoresHtml from "./tourTable.html?raw";
 import io from "socket.io-client";
 import { JoinRes, type CSocket, type GameMove, type GameUpdate, type TourInfo } from "./socket";
 import { showError, showInfo, showSuccess } from "@app/toast";
@@ -301,38 +302,27 @@ function pongClient(
 			const renderTournamentScores = (info: TourInfo) => {
 				let players = info.players.sort((l, r) => r.score - l.score);
 
-				tour_scores.innerHTML = `
-	<div class="overflow-x-auto">
-      <table class="min-w-full border border-gray-200 rounded-lg shadow-sm">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border-b">
-              Name
-            </th>
-            <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700 border-b">
-              Score
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players
-						.map(
-							(player) => `
-              <tr class="hover:bg-gray-50" key="${player.id}">
-                <td class="px-4 py-2 text-sm text-gray-800 border-b">
-                  ${player.name}
-                </td>
-                <td class="px-4 py-2 text-sm text-gray-800 text-right border-b">
-                  ${player.score}
-                </td>
-              </tr>
-            `,
-						)
-						.join("")}
-        </tbody>
-      </table>
-    </div>`;
+				const medals = ["🥇", "🥈", "🥉"];
+				tour_scores.innerHTML = tourScoresHtml;
+				let table = tour_scores.querySelector("#tour-score-body");
+				if (table)
+					table.innerHTML = players.map((player, idx) =>
+						`<tr class="${player.id === user.id ? "bg-amber-400 hover:bg-amber-500" : "hover:bg-gray-50"}" key="${player.id}">
+							<td class="px-4 py-2 text-sm text-gray-800 text-center border-b font-semibold min-w-100px">${idx < medals.length ? `<span class="font-lg">${medals[idx]}</span>` : ''}${player.name}</td>
+							<td class="px-4 py-2 text-sm text-gray-800 text-center border-b font-bold  min-w-100px">${player.score}</td>
+						</tr>`)
+						.join("");
 			};
+
+			// TODO: REMOVE THIS
+			// const makePlayer = (n: number) => ({ name: `user${n}`, id: `${n}`, score: n })
+			//
+			// renderTournamentScores({
+			// 	state: "playing",
+			// 	ownerId: "ownerID",
+			// 	remainingMatches: null,
+			// 	players: [...Array.from(Array(10).keys()).map(makePlayer), { id: user.id, name: user.name, score: 99 }],
+			// });
 
 			const render = (state: GameUpdate) => {
 				batLeft.style.top = `${state.left.paddle.y}px`;
