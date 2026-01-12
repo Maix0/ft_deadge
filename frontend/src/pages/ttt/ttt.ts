@@ -41,6 +41,7 @@ type CurrentGameInfo = GameUpdate & { lastState: GameUpdate['gameState'] | null 
 // Route handler for the Tic-Tac-Toe page.
 // Instantiates the game logic and binds UI events.
 async function handleTTT(): Promise<RouteHandlerReturn> {
+    const msgNotifTimeOut = 4 * 1000;
     const socket: Socket = getSocket();
     void socket;
     return {
@@ -134,7 +135,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                     result_message.classList.remove("hidden");
                     setTimeout(() => {
                         result_message.classList.add("hidden");
-                    }, 3 * 1000);
+                    }, msgNotifTimeOut);
                 }
 
                 if (type === 'win') {
@@ -154,13 +155,13 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                         result_message.classList.remove("hidden");
                         setTimeout(() => {
                             result_message.classList.add("hidden");
-                        }, 3 * 1000);
+                        }, msgNotifTimeOut);
                     } else {
                         result_message.innerText = "You lost the game! :(";
                         result_message.classList.remove("hidden");
                         setTimeout(() => {
                             result_message.classList.add("hidden");
-                        }, 3 * 1000);
+                        }, msgNotifTimeOut);
                     }
                 }
             };
