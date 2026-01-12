@@ -21,6 +21,7 @@ import { setGameLink } from './setGameLink';
 import { list_SocketListener } from './chatBackHelperFunctions/list_SocketListener';
 import { isUser_BlockedBy_me } from './chatBackHelperFunctions/isUser_BlockedBy_me';
 import type { inviteUserTOGame, ClientInfo, blockedUnBlocked } from './chat_types';
+import { PongGameId } from '@shared/database/mixin/pong';
 
 
 declare const __SERVICE_NAME: string;
@@ -216,10 +217,9 @@ async function onReady(fastify: FastifyInstance) {
 		socket.on('inviteGame', async (data: string) => {
 			const clientName: string = clientChat.get(socket.id)?.user || '';
 			const profilInvite: ClientProfil = JSON.parse(data) || '';
-			const linkGame: Response | undefined = await setGameLink(fastify, data);
+			const linkGame: PongGameId | undefined = await setGameLink(fastify, data);
 			if (!linkGame) return;
-			const tmp: inviteUserTOGame = await linkGame?.json() as inviteUserTOGame;
-			const link: string = `<a href="https://localhost:8888/app/pong?game=${tmp.gameId}" style="color: blue; text-decoration: underline; cursor: pointer;">Click me</a>`;
+			const link: string = `<a href="https://localhost:8888/app/pong?game=${linkGame}" style="color: blue; text-decoration: underline; cursor: pointer;">Click me</a>`;
 			const inviteHtml: string = 'invites you to a game ' + link;
 			if (clientName !== null) {
 				sendInvite(fastify, inviteHtml, profilInvite);

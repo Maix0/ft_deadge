@@ -223,9 +223,13 @@ class StateI {
 	}
 
 	public newPausedGame(suid1: string, suid2: string): GameId | undefined {
-		if (!this.fastify.db.getUser(suid1) || !this.fastify.db.getUser(suid2)) {
-			return undefined;
-		}
+
+		this.fastify.log.info('suid1:' + suid1);
+		this.fastify.log.info('suid2:' + suid2);
+		// if (!this.fastify.db.getUser(suid1) || !this.fastify.db.getUser(suid2)) {
+		// 	return undefined;
+		// }
+		this.fastify.log.info('new paused start');
 		const uid1: UserId = suid1 as UserId;
 		const uid2: UserId = suid2 as UserId;
 		const g = new Pong(uid1, uid2);

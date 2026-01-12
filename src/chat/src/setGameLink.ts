@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import type { ClientProfil } from './chat_types';
+import { PongGameId } from '@shared/database/mixin/pong';
 
 
-export async function setGameLink(fastify: FastifyInstance, data: string): Promise<Response | undefined> {
-
+export async function setGameLink(fastify: FastifyInstance, data: string): Promise<PongGameId | undefined> {
 	const profilInvite: ClientProfil = JSON.parse(data) || '';
 
 	const payload = { 'user1': `'${profilInvite.SenderID}'`, 'user2':`'${profilInvite.userID}'` };
@@ -14,12 +14,17 @@ export async function setGameLink(fastify: FastifyInstance, data: string): Promi
 			body: JSON.stringify(payload),
 		});
 		if (!resp.ok) {
+			fastify.log.info("HELLO ?");
 			throw (resp);
 		}
 		else {
 			fastify.log.info('game-end info to chat success');
 		}
-		return resp;
+		
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const json = await resp.json() as any;
+		fastify.log.info(json);
+		return json.payload.gameId;
 	}
 	// disable eslint for err catching
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
