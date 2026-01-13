@@ -17,7 +17,6 @@ export async function openMessagePopup(message: any) {
         			`;
 		modalmessage.appendChild(messageElement);
 		modalmessage.scrollTop = modalmessage.scrollHeight;
-
 	}
 	const gameMessage = document.getElementById("game-modal") ?? null;
 	if (gameMessage) {

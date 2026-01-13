@@ -14,6 +14,7 @@ export function cmdList() {
 	}
 	addMessage('\'@notify\' - toggles notifications on / off');
 	addMessage('\'@quit\' - disconnect user from the chat');
+	addMessage('\'@pong\' - displays your pong match results');
 	addMessage('** *********************************** **');
 	addMessage('*');
 }
