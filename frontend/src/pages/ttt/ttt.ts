@@ -95,8 +95,12 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             let curGameX: { id: string, name: string } | null = null;
             let curGameO: { id: string, name: string } | null = null;
 
-            socket.on('updateInformation', (e) => showInfo(`UpdateInformation: t=${e.totalUser};q=${e.inQueue}`));
-            socket.on('queueEvent', (e) => showInfo(`QueueEvent: ${e}`));
+            socket.on('queueEvent', (e) => {
+                if (joinQueueBtn.innerText !== QueueState.InQueue)
+                   showInfo('Queue left!');
+                else
+                    showInfo('Queue joined!');
+            });
             socket.on('newGame', async (gameState) => {
                 showInfo(`newGame: ${gameState.gameId}`)
 
