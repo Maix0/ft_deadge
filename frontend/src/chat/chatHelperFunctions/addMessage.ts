@@ -28,14 +28,3 @@ export function addInviteMessage(text: string) {
 	chatWindow.scrollTop = chatWindow.scrollHeight;
 	return ;
 };
-
-
-	// if (chatWindow && data.message.destination === "inviteMsg") {
-	// 		const messageElement = document.createElement("div-private");
-	// 		const chatWindow = document.getElementById(
-	// 			"t-chatbox",
-	// 		) as HTMLDivElement;
-	// 		messageElement.innerHTML = `🏓${data.message.SenderUserName}: ${data.message.innerHtml}`;
-	// 		chatWindow.appendChild(messageElement);
-	// 		chatWindow.scrollTop = chatWindow.scrollHeight;
-	// 	}
