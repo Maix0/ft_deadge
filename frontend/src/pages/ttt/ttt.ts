@@ -6,6 +6,7 @@ import {io} from "socket.io-client";
 import type {CSocket as Socket, GameUpdate} from "./socket";
 import {updateUser} from "@app/auth";
 import client from "@app/api";
+import { isNullish } from "@app/utils";
 
 
 declare module 'ft_state' {
@@ -61,7 +62,12 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             const result_message = document.getElementById("ttt-end-screen");
             const userOString = document.getElementById("playerO-name");
             const userXString = document.getElementById("playerX-name");
-            if (!currentPlayerIndicator || !currentPlayerTimer || !historyButton || !joinQueueBtn || !result_message || !userOString || !userXString) {
+            const txt_pos = document.getElementById("end-msg");
+
+            if (!currentPlayerIndicator || !currentPlayerTimer 
+                || !historyButton || !joinQueueBtn 
+                || !result_message || !userOString 
+                || !userXString || !txt_pos) {
                 return showError('fatal error');
             }
 
@@ -137,40 +143,21 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             };
 
             const makeEnd = (type: 'win' | 'conceded' | 'draw', player: 'X' | 'O') => {
-                if (type === 'draw') {
-                    result_message.innerText = "It's a draw! :/";
-                    result_message.classList.remove("hidden");
-                    setTimeout(() => {
-                        result_message.classList.add("hidden");
-                    }, msgNotifTimeOut);
-                }
+                let text = 'It\'s a draw! :/';
 
                 if (type === 'win') {
-                    let youWin: boolean;
-                    switch (player) {
-                        case 'X':
-                            youWin = (curGame?.playerX === user.id);
-                            break;
-                        case 'O':
-                            youWin = (curGame?.playerO === user.id);
-                            break;
-                        default:
-                            return;
-                    }
-                    if (youWin) {
-                        result_message.innerText = "You won the game! :)";
-                        result_message.classList.remove("hidden");
-                        setTimeout(() => {
-                            result_message.classList.add("hidden");
-                        }, msgNotifTimeOut);
+                    if ((curGame?.playerX === user.id && player === 'X') || 
+                        ((curGame?.playerO === user.id && player === 'O'))) {
+                        text = "You won the game! :)";
                     } else {
-                        result_message.innerText = "You lost the game! :(";
-                        result_message.classList.remove("hidden");
-                        setTimeout(() => {
-                            result_message.classList.add("hidden");
-                        }, msgNotifTimeOut);
+                        text = "You lost the game! :(";
                     }
                 }
+                txt_pos.innerHTML = text;
+                result_message.classList.remove("hidden");
+                setTimeout(() => {
+                    result_message.classList.add("hidden");
+                }, msgNotifTimeOut);
             };
 
             socket.on('gameEnd', () => {
