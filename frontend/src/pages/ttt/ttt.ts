@@ -72,11 +72,8 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             }
 
             joinQueueBtn.addEventListener("click", () => {
-                console.log('===== JOIN QUEUE BUTTON PRESSED =====');
                 if (joinQueueBtn.innerText !== QueueState.Idle) {
-                    console.log("== Entering in first if ==");
                     if (joinQueueBtn.innerText === QueueState.InQueue) {
-                        console.log("== Entering in second if ==");
                         socket.emit("dequeue");
                         joinQueueBtn.innerText = QueueState.Idle;
                     }
@@ -86,7 +83,6 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                 socket.emit("enqueue");
             });
 
-            //TODO: Redirect to /app/ttt
             historyButton.addEventListener("click", () => {
                 navigateTo("/app/ttt/games");
             });
@@ -219,4 +215,3 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
 }
 
 addRoute("/ttt", handleTTT);
-
