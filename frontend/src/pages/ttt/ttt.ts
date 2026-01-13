@@ -178,7 +178,10 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                 for (let idx = 0 ; idx < 9 ; idx++) {
                     cells[idx].innerText = " ";
                 };
+                userOString.innerText = "";
+                userXString.innerText = "";
                 currentPlayerTimer.innerText = "Waiting for match...";
+                currentPlayerIndicator.innerText = "";
                 joinQueueBtn.innerText = QueueState.Idle;
             })
 
