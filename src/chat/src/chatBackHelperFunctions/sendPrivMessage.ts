@@ -23,9 +23,7 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 
 	const sockets = await fastify.io.fetchSockets();
 	const allUsers: User[] = fastify.db.getAllUsers() ?? [];
-	console.log('sender', sender);
 	const senderSocket = sockets.find(socket => socket.id === sender);
-	console.log('senderSOcket', senderSocket?.id);
 
 	for (const socket of sockets) {
 		if (socket.id === sender) continue;
@@ -46,20 +44,16 @@ export async function sendPrivMessage(fastify: FastifyInstance, data: ClientMess
 		}
 
 		blockMsgFlag = checkNamePair(list, UserID, receiverUser.id) || false;
-		console.log("userID", UserID);
-		console.log("receiverUserID", receiverUser.id)
 		if (!blockMsgFlag) {
 			socket.emit('MsgObjectServer', { message: data });
 			fastify.log.info({ senderID: `${UserID}`, msgPriv: data.text, target: `${receiverUser.id}` });
 			if (senderSocket) {
 				if (!data.innerHtml) {
-					console.log('privMsg text');
 					senderSocket.emit('privMessageCopy', `${data.command}: ${data.text}🔒`);
-				} else {
-					console.log('privMsg texthtml'); 
+				}
+				else {
 					senderSocket.emit('privMessageCopy', `${data.command}: ${data.innerHtml}🔒`);
 				}
-			
 			}
 		}
 	}

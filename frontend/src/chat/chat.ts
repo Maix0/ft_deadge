@@ -384,15 +384,18 @@ sendButton?.addEventListener("click", () => {
 
 let toggle = false;
 window.addEventListener("focus", async () => {
+	console.log('--------------------------')
+	console.log('Window focus called Called');
+	console.log('--------------------------')
 	setTimeout(() => {
 		if (window.__state.chatSock) connected(window.__state.chatSock);
 	}, 16);
-	if (window.location.pathname === "/app/chat") {
-		if (window.__state.chatSock?.id) {
+	// if (window.location.pathname === "/app/chat") {
+		// if (window.__state.chatSock?.id) {
 			await windowStateVisable();
-		}
+		// }
 		toggle = true;
-	}
+	// }
 });
 
 window.addEventListener("blur", () => {
@@ -419,13 +422,17 @@ sendtextbox.addEventListener("keydown", (event) => {
 	}
 });
 
-chatButton!.addEventListener("click", () => {
+chatButton!.addEventListener("click", async () => {
 	if (chatBox.classList.contains("hidden")) {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.add("opacity-60");
+		await windowStateVisable();
+		
+		
 	} else {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.remove("opacity-60");
+		await windowStateHidden();
 	}
 });
 
