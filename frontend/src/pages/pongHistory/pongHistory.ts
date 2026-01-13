@@ -1,8 +1,9 @@
-import { addRoute, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
+import { addRoute, navigateTo, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
 import page from './pongHistory.html?raw';
 import { isNullish } from "@app/utils";
 import client from "@app/api";
 import { updateUser } from "@app/auth";
+import { showError } from "@app/toast";
 
 
 function getHHMM(d: Date): string {
@@ -12,23 +13,23 @@ function getHHMM(d: Date): string {
 }
 
 async function pongHistory(_url: string, args: RouteHandlerParams): Promise<RouteHandlerReturn> {
+	setTitle("Pong Matches");
 	if (isNullish(args.userid))
 		args.userid = 'me';
 	let user = await updateUser();
 	if (isNullish(user)) {
-		return { html: '<span> You aren\'t logged in </span>' };
+		return { html: '<span> You aren\'t logged in </span>', postInsert: () => { showError("You must be logged in !"); navigateTo("/") } };
 	}
 
-	let userInfoRes = await client.getUser({user: args.userid});
-	if (userInfoRes.kind !== 'success')
-	{
-		return { html: '<span> You tried to open a game history with no data :(</span>' };
+	let userInfoRes = await client.getUser({ user: args.userid });
+	if (userInfoRes.kind !== 'success') {
+		return { html: '<span> You tried to open a game history with no data :(</span>', postInsert: () => { showError("We found no data"); navigateTo("/") } };
 	}
 	let userInfo = userInfoRes.payload;
 	let res = await client.pongHistory({ user: args.userid });
 	if (res.kind === 'failure' || res.kind === 'notLoggedIn') {
 		// todo: make a real page on no data
-		return { html: '<span> You tried to open a game history with no data :(</span>' };
+		return { html: '<span> You tried to open a game history with no data :(</span>', postInsert: () => { showError("We found no data"); navigateTo("/") } };
 	}
 	let games = res.payload.data;
 	games.reverse();

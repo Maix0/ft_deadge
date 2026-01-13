@@ -1,5 +1,5 @@
 import "./ttt.css"
-import {addRoute, type RouteHandlerReturn} from "@app/routing";
+import {addRoute, setTitle, type RouteHandlerReturn} from "@app/routing";
 import tttPage from "./ttt.html?raw";
 import {showError, showInfo} from "@app/toast";
 import {io} from "socket.io-client";
@@ -41,6 +41,7 @@ type CurrentGameInfo = GameUpdate & { lastState: GameUpdate['gameState'] | null 
 // Route handler for the Tic-Tac-Toe page.
 // Instantiates the game logic and binds UI events.
 async function handleTTT(): Promise<RouteHandlerReturn> {
+	setTitle("Tic Tac Toe");
     const msgNotifTimeOut = 4 * 1000;
     const socket: Socket = getSocket();
     void socket;

@@ -1,4 +1,4 @@
-import { addRoute, navigateTo, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
+import { addRoute, navigateTo, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
 import pageAll from './tourHistoryAll.html?raw';
 import pageSingle from './tourHistorySingle.html?raw';
 import { isNullish } from "@app/utils";
@@ -14,7 +14,7 @@ function getHHMM(d: Date): string {
 }
 
 async function tourHistoryAll(_url: string, args: RouteHandlerParams): Promise<RouteHandlerReturn> {
-
+	setTitle("Tournaments");
 	let data = await client.tournamentList();
 	if (data.kind !== 'success') {
 		showError(`Failed to fetch data`);

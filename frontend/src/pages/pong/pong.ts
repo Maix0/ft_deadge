@@ -79,7 +79,7 @@ function pongClient(
 	_url: string,
 	_args: RouteHandlerParams,
 ): RouteHandlerReturn {
-	setTitle("Pong Game Page");
+	setTitle("Pong Game");
 	const urlParams = new URLSearchParams(window.location.search);
 	let game_req_join = urlParams.get("game");
 	// todo:

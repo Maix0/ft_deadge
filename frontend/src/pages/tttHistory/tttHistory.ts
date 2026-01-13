@@ -1,8 +1,9 @@
-import { addRoute, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
+import { addRoute, navigateTo, setTitle, type RouteHandlerParams, type RouteHandlerReturn } from "@app/routing";
 import page from './tttHistory.html?raw';
 import { isNullish } from "@app/utils";
 import client from "@app/api";
 import { updateUser } from "@app/auth";
+import { showError } from "@app/toast";
 
 
 function getHHMM(d: Date): string {
@@ -11,36 +12,36 @@ function getHHMM(d: Date): string {
 	return `${h < 9 ? '0' : ''}${h}:${m < 9 ? '0' : ''}${m}`
 }
 
-function statusText(side:'X'|'O',status: string): string {
+function statusText(side: 'X' | 'O', status: string): string {
 	if (status === `win${side}`) return 'WIN';
-	if (status === `win${side === 'X'? 'O' : 'X'}`) return 'LOSE';
+	if (status === `win${side === 'X' ? 'O' : 'X'}`) return 'LOSE';
 	return 'DRAW'
 }
 
-function statusColor(side:'X'|'O',status: string): string {
+function statusColor(side: 'X' | 'O', status: string): string {
 	if (status === `win${side}`) return 'text-green-600';
-	if (status === `win${side === 'X'? 'O' : 'X'}`) return 'text-red-600';
+	if (status === `win${side === 'X' ? 'O' : 'X'}`) return 'text-red-600';
 	return 'text-yellow-600'
 }
 
 async function tttHistory(_url: string, args: RouteHandlerParams): Promise<RouteHandlerReturn> {
+	setTitle("Tic Tac Toe Games");
 	if (isNullish(args.userid))
 		args.userid = 'me';
 	let user = await updateUser();
 	if (isNullish(user)) {
-		return { html: '<span> You aren\'t logged in </span>' };
+		return { html: '<span> You aren\'t logged in </span>', postInsert: () => { showError("You must be logged in !"); navigateTo("/") } };
 	}
 
-	let userInfoRes = await client.getUser({user: args.userid});
-	if (userInfoRes.kind !== 'success')
-	{
-		return { html: '<span> You tried to open a game history with no data :(</span>' };
+	let userInfoRes = await client.getUser({ user: args.userid });
+	if (userInfoRes.kind !== 'success') {
+		return { html: '<span> You tried to open a game history with no data :(</span>', postInsert: () => { showError("We found no data"); navigateTo("/") } };
 	}
 	let userInfo = userInfoRes.payload;
 	let res = await client.tttHistory({ user: args.userid });
 	if (res.kind === 'failure' || res.kind === 'notLoggedIn') {
 		// todo: make a real page on no data
-		return { html: '<span> You tried to open a game history with no data :(</span>' };
+		return { html: '<span> You tried to open a game history with no data :(</span>', postInsert: () => { showError("We found no data"); navigateTo("/") } };
 	}
 	let games = res.payload.data;
 	games.reverse();
@@ -54,7 +55,7 @@ async function tttHistory(_url: string, args: RouteHandlerParams): Promise<Route
 		// maybe we do want local games ? then put the check here :D
 		// if (!g.local) {
 		if (true) {
-			let state: 'win'|'lose'|'draw' = 'lose';
+			let state: 'win' | 'lose' | 'draw' = 'lose';
 
 			if (g.outcome === 'draw')
 				state = 'draw';
@@ -67,7 +68,7 @@ async function tttHistory(_url: string, args: RouteHandlerParams): Promise<Route
 				color = 'bg-green-300';
 			else if (state === 'lose')
 				color = 'bg-red-300';
-			else 
+			else
 				color = 'bg-amber-200';
 		}
 		e.className =

@@ -2,7 +2,7 @@ import { showError } from "@app/toast";
 import client from "@app/api";
 import cookie from "js-cookie";
 import { ensureWindowState, isNullish } from "@app/utils";
-import { navigateTo } from "./routing";
+import { handleRoute, navigateTo } from "./routing";
 
 
 cookie.remove("pkce");
@@ -28,6 +28,7 @@ declare module "ft_state" {
 	interface State {
 		user: User | null;
 		_headerProfile: boolean;
+		_reloadOnAuthChange: boolean;
 	}
 }
 
@@ -94,6 +95,12 @@ if (!window.__state._headerProfile) {
 		}
 	});
 	window.__state._headerProfile = true;
+}
+
+window.__state._reloadOnAuthChange ??= false;
+if (!window.__state._reloadOnAuthChange) {
+	document.addEventListener("ft:userChange", () => handleRoute());
+	window.__state._reloadOnAuthChange = true;
 }
 updateHeaderProfile();
 
