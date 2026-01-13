@@ -14,6 +14,7 @@ import { getUser as getSelfUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
 import client from "@app/api";
 import "./pong.css";
+import { quitChat } from "@app/chat/chatHelperFunctions/quitChat";
 
 declare module "ft_state" {
 	interface State {
@@ -249,6 +250,7 @@ function pongClient(
 						switch (res) {
 							case JoinRes.yes :
 								showInfo('JoinRes = yes');
+								quitChat();
 								break;
 							case JoinRes.no :
 								showInfo('JoinRes = no');

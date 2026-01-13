@@ -13,7 +13,7 @@ export async function openMessagePopup(message: any) {
 	if (modalmessage) {
 		const messageElement = document.createElement("div");
 		messageElement.innerHTML = `
-            			<div id="profile-about">Next Game Message ${incrementCounter()}:  ${obj.nextGame}</div>
+            			<div  id="profile-about">Game-Info: ${incrementCounter()}:  ${obj.nextGame}</div>
         			`;
 		modalmessage.appendChild(messageElement);
 		modalmessage.scrollTop = modalmessage.scrollHeight;

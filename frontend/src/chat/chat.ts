@@ -422,17 +422,19 @@ sendtextbox.addEventListener("keydown", (event) => {
 	}
 });
 
-chatButton!.addEventListener("click", async () => {
+chatButton!.addEventListener("click",() => {
 	if (chatBox.classList.contains("hidden")) {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.add("opacity-60");
-		await windowStateVisable();
-		
+		windowStateVisable();
+		let socket = window.__state.chatSock;
+		if (!socket) return;
+		connected(socket);		
 		
 	} else {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.remove("opacity-60");
-		await windowStateHidden();
+		windowStateHidden();
 	}
 });
 
