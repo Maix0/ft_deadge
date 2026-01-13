@@ -2,13 +2,13 @@
 
 # TODO: REMOVE THIS BEFORE LAUNCH
 # this allows the us to only start the non-monitoring sercices
-DOCKER_SERVICE=        \
-			  auth     \
-			  chat     \
-			  tic-tac-toe \
-			  nginx    \
-			  user     \
-			  pong     \
+#DOCKER_SERVICE=        \
+#			  auth     \
+#			  chat     \
+#			  tic-tac-toe \
+#			  nginx    \
+#			  user     \
+#			  pong     \
 
 all: build
 	docker compose up -d $(DOCKER_SERVICE)
@@ -19,7 +19,7 @@ logs:
 down:
 	docker compose down
 
-build:
+build: .env
 	docker compose build $(DOCKER_SERVICE)
 
 re:
@@ -38,3 +38,8 @@ prune: clean
 	-docker volume  prune
 	-docker network prune
 	-docker system  prune -a
+
+.env:
+	@echo "edit the env.example file and use the \`make jwt_secret\` to create a valid jwt secret"
+	@echo "write the stuff to .env"
+	exit 1

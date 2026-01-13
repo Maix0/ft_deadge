@@ -148,5 +148,8 @@ fnginx: nginx-dev/nginx nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigne
 	-(cd ./frontend && npx pnpm exec vite --clearScreen false)
 	wait
 
+jwt_secret:
+	sh -c "dd if=/dev/urandom bs=32 count=1 2>/dev/null | base64 | tr -d -- '\n' | tr -- '+/' '-_'; echo"
+
 #	phony
-.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux logs
+.PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux logs jwt_secret

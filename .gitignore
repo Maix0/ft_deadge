@@ -10,6 +10,7 @@ openapi.jar
 .vscode
 nginx-dev/nginx
 nginx-dev/nginx.deb
+.env
 
 # sqlite stuff
 *.db
