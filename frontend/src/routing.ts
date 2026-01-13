@@ -1,5 +1,6 @@
 import { updateUser } from "@app/auth";
 import { ensureWindowState, escapeHTML } from "@app/utils";
+import errorPage from "./errorPage.html?raw";
 
 ensureWindowState();
 
@@ -14,7 +15,8 @@ declare module "ft_state" {
 
 window.__state.routes ??= new Map();
 window.__state.title ??= "";
-window.__state.titleElem ??= document.querySelector<HTMLDivElement>("#header-title")!;
+window.__state.titleElem ??=
+	document.querySelector<HTMLDivElement>("#header-title")!;
 window.__state._routingHandler ??= false;
 
 // ---- Router logic ----
@@ -206,18 +208,26 @@ export async function handleRoute() {
 		);
 	const app = document.getElementById("app")!;
 
-	const event = new CustomEvent("ft:pageChange", { detail: window.location.pathname });
+	const event = new CustomEvent("ft:pageChange", {
+		detail: window.location.pathname,
+	});
 	document.dispatchEvent(event);
 
-	let ret = await executeRouteHandler(
-		route_handler,
-		window.location.pathname,
-		args,
-	);
-	app.innerHTML = ret.html;
-	if (ret.postInsert) {
-		let r = ret.postInsert(app);
-		if (r instanceof Promise) await r;
+	try {
+		let ret = await executeRouteHandler(
+			route_handler,
+			window.location.pathname,
+			args,
+		);
+		app.innerHTML = ret.html;
+		if (ret.postInsert) {
+			let r = ret.postInsert(app);
+			if (r instanceof Promise) await r;
+		}
+	} catch (e: any) {
+		app.innerHTML = errorPage;
+		let err = app.querySelector("#error-msg");
+		if (err) err.innerHTML = e.toString();
 	}
 }
 
