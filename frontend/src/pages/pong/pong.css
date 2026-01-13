@@ -42,9 +42,6 @@
     absolute
     text-xl
   }
-  .pong-bat {
-    @apply absolute w-3 h-20 bg-white;
-  }
   .disp-key {
     @apply
       inline-flex
@@ -56,9 +53,13 @@
       font-mono text-sm font-medium
       select-none  
   }
-}
-@layer components {
-  .pong-btn-style {
+  .page-title {
+    @apply text-3xl font-bold text-gray-800
+  }
+  .displaybox {
+    @apply bg-[#43536b];
+  }
+  .dflt-btn-style {
     @apply
     text-white
     cursor-pointer
@@ -68,14 +69,7 @@
     active:translate-y-px
     active:shadow-[0_2px_0_0_black];
   }
-  .page-title {
-    @apply text-3xl font-bold text-gray-800
-  }
-  .displaybox {
-    @apply bg-[#43536b];
-  }
-  /* pong decorative */
-  .pong-mainboxDisplay {
+  .game-mainBoxDisplay {
     @apply
     fixed
     top-1/2
@@ -86,6 +80,11 @@
     bg-gray-200 border-gray-200
     p-6
   }
+}
+
+/*  PONG ONLY ELEMENTS  */
+@layer components {
+  /* pong decorative */
   .pongbox-style {
     @apply
     h-112.5
@@ -106,6 +105,9 @@
       bg-size-[4px_20px];
   }
   /* game pong moving elements */
+  .pong-bat {
+    @apply absolute w-3 h-20 bg-white;
+  }
   .pong-batleft {
     @apply
     absolute left-4 top-0;

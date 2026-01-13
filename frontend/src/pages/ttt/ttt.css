@@ -5,85 +5,112 @@
   src: url("/fonts/DejaVuSansMono.woff2") format("woff2");
 }
 
-.displaybox {
-  @apply
-  fixed
-  inset-0
-  flex
-  items-center
-  justify-center
-  bg-[#43536b];
-  
-}
+@tailwind utilities;
 
-.mainboxDisplay {
-  @apply
-  fixed 
-  top-1/2 
-  left-1/2 
-  -translate-x-1/2 
-  -translate-y-1/2 
-  bg-gray-200 
-  p-6 rounded-xl 
-  shadow-2xl 
-  text-center z-50;
-}
-
-
-.btn-style {
-  @apply
-  w-25
-  h-8
-  border 
-  border-gray-500
-  rounded-3xl
-  bg-gray-500
-  text-white
-  cursor-pointer
-  shadow-[0_2px_0_0_black]
-  transition-all
-  hover:bg-blue-200
-  active:bg-gray-400
-  active:translate-y-px
-  active:shadow-[0_2px_0_0_black];
-}
-
-
-.grid-box {
+@layer utilities {
+  .gray-color {
+    @apply border-gray-500 bg-gray-500
+  }
+  .white-color {
+    @apply border-white bg-white
+  }
+  .fit-all {
     @apply
-    bg-white
-    p-8 
-    rounded-3xl
-    border
-    border-black
+    w-fit h-fit
+  }
+  .blue-hover {
+    @apply
+    hover:bg-blue-200
+    hover:border-blue-200
+  }
+  .rounded-elem {
+    @apply
+    border-6 rounded-3xl
+  }
+  .circle-8 {
+    @apply w-8 h-8 rounded-full
+  }
+  .base-box {
+    @apply
+    flex items-center justify-center
+  }
+  .focus-elem {
+    @apply
+    z-50
     shadow-2xl
-}
-
-
-.grid-layout {
+    text-center
+    text-black
+    absolute
+    text-xl
+  }
+  .disp-key {
     @apply
-
-    grid 
-    grid-cols-3 
-    gap-1 
-    max-w-2xl 
-    mx-auto
+      inline-flex
+      items-center
+      justify-center
+      min-w-[2rem] h-8 px-2
+      rounded-md border border-gray-300
+      bg-gray-100 text-gray-800
+      font-mono text-sm font-medium
+      select-none  
+  }
+  .page-title {
+    @apply text-3xl font-bold text-gray-800
+  }
+  .displaybox {
+    @apply bg-[#43536b];
+  }
+  .dflt-btn-style {
+    @apply
+    text-white
+    cursor-pointer
+    shadow-[0_2px_0_0_black]
+    transition-all
+    active:bg-gray-400
+    active:translate-y-px
+    active:shadow-[0_2px_0_0_black];
+  }
+  .game-mainBoxDisplay {
+    @apply
+    fixed
+    top-1/2
+    left-1/2
+    -translate-x-1/2
+    -translate-y-1/2
+    w-212.5
+    bg-gray-200 border-gray-200
+    p-6
+  }
 }
 
-.ttt-cell {
-    @apply 
-    bg-black 
-    aspect-square
-    flex
-    items-center 
-    justify-center 
-    text-white 
-    text-9xl 
-    font-bold 
-    hover:bg-gray-500
-}
-
-#historyBtn {
-  @apply
-  text-white
+/*  TIC-TAC-TOE ONLY ELEMENTS  */
+@layer components {
+  /* ttt decorative */
+  .player-name {
+    @apply
+    font-semibold text-gray-800
+  }
+  .player-timer {
+    @apply
+    text-lg text-gray-800
+  }
+  /* ttt game elements */
+  .ttt-play-area {
+    @apply
+    grid grid-cols-3 gap-1 
+    max-w-2xl mx-auto
+    relative overflow-hidden
+  }
+  .ttt-cell {
+      @apply 
+      bg-black 
+      aspect-square
+      flex
+      items-center 
+      justify-center 
+      text-white 
+      text-9xl 
+      font-bold 
+      hover:bg-gray-500
+  }
 }

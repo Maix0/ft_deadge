@@ -1,17 +1,21 @@
-<div class="displaybox">
-    <div class="mainboxDisplay" id="mainbox">
-        <button class="btn-style absolute top-4 left-6" id="historyBtn">History</button>
-        <button class="btn-style absolute top-4 right-6" id="JoinQueueBtn">Join Queue</button>
-        <h1 class="text-3xl font-bold text-gray-800">
-            Tic-tac-toe Box<span id="t-username"></span>
-        </h1><br>
-        <div class="grid grid-cols-[auto_1fr_auto_1fr_auto] items-center rounded-lg px-4 py-3">
-            <div class="text-7xl text-gray-800 mx-4 font-bold" id="playerX">
-                X
+<div class="base-box displaybox">
+    <div class="game-mainboxDisplay rounded-elem white-color" id="mainbox">
+        <div class="grid grid-cols-[1fr_2fr_1fr] items-center">
+            <div class="flex flex-col gap-2 p-8">
+                <button class="dflt-btn-style fit-all gray-color rounded-elem" id="historyBtn">History</button>
             </div>
+            <div class="flex flex-col gap-2">
+                <h1 class="page-title">Tic-tac-toe Box<span id="t-username"></span></h1>
+            </div>
+            <div class="flex flex-col gap-2 p-8 items-end">
+                <button class="dflt-btn-style fit-all gray-color rounded-elem" id="JoinQueueBtn">Join Queue</button>
+            </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr_auto_1fr_auto] items-center px-4 py-3">
+            <div class="text-7xl text-gray-800 mx-4 font-bold" id="playerX">X</div>
             <div class="text-left">
-                <div class="font-semibold text-gray-800" id="playerX-name"></div>
-                <div class="text-lg text-gray-800" id="playerX-timer"></div>
+                <div class="player-name" id="playerX-name"></div>
+                <div class="player-timer" id="playerX-timer"></div>
             </div>
 
             <div class="text-center text-sm text-gray-800 px-4 whitespace-nowrap">
@@ -20,19 +24,16 @@
             </div>
 
             <div class="text-right">
-                <div class="font-semibold text-gray-800" id="playerO-name"></div>
-                <div class="text-lg text-gray-800" id="playerO-timer"></div>
+                <div class="player-name" id="playerO-name"></div>
+                <div class="player-timer" id="playerO-timer"></div>
             </div>
-            <div class="text-7xl text-gray-800 mx-4 font-bold" id="playerO">
-                O
-            </div>
+            <div class="text-7xl text-gray-800 mx-4 font-bold" id="playerO">O</div>
         </div>
-        <div class="grid-box mt-2">
-            <div class="grid-layout relative rounded-lg overflow-hidden">
-                <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-gray-900/85 text-white hidden"
-                     id="ttt-end-screen">
-                    outcome
-                </div>
+        <div class="rounded-elem white-color p-8 mt-2">
+            <div class="ttt-play-area">
+                <div class="absolute inset-0 flex items-center justify-center">
+                   <div class="focus-elem white-color rounded-elem hidden" id="ttt-end-screen">outcome</div>
+                </div> 
                 <div class="ttt-cell" id="cell1"></div>
                 <div class="ttt-cell" id="cell2"></div>
                 <div class="ttt-cell" id="cell3"></div>
