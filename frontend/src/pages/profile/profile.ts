@@ -221,7 +221,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 				if (res.kind === "success") {
 					navigateTo(url);
 				} else {
-					showError(`failed to activate OTP: ${res.msg}`);
+					showError(`failed to activate OTP`);
 				}
 			};
 
@@ -230,7 +230,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 				if (res.kind === "success") {
 					navigateTo(url);
 				} else {
-					showError(`failed to deactivate OTP: ${res.msg}`);
+					showError(`failed to deactivate OTP`);
 				}
 			};
 
@@ -252,7 +252,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 					showSuccess("Successfully changed display name");
 					handleRoute();
 				} else {
-					showError(`Failed to update: ${req.msg}`);
+					showError(`Failed to update`);
 				}
 			};
 			passwordButton.onclick = async () => {
@@ -265,7 +265,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 					showSuccess("Successfully changed password");
 					handleRoute();
 				} else {
-					showError(`Failed to update: ${req.msg}`);
+					showError(`Failed to update`);
 				}
 			};
 			descButton.onclick = async () => {
@@ -275,7 +275,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 					handleRoute();
 				}
 				else {
-					showError(`Failed to update: ${req.msg}`);
+					showError(`Failed to update`);
 				}
 			};
 

@@ -92,7 +92,7 @@ async function handleOtp(
 				});
 				navigateTo(returnTo ?? "/");
 			} else if (res.kind === "failed") {
-				showError(`Failed to authenticate: ${res.msg}`);
+				showError(`Failed to authenticate`);
 			}
 		}
 	}

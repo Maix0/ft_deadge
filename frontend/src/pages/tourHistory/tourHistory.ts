@@ -17,7 +17,7 @@ async function tourHistoryAll(_url: string, args: RouteHandlerParams): Promise<R
 
 	let data = await client.tournamentList();
 	if (data.kind !== 'success') {
-		showError(`Failed to fetch data: ${data.msg}`);
+		showError(`Failed to fetch data`);
 		return {
 			html: "", postInsert: async () => navigateTo('/')
 		}
@@ -79,7 +79,7 @@ async function tourHistorySingle(_url: string, args: RouteHandlerParams): Promis
 
 	let data = await client.tournamentData({ id: args.tourid });
 	if (data.kind !== 'success') {
-		showError(`Failed to fetch data: ${data.msg}`);
+		showError(`Failed to fetch data`);
 		return {
 			html: "", postInsert: async () => navigateTo('/')
 		}

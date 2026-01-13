@@ -8,6 +8,17 @@ import loggedInHtml from './alreadyLoggedin.html?raw';
 import { isNullish } from "@app/utils";
 import cuteCat from './cuteCat.png';
 
+const MSG_KEY_TO_STRING = {
+	'signin.failed.username.existing': 'Username already exists',
+	'signin.failed.username.toolong': 'Username is too short',
+	'signin.failed.username.tooshort': 'Username is too long',
+	'signin.failed.username.invalid': 'Username is invalid',
+	'signin.failed.password.toolong': 'Password is too long',
+	'signin.failed.password.tooshort': 'Password is too short',
+	'signin.failed.password.invalid': 'Password is invalid',
+	'signin.failed.generic': 'Unknown Error',
+};
+
 async function handleSignin(_url: string, _args: RouteHandlerParams): Promise<RouteHandlerReturn> {
 	setTitle('Signin')
 	let user = await updateUser();
@@ -72,7 +83,7 @@ async function handleSignin(_url: string, _args: RouteHandlerParams): Promise<Ro
 							break;
 						}
 						case 'failed': {
-							showError(`Failed to signin: ${res.msg}`);
+							showError(`Failed to signin: ${MSG_KEY_TO_STRING[res.msg]}`);
 						}
 					}
 				} catch (e) {
