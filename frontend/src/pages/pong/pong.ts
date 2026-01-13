@@ -311,8 +311,7 @@ function pongClient(
 				let players = info.players.sort((l, r) => r.score - l.score);
 
 				const medals = ["🥇", "🥈", "🥉"];
-				if (!render_tour_score_once)
-				{
+				if (!render_tour_score_once) {
 					tour_scores.innerHTML = tourScoresHtml;
 					render_tour_score_once = true;
 				}
@@ -536,7 +535,12 @@ function pongClient(
 			socket.on("updateInformation", (e) => {
 				queue_infos.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
 			});
-			socket.on("queueEvent", (e) => showInfo(`QueueEvent: ${e}`)); // MAYBE: play a sound? to notify user that smthing happend
+			socket.on("queueEvent", (e) => {
+				if (e === "registered") queueBtn.innerText = QueueState.InQueu;
+				else if (e === "unregistered")
+					queueBtn.innerText = QueueState.Iddle;
+				showInfo(`QueueEvent: ${e}`);
+			}); // MAYBE: play a sound? to notify user that smthing happend
 			// ---
 			// queue evt end
 			// ---
