@@ -82,12 +82,12 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 					left: {
 						score: v.left.score,
 						id: v.left.id,
-						name: `${v.nameL}-left`,
+						name: `${v.nameL}`,
 					},
 					right: {
 						score: v.right.score,
 						id: v.right.id,
-						name: `${v.nameR}-right`,
+						name: `${v.nameR}`,
 					},
 					local: v.local,
 					date: v.time.toString(),

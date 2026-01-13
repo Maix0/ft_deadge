@@ -4,7 +4,6 @@ import cookie from "js-cookie";
 import { ensureWindowState, isNullish } from "@app/utils";
 import { handleRoute, navigateTo } from "./routing";
 
-
 cookie.remove("pkce");
 const headerProfile =
 	document.querySelector<HTMLDivElement>("#header-profile")!;
@@ -29,6 +28,7 @@ declare module "ft_state" {
 		user: User | null;
 		_headerProfile: boolean;
 		_reloadOnAuthChange: boolean;
+		lastAuthChange: number;
 	}
 }
 
@@ -41,12 +41,16 @@ export function isLogged(): boolean {
 }
 
 export function setUser(newUser: User | null) {
-	let sendEvent = (window.__state.user?.id !== newUser?.id);
+	let sendEvent = window.__state.user?.id !== newUser?.id;
 	window.__state.user = newUser;
 	updateHeaderProfile();
 
 	if (sendEvent) {
-		const event = new CustomEvent("ft:userChange", { detail: isNullish(newUser) ? null : { id: newUser.id, name: newUser.name } });
+		const event = new CustomEvent("ft:userChange", {
+			detail: isNullish(newUser)
+				? null
+				: { id: newUser.id, name: newUser.name },
+		});
 		document.dispatchEvent(event);
 	}
 }
@@ -89,7 +93,9 @@ window.__state._headerProfile ??= false;
 if (!window.__state._headerProfile) {
 	headerProfile.addEventListener("click", () => {
 		if (window.__state.user === null) {
-			navigateTo(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+			navigateTo(
+				`/login?returnTo=${encodeURIComponent(window.location.pathname)}`,
+			);
 		} else {
 			navigateTo("/profile");
 		}
@@ -99,7 +105,12 @@ if (!window.__state._headerProfile) {
 
 window.__state._reloadOnAuthChange ??= false;
 if (!window.__state._reloadOnAuthChange) {
-	document.addEventListener("ft:userChange", () => handleRoute());
+	document.addEventListener("ft:userChange", () => {
+		// if the last forced auth change is less than 1000 sec old -> we do nothing
+		if (Date.now() - (window.__state.lastAuthChange ?? Date.now()) < 1000)
+			return;
+		handleRoute();
+	});
 	window.__state._reloadOnAuthChange = true;
 }
 updateHeaderProfile();

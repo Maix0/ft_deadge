@@ -11,11 +11,13 @@ import client from "@app/api";
 import cuteCat from "./cuteCat.png";
 import loggedInHtml from "./alreadyLoggedin.html?raw";
 import totpHtml from "./totp.html?raw";
-import { isNullish } from "@app/utils";
+import { ensureWindowState, isNullish } from "@app/utils";
 import { showError, showInfo, showSuccess } from "@app/toast";
 import { updateUser } from "@app/auth";
 
 const TOTP_LENGTH = 6;
+ensureWindowState();
+window.__state.lastAuthChange = Date.now();
 
 async function handleOtp(
 	app: HTMLElement,
@@ -86,6 +88,7 @@ async function handleOtp(
 			});
 
 			if (res.kind === "success") {
+				window.__state.lastAuthChange = Date.now();
 				Cookie.set("token", res.payload.token, {
 					path: "/",
 					sameSite: "lax",
@@ -178,6 +181,7 @@ async function handleLogin(
 					});
 					switch (res.kind) {
 						case "success": {
+							window.__state.lastAuthChange = Date.now();
 							Cookie.set("token", res.payload.token, {
 								path: "/",
 								sameSite: "lax",
@@ -219,6 +223,7 @@ async function handleLogin(
 					});
 					switch (res.kind) {
 						case "success": {
+							window.__state.lastAuthChange = Date.now();
 							Cookie.set("token", res.payload.token, {
 								path: "/",
 								sameSite: "lax",

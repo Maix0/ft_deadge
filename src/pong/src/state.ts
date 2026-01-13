@@ -77,23 +77,21 @@ class StateI {
 		const u1 = this.users.get(id1);
 		const u2 = this.users.get(id2);
 
-		if (isNullish(u1) || isNullish(u2)) return null;
-
 		this.fastify.log.info({
 			msg: 'init new game',
-			user1: u1.id,
-			user2: u2.id,
+			user1: id1,
+			user2: id2,
 		});
-		if (g === null) g = new Pong(u1.id, u2.id);
+		if (g === null) g = new Pong(id1, id2);
 		const iState: GameUpdate = StateI.getGameUpdateData(gameId, g);
 
-		u1.socket.emit('newGame', iState);
-		u2.socket.emit('newGame', iState);
+		u1?.socket.emit('newGame', iState);
+		u2?.socket.emit('newGame', iState);
 		g.rdy_timer = Date.now();
 		this.games.set(gameId, g);
 
-		u1.currentGame = gameId;
-		u2.currentGame = gameId;
+		if (u1) { u1.currentGame = gameId; }
+		if (u2) { u2.currentGame = gameId; }
 
 		g.gameUpdate = setInterval(() => {
 			g.tick();
@@ -102,13 +100,21 @@ class StateI {
 				g.ready_checks[0] === true &&
 				g.ready_checks[1] === true
 			) {
-				u1.socket.emit('rdyEnd');
-				u2.socket.emit('rdyEnd');
+				if (u1) {
+					u1.socket.emit('rdyEnd');
+				}
+				if (u2) {
+					u2.socket.emit('rdyEnd');
+				}
 				g.sendSig = true;
 			}
 			if (g.ready_checks[0] === true && g.ready_checks[1] === true) {
-				this.gameUpdate(gameId, u1.socket);
-				this.gameUpdate(gameId, u2.socket);
+				if (u1) {
+					this.gameUpdate(gameId, u1.socket);
+				}
+				if (u2) {
+					this.gameUpdate(gameId, u2.socket);
+				}
 			}
 			if (g.checkWinner() !== null) {
 				this.cleanupGame(gameId, g);
@@ -376,14 +382,14 @@ class StateI {
 		this.cleanupUser(sock);
 	}
 
-	private tryJoinGame(g_id : string, sock : SSocket) : JoinRes {
-		const game_id : PongGameId = g_id as PongGameId;
+	private tryJoinGame(g_id: string, sock: SSocket): JoinRes {
+		const game_id: PongGameId = g_id as PongGameId;
 
 		if (this.games.has(game_id) === false) {
 			this.fastify.log.warn('gameId:' + g_id + ' is unknown!');
 			return (JoinRes.no);
 		}
-		const game : Pong = this.games.get(game_id)!;
+		const game: Pong = this.games.get(game_id)!;
 		if (game.local === true || (game.userLeft !== sock.authUser.id && game.userRight !== sock.authUser.id)) {
 			this.fastify.log.warn('user trying to connect to a game he\'s not part of: gameId:' + g_id + ' userId:' + sock.authUser.id);
 			return (JoinRes.no);
@@ -426,7 +432,7 @@ class StateI {
 
 		socket.on('gameMove', (e) => this.gameMove(socket, e));
 		socket.on('localGame', () => this.newLocalGame(socket));
-		socket.on('joinGame', (g_id, ack) => {return (ack(this.tryJoinGame(g_id, socket)));});
+		socket.on('joinGame', (g_id, ack) => { return (ack(this.tryJoinGame(g_id, socket))); });
 		// todo: allow passing nickname
 		socket.on('tourRegister', () =>
 			this.registerForTournament(socket, null),

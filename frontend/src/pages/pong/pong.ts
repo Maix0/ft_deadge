@@ -8,7 +8,13 @@ import {
 import authHtml from "./pong.html?raw";
 import tourScoresHtml from "./tourTable.html?raw";
 import io from "socket.io-client";
-import { JoinRes, type CSocket, type GameMove, type GameUpdate, type TourInfo } from "./socket";
+import {
+	JoinRes,
+	type CSocket,
+	type GameMove,
+	type GameUpdate,
+	type TourInfo,
+} from "./socket";
 import { showError, showInfo, showSuccess } from "@app/toast";
 import { getUser as getSelfUser, type User } from "@app/auth";
 import { isNullish } from "@app/utils";
@@ -86,6 +92,7 @@ function pongClient(
 	// [ ] shape sock
 	// 	- [ ] joinGame (guid) -> ["ok"|"no, dont ever talk to my kid or me ever again you creep"];
 	//	- [ ] launch newgame evt?
+	let inTournament = false;
 
 	return {
 		html: authHtml,
@@ -245,21 +252,19 @@ function pongClient(
 			// join game
 			// ---
 			if (game_req_join != null) {
-				socket.emit('joinGame', game_req_join, 
-					(res : JoinRes) => {
-						switch (res) {
-							case JoinRes.yes :
-								showInfo('JoinRes = yes');
-								quitChat();
-								break;
-							case JoinRes.no :
-								showInfo('JoinRes = no');
-								break;
-							default:
-								showError('JoinRes switch fail:' + res);
-						}
+				socket.emit("joinGame", game_req_join, (res: JoinRes) => {
+					switch (res) {
+						case JoinRes.yes:
+							showInfo("JoinRes = yes");
+							quitChat();
+							break;
+						case JoinRes.no:
+							showInfo("JoinRes = no");
+							break;
+						default:
+							showError("JoinRes switch fail:" + res);
 					}
-				)
+				});
 				game_req_join = null;
 			}
 			// ---
@@ -300,20 +305,33 @@ function pongClient(
 				playerL.innerText = "";
 				currentGame = null;
 			}
+			let render_tour_score_once = false;
 
 			const renderTournamentScores = (info: TourInfo) => {
 				let players = info.players.sort((l, r) => r.score - l.score);
 
 				const medals = ["🥇", "🥈", "🥉"];
-				tour_scores.innerHTML = tourScoresHtml;
+				if (!render_tour_score_once)
+				{
+					tour_scores.innerHTML = tourScoresHtml;
+					render_tour_score_once = true;
+				}
 				let table = tour_scores.querySelector("#tour-score-body");
-				if (table)
-					table.innerHTML = players.map((player, idx) =>
-						`<tr class="${player.id === user.id ? "bg-amber-400 hover:bg-amber-500" : "hover:bg-gray-50"}" key="${player.id}">
-							<td class="px-4 py-2 text-sm text-gray-800 text-center border-b font-semibold min-w-100px">${idx < medals.length ? `<span class="font-lg">${medals[idx]}</span>` : ''}${player.name}</td>
-							<td class="px-4 py-2 text-sm text-gray-800 text-center border-b font-bold  min-w-100px">${player.score}</td>
-						</tr>`)
+				let table_shadow = document.createElement("tbody");
+				if (table) {
+					table_shadow.innerHTML = players
+						.map(
+							(player, idx) =>
+								`<tr class="${player.id === user.id ? "bg-amber-400 hover:bg-amber-500" : "hover:bg-gray-50"}" data-id="${player.id}">
+								<td class="px-4 py-2 text-sm text-gray-800 text-center border-b font-semibold min-w-100px"><span class="font-lg medal">${idx < medals.length ? medals[idx] : ""}</span>${player.name}</td>
+								<td class="px-4 py-2 text-sm text-gray-800 text-center border-b font-bold min-w-100px">${player.score}</td>
+							</tr>`,
+						)
 						.join("");
+					if (table_shadow.innerHTML !== table.innerHTML) {
+						table.innerHTML = table_shadow.innerHTML;
+					}
+				}
 			};
 
 			// TODO: REMOVE THIS
@@ -371,6 +389,10 @@ function pongClient(
 
 			// btn setup
 			queueBtn.addEventListener("click", () => {
+				if (inTournament) {
+					showError("You can't queue up currently !");
+					return;
+				}
 				if (queueBtn.innerText !== QueueState.Iddle) {
 					if (queueBtn.innerText === QueueState.InQueu) {
 						socket.emit("dequeue");
@@ -384,11 +406,10 @@ function pongClient(
 			LocalGameBtn.addEventListener("click", () => {
 				if (
 					queueBtn.innerText !== QueueState.Iddle ||
-					currentGame !== null
+					currentGame !== null ||
+					inTournament
 				) {
-					showError(
-						"cant launch a local game while in queue/in game",
-					);
+					showError("cant launch a game currently");
 					return;
 				}
 				socket.emit("localGame");
@@ -467,6 +488,7 @@ function pongClient(
 				updateCurrentGame(state);
 				render(state);
 
+				tour_scores.classList.add("hidden");
 				queueBtn.innerText = QueueState.InGame;
 				queueBtn.style.color = "red";
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
@@ -487,14 +509,17 @@ function pongClient(
 				queueBtn.style.color = "white";
 
 				if (!isNullish(currentGame)) {
-					let end_txt: string = '';
-					if ((user.id === currentGame.game.left.id && winner === 'left') ||
-						(user.id === currentGame.game.right.id && winner === 'right'))
-						end_txt = 'you won! #yippe';
-					else
-						end_txt = 'you lost #sadge';
+					let end_txt: string = "";
+					if (
+						(user.id === currentGame.game.left.id &&
+							winner === "left") ||
+						(user.id === currentGame.game.right.id &&
+							winner === "right")
+					)
+						end_txt = "you won! #yippe";
+					else end_txt = "you lost #sadge";
 					if (currentGame.spectating)
-						end_txt = `${winner === 'left' ? currentGame.playerL.name : currentGame.playerR.name} won #gg`;
+						end_txt = `${winner === "left" ? currentGame.playerL.name : currentGame.playerR.name} won #gg`;
 					end_scr.innerText = end_txt;
 					end_scr.classList.remove("hidden");
 					setTimeout(() => {
@@ -528,13 +553,16 @@ function pongClient(
 				let imOwner = s.ownerId === user.id;
 				switch (s.state) {
 					case "ended":
+						inTournament = false;
 						tournamentBtn.innerText = TourBtnState.AbleToCreate;
 						break;
 					case "playing":
+						inTournament = true;
 						tournamentBtn.innerText = TourBtnState.Started;
 						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ${s.remainingMatches ?? "?"}▮•▮`;
 						break;
 					case "prestart":
+						inTournament = true;
 						tour_infos.innerText = `${imOwner ? TourInfoState.Owner : weIn ? TourInfoState.Registered : TourInfoState.NotRegisted} ${s.players.length}👤 ?▮•▮`;
 						if (imOwner) {
 							tournamentBtn.innerText = TourBtnState.AbleToStart;
