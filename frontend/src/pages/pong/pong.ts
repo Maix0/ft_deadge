@@ -367,6 +367,7 @@ function pongClient(
 			});
 
 			socket.on("tourEnding", (ending) => {
+				inTournament = false;
 				showInfo(ending);
 			});
 			// ---
@@ -557,12 +558,12 @@ function pongClient(
 						tournamentBtn.innerText = TourBtnState.AbleToCreate;
 						break;
 					case "playing":
-						inTournament = true;
+						inTournament = weIn;
 						tournamentBtn.innerText = TourBtnState.Started;
 						tour_infos.innerText = `${TourInfoState.Running} ${s.players.length}👤 ${s.remainingMatches ?? "?"}▮•▮`;
 						break;
 					case "prestart":
-						inTournament = true;
+						inTournament = weIn;
 						tour_infos.innerText = `${imOwner ? TourInfoState.Owner : weIn ? TourInfoState.Registered : TourInfoState.NotRegisted} ${s.players.length}👤 ?▮•▮`;
 						if (imOwner) {
 							tournamentBtn.innerText = TourBtnState.AbleToStart;
