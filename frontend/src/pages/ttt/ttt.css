@@ -5,8 +5,6 @@
   src: url("/fonts/DejaVuSansMono.woff2") format("woff2");
 }
 
-
-
 .displaybox {
   @apply
   fixed

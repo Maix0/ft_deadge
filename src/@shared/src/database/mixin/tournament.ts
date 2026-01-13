@@ -36,7 +36,7 @@ export const TournamentImpl: Omit<ITournamentDb, keyof Database> = {
 	): TournamentData | null {
 		// Fetch tournament
 		const tournament = this
-			.prepare('SELECT id, time, owner FROM tournament WHERE id = @id')
+			.prepare('SELECT * FROM tournament WHERE id = @id')
 			.get({ id }) as TournamentTable;
 
 		if (!tournament) {
@@ -90,7 +90,7 @@ export const TournamentImpl: Omit<ITournamentDb, keyof Database> = {
 	): void {
 		const tournamentId = newUUID() as TournamentId;
 
-		this.prepare('INSERT INTO tournament (id, owner) VALUES (@id, @owner)').run({ id: tournamentId, owner });
+		this.prepare('INSERT INTO tournament (id, owner, playerCount) VALUES (@id, @owner, @count)').run({ id: tournamentId, owner, count: users.length });
 		for (const u of users) {
 			this.prepare('INSERT INTO tour_user (user, nickname, score, tournament) VALUES (@id, @name, @score, @tournament)').run({ id: u.id, name: u.name, score: u.score, tournament: tournamentId });
 		}
@@ -115,6 +115,7 @@ export interface TournamentTable {
 	id: TournamentId;
 	time: string;
 	owner: UserId;
+	playerCount: number;
 }
 
 export interface TournamentUser {

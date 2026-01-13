@@ -11,6 +11,7 @@ type TournamentDataParams = Static<typeof TournamentDataParams>;
 const TournamentDataResponse = {
 	'200': typeResponse('success', 'tournamentData.success', {
 		data: Type.Object({
+			playerCount: Type.Number(),
 			owner: Type.String({ description: 'ownerId' }),
 			users: Type.Array(
 				Type.Object({
@@ -65,8 +66,10 @@ const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 					'tournamentData.failure.notFound',
 				);
 			}
+			console.log(data);
 			const typed_res: TournamentDataResponse['200']['payload']['data'] =
 			{
+				playerCount: data.playerCount,
 				owner: data.owner,
 				time: data.time,
 				users: data.users.map((v) => ({

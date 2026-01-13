@@ -1,0 +1,37 @@
+<div class="fixed inset-0 flex items-center justify-center bg-[#43536b]">
+	<div
+		class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-200 w-212.5 p-6 rounded-xl shadow-2xl text-center z-50">
+		<h2 class="text-2xl font-bold text-center mb-4 text-gray-700">
+			Tournament <span id="tour-date"> </span>
+		</h2>
+		<div id="tourInfo" class="bg-white p-4 rounded-lg shadow-md mb-4">
+			<p class="text-lg"> <strong class="text-gray-700">Created By:<strong> <span class="text-amber-500"
+							id="tourOwner"></span></p>
+			<p class="text-lg"> <strong class="text-gray-700">Finished At:<strong> <span class="text-amber-500"
+							id="tourTime"></span></p>
+			<p class="text-lg"> <strong class="text-gray-700">Players:<strong> <span class="text-amber-500"
+							id="tourCount"></span></p>
+		</div>
+		<div class="max-h-[320px] overflow-y-auto overflow-x-auto border rounded-lg mb-4">
+			<table class="min-w-full border-collapse table-fixed">
+				<thead class="sticky top-0 z-10 bg-gray-100">
+					<tr>
+						<th class="px-4 py-2 text-center text-lg font-semibold text-gray-700 border-b">
+							Name
+						</th>
+						<th class="px-4 py-2 text-center text-lg font-semibold text-gray-700 border-b">
+							Score
+						</th>
+					</tr>
+				</thead>
+
+				<tbody id="tourPlayerList">
+					<!-- rows -->
+				</tbody>
+			</table>
+		</div>
+		<div id="tourGames" class="max-w-3xl mx-auto space-y-2 max-h-[25dvh] overflow-scroll">
+
+		</div>
+	</div>
+</div>

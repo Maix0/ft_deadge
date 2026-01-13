@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS tournament (
   id TEXT PRIMARY KEY NOT NULL,
   time TEXT NOT NULL default (datetime ('now')),
   owner TEXT NOT NULL,
+  playerCount INTEGER NOT NULL,
   FOREIGN KEY (owner) REFERENCES user (id)
 );
 

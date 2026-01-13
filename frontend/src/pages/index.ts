@@ -9,6 +9,7 @@ import './profile/profile.ts'
 import './logout/logout.ts'
 import './pongHistory/pongHistory.ts'
 import './tttHistory/tttHistory.ts'
+import './tourHistory/tourHistory.ts'
 
 // ---- Initial load ----
 setTitle("");

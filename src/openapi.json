@@ -2497,12 +2497,16 @@
                         "data": {
                           "type": "object",
                           "required": [
+                            "playerCount",
                             "owner",
                             "users",
                             "games",
                             "time"
                           ],
                           "properties": {
+                            "playerCount": {
+                              "type": "number"
+                            },
                             "owner": {
                               "type": "string",
                               "description": "ownerId"
@@ -2736,11 +2740,15 @@
                           "items": {
                             "type": "object",
                             "required": [
+                              "playerCount",
                               "id",
                               "owner",
                               "time"
                             ],
                             "properties": {
+                              "playerCount": {
+                                "type": "number"
+                              },
                               "id": {
                                 "type": "string",
                                 "description": "tournamentId"

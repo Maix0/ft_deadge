@@ -36,6 +36,12 @@ import {
 export interface TournamentData200ResponsePayloadData {
     /**
      * 
+     * @type {number}
+     * @memberof TournamentData200ResponsePayloadData
+     */
+    playerCount: number;
+    /**
+     * 
      * @type {string}
      * @memberof TournamentData200ResponsePayloadData
      */
@@ -64,6 +70,7 @@ export interface TournamentData200ResponsePayloadData {
  * Check if a given object implements the TournamentData200ResponsePayloadData interface.
  */
 export function instanceOfTournamentData200ResponsePayloadData(value: object): value is TournamentData200ResponsePayloadData {
+    if (!('playerCount' in value) || value['playerCount'] === undefined) return false;
     if (!('owner' in value) || value['owner'] === undefined) return false;
     if (!('users' in value) || value['users'] === undefined) return false;
     if (!('games' in value) || value['games'] === undefined) return false;
@@ -81,6 +88,7 @@ export function TournamentData200ResponsePayloadDataFromJSONTyped(json: any, ign
     }
     return {
         
+        'playerCount': json['playerCount'],
         'owner': json['owner'],
         'users': ((json['users'] as Array<any>).map(TournamentData200ResponsePayloadDataUsersInnerFromJSON)),
         'games': ((json['games'] as Array<any>).map(PongHistory200ResponsePayloadDataInnerFromJSON)),
@@ -99,6 +107,7 @@ export function TournamentData200ResponsePayloadDataToJSONTyped(value?: Tourname
 
     return {
         
+        'playerCount': value['playerCount'],
         'owner': value['owner'],
         'users': ((value['users'] as Array<any>).map(TournamentData200ResponsePayloadDataUsersInnerToJSON)),
         'games': ((value['games'] as Array<any>).map(PongHistory200ResponsePayloadDataInnerToJSON)),
