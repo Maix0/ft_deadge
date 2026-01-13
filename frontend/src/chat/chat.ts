@@ -7,13 +7,7 @@ import type {
 	ClientProfilPartial,
 } from "./types_front";
 import type { User } from "@app/auth";
-import {
-	addRoute,
-	navigateTo,
-	setTitle,
-	type RouteHandlerParams,
-	type RouteHandlerReturn,
-} from "@app/routing";
+import { navigateTo } from "@app/routing";
 import authHtml from "./chat.html?raw";
 import { getUser } from "@app/auth";
 import { listBuddies } from "./chatHelperFunctions/listBuddies";
@@ -33,7 +27,6 @@ import { quitChat } from "./chatHelperFunctions/quitChat";
 import { openMessagePopup } from "./chatHelperFunctions/openMessagePopup";
 import { windowStateVisable } from "./chatHelperFunctions/windowStateVisable";
 import { cmdList } from "./chatHelperFunctions/cmdList";
-import { showInfo } from "../toast";
 import { actionBtnTTTGames } from "./chatHelperFunctions/actionBtnTTTGames";
 
 const MAX_SYSTEM_MESSAGES = 10;
@@ -71,6 +64,7 @@ const buddies = document.getElementById("div-buddies") as HTMLDivElement;
 const buttonMessage = document.getElementById("close-modal-message") ?? null;
 const buttonPro = document.getElementById("close-modal") ?? null;
 const chatButton = document.querySelector("#chatButton");
+const chatMessageIn = document.querySelector("#chatMessageIn");
 const chatWindow = document.querySelector("#t-chatbox")!;
 const clearText = document.getElementById("b-clear") as HTMLButtonElement;
 const gameMessage = document.getElementById("game-modal") ?? null;
@@ -129,14 +123,18 @@ function initChatSocket() {
 		systemWindow.appendChild(messageElement);
 		systemWindow.scrollTop = systemWindow.scrollHeight;
 	});
+	chatMessageIn?.classList.add("hidden");
 
+	
 	// Listen for messages from the server "MsgObjectServer"
 	socket.on("MsgObjectServer", (data: { message: ClientMessage }) => {
 		if (socket) {
 			connected(socket);
 		}
-
+		
 		if (chatWindow && data.message.destination === "") {
+			chatMessageIn?.classList.remove("hidden");
+			chatMessageIn!.textContent = '🔵';
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
@@ -144,6 +142,8 @@ function initChatSocket() {
 		}
 
 		if (chatWindow && data.message.destination === "privateMsg") {
+			chatMessageIn?.classList.remove("hidden");
+			chatMessageIn!.textContent = '🔴';
 			const messageElement = document.createElement("div-private");
 			messageElement.textContent = `🔒${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
@@ -151,6 +151,8 @@ function initChatSocket() {
 		}
 
 		if (chatWindow && data.message.destination === "inviteMsg") {
+			chatMessageIn?.classList.remove("hidden");
+			chatMessageIn!.textContent = '🟢';
 			const messageElement = document.createElement("div-private");
 			const chatWindow = document.getElementById(
 				"t-chatbox",
@@ -460,12 +462,15 @@ chatButton!.addEventListener("click",() => {
 		windowStateVisable();
 		let socket = window.__state.chatSock;
 		if (!socket) return;
-		connected(socket);		
+		connected(socket);
+		chatMessageIn?.classList.add("hidden");
+		chatMessageIn!.textContent = '';		
 		
 	} else {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.remove("opacity-60");
 		windowStateHidden();
+		
 	}
 });
 

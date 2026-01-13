@@ -130,7 +130,7 @@
   top-4 
   left-6
 }
-
+overlay
 .b-TTTgame {
   @apply
   absolute
@@ -343,6 +343,23 @@ div-private {
   hover:bg-red-700
 }
 
+.chat-buttonMsg {
+  @apply
+  z-100 
+  align-text-top
+  text-xs 
+  fixed bottom-15 
+  right-9 
+  w-2 
+  h-2 
+  z-300
+  rounded-full 
+  shadow-lg 
+  flex items-center 
+  justify-center 
+  hover:bg-red-700
+  
+}
 
 
 .hidden{

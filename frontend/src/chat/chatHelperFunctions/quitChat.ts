@@ -10,7 +10,8 @@ import { windowStateHidden } from "./windowStateHidden";
 export async function quitChat () {
 	const chatBox = document.getElementById("chatBox")!;
 	const overlay = document.querySelector('#overlay')!;
-	
+	const chatMessageIn = document.querySelector("#chatMessageIn");
+
 	try {
 		if (chatBox.classList.contains('hidden')) {
 			// chatBox.classList.toggle('hidden');
@@ -21,6 +22,8 @@ export async function quitChat () {
 			await windowStateHidden();
 			chatBox.classList.toggle('hidden');
 			overlay.classList.remove('opacity-60');
+			chatMessageIn?.classList.remove("hidden");
+			chatMessageIn!.textContent = '';
 		}
 	} catch (e) {
 		showError('Failed to Quit Chat: Unknown error');
