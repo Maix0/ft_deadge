@@ -470,7 +470,8 @@ chatButton!.addEventListener("click",() => {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.remove("opacity-60");
 		windowStateHidden();
-		
+		chatMessageIn?.classList.add("hidden");
+		chatMessageIn!.textContent = '';		
 	}
 });
 
