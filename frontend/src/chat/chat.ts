@@ -9,6 +9,7 @@ import type {
 import type { User } from "@app/auth";
 import {
 	addRoute,
+	navigateTo,
 	setTitle,
 	type RouteHandlerParams,
 	type RouteHandlerReturn,
@@ -312,14 +313,14 @@ sendButton?.addEventListener("click", () => {
 
 				case "@pong": 
 					if (msgCommand[1] === "") {
-						window.location.href = "/app/pong/games";
+						navigateTo("/app/pong/games");
 						quitChat();
 					} 
 					break;
 
 				case "@ttt": 
 					if (msgCommand[1] === "") {
-						window.location.href = "/app/ttt/games";
+						navigateTo("/app/ttt/games");
 						quitChat();
 					} 
 					break;
@@ -432,12 +433,12 @@ bquit?.addEventListener("click", () => {
 });
 
 myGames?.addEventListener("click", () => {
-	window.location.href = "/app/pong/games";
+	navigateTo("/app/pong/games");
 	quitChat();
 });
 
 myTTTGames?.addEventListener("click", () => {
-	window.location.href = "/app/ttt/games";
+	navigateTo("/app/ttt/games");
 	quitChat();
 });
 
