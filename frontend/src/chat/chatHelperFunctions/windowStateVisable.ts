@@ -8,10 +8,7 @@ import { updateUser } from "@app/auth";
  */
 
 export async function windowStateVisable() {
-
-	console.log('--------------------------')
-	console.log('WindowState Visable Called');
-	console.log('--------------------------')
+	
 	const buddies = document.getElementById('div-buddies') as HTMLDivElement;
 	const socketId = window.__state.chatSock || undefined;
 	let oldName = localStorage.getItem("oldName") || undefined;

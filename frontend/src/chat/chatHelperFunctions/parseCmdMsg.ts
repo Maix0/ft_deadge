@@ -17,7 +17,7 @@ export function parseCmdMsg(msgText: string): string[] | undefined {
         command[1] = msgText;
         return command;
     }
-    const noArgCommands = ['@quit', '@help', '@cls'];
+    const noArgCommands = ['@quit', '@help', '@cls', '@pong', '@ttt'];
     if (noArgCommands.includes(msgText)) {
         command[0] = msgText;
         command[1] = '';

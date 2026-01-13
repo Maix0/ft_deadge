@@ -21,6 +21,7 @@ import { addInviteMessage, addMessage } from "./chatHelperFunctions/addMessage";
 import { broadcastMsg } from "./chatHelperFunctions/broadcastMsg";
 import { openProfilePopup } from "./chatHelperFunctions/openProfilePopup";
 import { actionBtnPopUpBlock } from "./chatHelperFunctions/actionBtnPopUpBlock";
+import { actionBtnPongGames } from "./chatHelperFunctions/actionBtnPongGames";
 import { windowStateHidden } from "./chatHelperFunctions/windowStateHidden";
 import { blockUser } from "./chatHelperFunctions/blockUser";
 import { parseCmdMsg } from "./chatHelperFunctions/parseCmdMsg";
@@ -32,6 +33,7 @@ import { openMessagePopup } from "./chatHelperFunctions/openMessagePopup";
 import { windowStateVisable } from "./chatHelperFunctions/windowStateVisable";
 import { cmdList } from "./chatHelperFunctions/cmdList";
 import { showInfo } from "../toast";
+import { actionBtnTTTGames } from "./chatHelperFunctions/actionBtnTTTGames";
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
@@ -71,6 +73,8 @@ const chatButton = document.querySelector("#chatButton");
 const chatWindow = document.querySelector("#t-chatbox")!;
 const clearText = document.getElementById("b-clear") as HTMLButtonElement;
 const gameMessage = document.getElementById("game-modal") ?? null;
+const myGames = document.getElementById("b-hGame") ?? null;
+const myTTTGames = document.getElementById("b-hTGame") ?? null;
 const modalmessage = document.getElementById("modal-message") ?? null;
 const noGuest = document.getElementById("noGuest") ?? null;
 const notify = document.getElementById("notify") ?? null;
@@ -176,6 +180,8 @@ function initChatSocket() {
 		socket.emit("check_Block_button", profil);
 		actionBtnPopUpInvite(profil, socket);
 		actionBtnPopUpBlock(profil, socket);
+		actionBtnPongGames(profil, socket);
+		actionBtnTTTGames(profil, socket);
 	});
 
 	socket.on("blockUser", (blocked: ClientProfil) => {
@@ -304,6 +310,20 @@ sendButton?.addEventListener("click", () => {
 					}
 					break;
 
+				case "@pong": 
+					if (msgCommand[1] === "") {
+						window.location.href = "/app/pong/games";
+						quitChat();
+					} 
+					break;
+
+				case "@ttt": 
+					if (msgCommand[1] === "") {
+						window.location.href = "/app/ttt/games";
+						quitChat();
+					} 
+					break;
+			
 				case "@guest":
 					if (!userId) {
 						return;
@@ -384,9 +404,6 @@ sendButton?.addEventListener("click", () => {
 
 let toggle = false;
 window.addEventListener("focus", async () => {
-	console.log('--------------------------')
-	console.log('Window focus called Called');
-	console.log('--------------------------')
 	setTimeout(() => {
 		if (window.__state.chatSock) connected(window.__state.chatSock);
 	}, 16);
@@ -411,7 +428,20 @@ clearText?.addEventListener("click", () => {
 
 bquit?.addEventListener("click", () => {
 	quitChat();
+	
 });
+
+myGames?.addEventListener("click", () => {
+	window.location.href = "/app/pong/games";
+	quitChat();
+});
+
+myTTTGames?.addEventListener("click", () => {
+	window.location.href = "/app/ttt/games";
+	quitChat();
+});
+
+
 
 // Enter key to send message
 sendtextbox.addEventListener("keydown", (event) => {

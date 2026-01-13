@@ -36,6 +36,24 @@
   active:shadow-[0_2px_0_0_black];
 }
 
+.btn-style-games {
+  @apply
+  w-35
+  h-8
+  border 
+  border-gray-500
+  rounded-3xl
+  bg-gray-500
+  text-white
+  cursor-pointer
+  shadow-[0_2px_0_0_black]
+  transition-all
+  hover:bg-blue-200
+  active:bg-gray-400
+  active:translate-y-px
+  active:shadow-[0_2px_0_0_black];
+}
+
 .send-btn-style {
   @apply 
   w-12.5 
@@ -106,6 +124,19 @@
 }
 
 
+.b-game {
+  @apply
+  absolute 
+  top-4 
+  left-6
+}
+
+.b-TTTgame {
+  @apply
+  absolute
+  left-6
+  top-14
+}
 
 .text-info {
   @apply
@@ -257,6 +288,20 @@ div-private {
   absolute 
   bottom-52 
   right-12
+}
+
+.popup-b-game {
+  @apply
+  absolute 
+  bottom-52 
+  left-12
+}
+
+.popup-b-TTTgame {
+  @apply
+  absolute 
+  bottom-42 
+  left-12
 }
 
 .popUpMessage {
