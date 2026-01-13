@@ -82,3 +82,8 @@
     font-bold 
     hover:bg-gray-500
 }
+
+#historyBtn {
+  @apply
+  text-white
+}

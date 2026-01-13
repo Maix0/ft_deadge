@@ -1,5 +1,5 @@
 import "./ttt.css"
-import {addRoute, setTitle, type RouteHandlerReturn} from "@app/routing";
+import {addRoute, setTitle, navigateTo, type RouteHandlerReturn} from "@app/routing";
 import tttPage from "./ttt.html?raw";
 import {showError, showInfo} from "@app/toast";
 import {io} from "socket.io-client";
@@ -54,13 +54,14 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             if (user === null)
                 return;
 
-            const userXString = document.getElementById("playerX-name");
-            const userOString = document.getElementById("playerO-name");
             const currentPlayerIndicator = document.getElementById("currentPlayer");
+            const currentPlayerTimer = document.getElementById("currentPlayerTimer");
+            const historyButton = document.getElementById("historyBtn");
             const joinQueueBtn = document.getElementById("JoinQueueBtn");
-            const currentPlayerTimer = document.getElementById("currentPlayerTimer")
             const result_message = document.getElementById("ttt-end-screen");
-            if (!userXString || !userOString || !currentPlayerIndicator || !joinQueueBtn || !currentPlayerTimer || !result_message) {
+            const userOString = document.getElementById("playerO-name");
+            const userXString = document.getElementById("playerX-name");
+            if (!currentPlayerIndicator || !currentPlayerTimer || !historyButton || !joinQueueBtn || !result_message || !userOString || !userXString) {
                 return showError('fatal error');
             }
 
@@ -77,6 +78,11 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                 }
                 joinQueueBtn.innerText = QueueState.InQueue;
                 socket.emit("enqueue");
+            });
+
+            //TODO: Redirect to /app/ttt
+            historyButton.addEventListener("click", () => {
+                navigateTo("/app/ttt/games");
             });
 
             let curGame: CurrentGameInfo | null = null;
