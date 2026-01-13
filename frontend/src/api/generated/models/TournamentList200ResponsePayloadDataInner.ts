@@ -21,6 +21,12 @@ import { mapValues } from '../runtime';
 export interface TournamentList200ResponsePayloadDataInner {
     /**
      * 
+     * @type {number}
+     * @memberof TournamentList200ResponsePayloadDataInner
+     */
+    playerCount: number;
+    /**
+     * 
      * @type {string}
      * @memberof TournamentList200ResponsePayloadDataInner
      */
@@ -43,6 +49,7 @@ export interface TournamentList200ResponsePayloadDataInner {
  * Check if a given object implements the TournamentList200ResponsePayloadDataInner interface.
  */
 export function instanceOfTournamentList200ResponsePayloadDataInner(value: object): value is TournamentList200ResponsePayloadDataInner {
+    if (!('playerCount' in value) || value['playerCount'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('owner' in value) || value['owner'] === undefined) return false;
     if (!('time' in value) || value['time'] === undefined) return false;
@@ -59,6 +66,7 @@ export function TournamentList200ResponsePayloadDataInnerFromJSONTyped(json: any
     }
     return {
         
+        'playerCount': json['playerCount'],
         'id': json['id'],
         'owner': json['owner'],
         'time': json['time'],
@@ -76,6 +84,7 @@ export function TournamentList200ResponsePayloadDataInnerToJSONTyped(value?: Tou
 
     return {
         
+        'playerCount': value['playerCount'],
         'id': value['id'],
         'owner': value['owner'],
         'time': value['time'],

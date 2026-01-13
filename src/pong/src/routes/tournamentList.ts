@@ -6,6 +6,7 @@ const TournamentListResponse = {
 	'200': typeResponse('success', 'tournamentList.success', {
 		data: Type.Array(
 			Type.Object({
+				playerCount: Type.Number(),
 				id: Type.String({ description: 'tournamentId' }),
 				owner: Type.String({ description: 'ownerId' }),
 				time: Type.String(),
