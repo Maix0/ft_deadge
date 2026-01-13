@@ -157,6 +157,7 @@ class StateI {
 			return;
 		}
 
+		this.queue.delete(user.id);
 		this.tournament.addUser(user.id, name ?? udb.name);
 		sock.emit('tournamentRegister', {
 			kind: 'success',
