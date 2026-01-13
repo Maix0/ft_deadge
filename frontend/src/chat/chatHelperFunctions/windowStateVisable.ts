@@ -22,6 +22,5 @@ export async function windowStateVisable() {
 	});
 	buddies.innerHTML = '';
 	buddies.textContent = '';
-	setTitle('Chat Page');
 	return;
 };
