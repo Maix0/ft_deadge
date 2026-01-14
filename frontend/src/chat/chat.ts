@@ -87,40 +87,39 @@ const systemWindow = document.getElementById("chat-system-box") as HTMLDivElemen
 
 const keysPressed: Record<string, boolean> = {};
 async function chatKeyToggle() {
+	const chat_toggle_key = 'f1';
+	let anti_flicker_control = false;
 	document.addEventListener("keydown", (event) => {
-	// if (keysPressed[event.code])  {keysPressed[event.key.toLowerCase()] = false; chatBox.classList.remove("hidden"); return};
-	if (event.repeat) {keysPressed[event.key.toLowerCase()] = false; chatBox.classList.remove("hidden"); return};
-	keysPressed[event.key.toLowerCase()] = true;
-});
-document.addEventListener("keyup", (event) => {
-	keysPressed[event.key.toLowerCase()] = false;
-});
-
+		if (event.repeat && keysPressed[chat_toggle_key] === true) {
+			anti_flicker_control = true;
+			return ;
+		};
+		keysPressed[event.key.toLowerCase()] = true;
+	});
+	document.addEventListener("keyup", (event) => {
+		keysPressed[event.key.toLowerCase()] = false;
+		if (event.key.toLowerCase() === chat_toggle_key)
+			anti_flicker_control = false;
+	});
 	setInterval( () => {
-		if(keysPressed['f1'] === true) {
-			if (chatBox.classList.contains("hidden")) {
-			chatBox.classList.remove("hidden");
-			overlay.classList.add("opacity-60");
-			chatMessageIn?.classList.add("hidden");
-			chatMessageIn!.textContent = '';
-			sendtextbox.focus();
-			} else {
+		if(keysPressed[chat_toggle_key] === true) {
+			if (!chatBox.classList.contains("hidden") && anti_flicker_control === false) {
 				overlay.classList.remove("opacity-60");
-			chatBox.classList.add("hidden");
-			overlay.classList.remove("opacity-60");
-			chatMessageIn?.classList.add("hidden");
-			chatMessageIn!.textContent = '';
+				chatBox.classList.add("hidden");
+				overlay.classList.remove("opacity-60");
+				chatMessageIn?.classList.add("hidden");
+				chatMessageIn!.textContent = '';
+			} else {
+				chatBox.classList.remove("hidden");
+				overlay.classList.add("opacity-60");
+				chatMessageIn?.classList.add("hidden");
+				chatMessageIn!.textContent = '';
+				sendtextbox.focus();
 			}
 
 		}
-		else if(keysPressed['t'] === false) {
-			
-		}
 	}, 1000/10);
 };
-
-
-
 
 function initChatSocket() {
 	let socket = getSocket();
