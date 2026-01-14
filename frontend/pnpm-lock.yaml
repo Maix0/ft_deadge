@@ -8,12 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@tailwindcss/vite':
-        specifier: ^4.1.18
-        version: 4.1.18(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2))
-      '@types/qrcode':
-        specifier: ^1.5.6
-        version: 1.5.6
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -27,9 +21,15 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.1.18(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2))
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
+      '@types/qrcode':
+        specifier: ^1.5.6
+        version: 1.5.6
       typescript:
         specifier: ~5.9.3
         version: 5.9.3

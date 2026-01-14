@@ -1,7 +1,5 @@
 // import { TTC } from './game';
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import fastifyFormBody from '@fastify/formbody';
-import fastifyMultipart from '@fastify/multipart';
 import * as db from '@shared/database';
 import * as auth from '@shared/auth';
 import * as swagger from '@shared/swagger';
@@ -34,9 +32,6 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	for (const route of Object.values(routes)) {
 		void fastify.register(route as FastifyPluginAsync, {});
 	}
-
-	void fastify.register(fastifyFormBody, {});
-	void fastify.register(fastifyMultipart, {});
 
 	fastify.ready((err) => {
 		if (err) throw err;

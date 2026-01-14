@@ -17,7 +17,6 @@ import * as runtime from '../runtime';
 import type {
   AllowGuestMessage200Response,
   AllowGuestMessage403Response,
-  ApiChatBroadcastPostRequest,
   ChangeDesc200Response,
   ChangeDesc400Response,
   ChangeDesc403Response,
@@ -79,8 +78,6 @@ import {
     AllowGuestMessage200ResponseToJSON,
     AllowGuestMessage403ResponseFromJSON,
     AllowGuestMessage403ResponseToJSON,
-    ApiChatBroadcastPostRequestFromJSON,
-    ApiChatBroadcastPostRequestToJSON,
     ChangeDesc200ResponseFromJSON,
     ChangeDesc200ResponseToJSON,
     ChangeDesc400ResponseFromJSON,
@@ -193,10 +190,6 @@ import {
     TttHistory404ResponseToJSON,
 } from '../models/index';
 
-export interface ApiChatBroadcastPostOperationRequest {
-    apiChatBroadcastPostRequest: ApiChatBroadcastPostRequest;
-}
-
 export interface ChangeDescOperationRequest {
     changeDescRequest: ChangeDescRequest;
 }
@@ -294,53 +287,6 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
     async allowGuestMessage(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AllowGuestMessage200Response | StatusOtp401Response | AllowGuestMessage403Response> {
         const response = await this.allowGuestMessageRaw(initOverrides);
         return await response.value();
-    }
-
-    /**
-     */
-    async apiChatBroadcastPostRaw(requestParameters: ApiChatBroadcastPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['apiChatBroadcastPostRequest'] == null) {
-            throw new runtime.RequiredError(
-                'apiChatBroadcastPostRequest',
-                'Required parameter "apiChatBroadcastPostRequest" was null or undefined when calling apiChatBroadcastPost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-
-        let urlPath = `/api/chat/broadcast`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ApiChatBroadcastPostRequestToJSON(requestParameters['apiChatBroadcastPostRequest']),
-        }, initOverrides);
-
-        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
-        // This allows typed access to error responses (4xx, 5xx) and other status codes.
-        // The code routes responses based on the actual HTTP status code and returns
-        // appropriately typed ApiResponse wrappers for each status code.
-        if (response.status === 200) {
-            // No body response for status 200
-            return new runtime.VoidApiResponse(response);
-        }
-        // CHANGED: Throw error if status code is not handled by any of the defined responses
-        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
-        // Only throw if responses were defined but none matched the actual status code
-        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200`);
-    }
-
-    /**
-     */
-    async apiChatBroadcastPost(requestParameters: ApiChatBroadcastPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiChatBroadcastPostRaw(requestParameters, initOverrides);
     }
 
     /**

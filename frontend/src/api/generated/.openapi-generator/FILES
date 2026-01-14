@@ -3,7 +3,6 @@ apis/index.ts
 index.ts
 models/AllowGuestMessage200Response.ts
 models/AllowGuestMessage403Response.ts
-models/ApiChatBroadcastPostRequest.ts
 models/ChangeDesc200Response.ts
 models/ChangeDesc400Response.ts
 models/ChangeDesc403Response.ts

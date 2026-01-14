@@ -2,7 +2,6 @@
 /* eslint-disable */
 export * from './AllowGuestMessage200Response';
 export * from './AllowGuestMessage403Response';
-export * from './ApiChatBroadcastPostRequest';
 export * from './ChangeDesc200Response';
 export * from './ChangeDesc400Response';
 export * from './ChangeDesc403Response';
