@@ -85,9 +85,9 @@ const systemWindow = document.getElementById("chat-system-box") as HTMLDivElemen
 
 
 
-let anti_flicker_control = false;
 
 function chatKeyToggle() {
+	let anti_flicker_control = false;
 	const chat_toggle_key = 'f1';
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_toggle_key] === true) {
@@ -145,9 +145,9 @@ function initChatSocket() {
 		!sendButton ||
 		!sendtextbox ||
 		!systemWindow
-
+		
 	) return showError("fatal error");
-
+	
 	// Listen for the 'connect' event
 	socket.on("connect", async () => {
 		await waitSocketConnected(socket);
@@ -550,10 +550,7 @@ document.addEventListener("ft:userChange", (user) => {
 	window.__state.chatSock = undefined;
 	if (newUser === null) {
 		quitChat();
-		// logged out
-		// hide chat button
 	} else {
-		// user has changed
 		initChatSocket();
 	}
 });
