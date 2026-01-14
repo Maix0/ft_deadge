@@ -296,6 +296,11 @@ function initChatSocket() {
 	socket.on("nextGame", (message: string) => {
 		openMessagePopup(message);
 	});
+	
+	//receives broadcast of the next GAME
+	socket.on("tourStatus", (message: string) => {
+		openMessagePopup(message);
+	});
 
 	socket.on("listBud", async (myBuddies: string[]) => {
 		const buddies = document.getElementById(

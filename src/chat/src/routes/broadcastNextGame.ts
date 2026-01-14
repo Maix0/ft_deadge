@@ -3,7 +3,7 @@ import { Static, Type } from 'typebox';
 import { broadcastNextGame } from '../broadcastNextGame';
 
 export const ChatReq = Type.Object({
-	message: Type.String(),
+	nextGame: Type.String(),
 });
 
 export type ChatReq = Static<typeof ChatReq>;
@@ -27,21 +27,14 @@ export type ChatReq = Static<typeof ChatReq>;
 // export default route;
 
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
-	fastify.post('/api/chat/broadcast', {
+	fastify.post<{ Body: ChatReq }>('/broadcastNextGame', {
 		schema: {
-			body: {
-				type: 'object',
-				required: ['nextGame'],
-				properties: {
-					nextGame: { type: 'string' },
-				},
-			},
+			body: ChatReq,
+			hide: true,
 		},
-	}, async (req, reply) => {
-		const gameLink: Promise<string> = Promise.resolve(req.body as string);
-		if (gameLink) {
-			broadcastNextGame(fastify, gameLink);
-		}
+	}, async function(req, reply) {
+		this.log.info({ msg: 'Broadcasting nextGame status', ...req.body });
+		broadcastNextGame(fastify, req.body.nextGame);
 		return reply.send({ status: 'ok' });
 	});
 };

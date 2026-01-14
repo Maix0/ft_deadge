@@ -82,6 +82,7 @@ declare module 'fastify' {
 			blockBtn: (data: blockedUnBlocked) => void;
 			isBlockdBtn: (data: blockedUnBlocked) => void;
 			check_Block_button: (data: blockedUnBlocked) => void;
+			tourStatus: (data: string) => void;
 		}>;
 	}
 }
