@@ -21,3 +21,4 @@ nginx-dev/nginx.deb
 pnpm-lock.yaml
 package-lock.json
 .idea
+.dev
