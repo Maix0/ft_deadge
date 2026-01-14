@@ -38,13 +38,14 @@
 
 .btn-style-games {
   @apply
-  w-35
+  w-40
   h-8
   border 
   border-gray-500
   rounded-3xl
-  bg-gray-500
-  text-white
+  bg-white
+  text-blue-800
+  underline underline-offset-4
   cursor-pointer
   shadow-[0_2px_0_0_black]
   transition-all

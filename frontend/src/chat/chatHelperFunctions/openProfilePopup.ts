@@ -14,7 +14,7 @@ export async function openProfilePopup(profil: ClientProfil) {
     			<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
     			<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
 				<div id="profile-about" class="text-2xl">About: <span class="recessed">${profil.text}</span> </div>
-				<button id="popup-b-hGame" class="btn-style-games popup-b-game">My Pong Games</button>
+				<button id="popup-b-hGame" class="btn-style-games popup-b-game">Your Pong Games</button>
 				<button id="popup-b-hTGame" class="btn-style-games popup-b-TTTgame">My TTT Games</button>
 
     		</div>

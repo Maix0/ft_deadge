@@ -28,6 +28,7 @@ import { openMessagePopup } from "./chatHelperFunctions/openMessagePopup";
 import { windowStateVisable } from "./chatHelperFunctions/windowStateVisable";
 import { cmdList } from "./chatHelperFunctions/cmdList";
 import { actionBtnTTTGames } from "./chatHelperFunctions/actionBtnTTTGames";
+import { showError } from "@app/toast";
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
@@ -81,9 +82,72 @@ const sendtextbox = document.getElementById(
 ) as HTMLButtonElement;
 const systemWindow = document.getElementById("chat-system-box") as HTMLDivElement;
 
+
+
+
+const keysPressed: Record<string, boolean> = {};
+async function chatKeyToggle() {
+	document.addEventListener("keydown", (event) => {
+	// if (keysPressed[event.code])  {keysPressed[event.key.toLowerCase()] = false; chatBox.classList.remove("hidden"); return};
+	if (event.repeat) {keysPressed[event.key.toLowerCase()] = false; chatBox.classList.remove("hidden"); return};
+	keysPressed[event.key.toLowerCase()] = true;
+});
+document.addEventListener("keyup", (event) => {
+	keysPressed[event.key.toLowerCase()] = false;
+});
+
+	setInterval( () => {
+		if(keysPressed['f1'] === true) {
+			if (chatBox.classList.contains("hidden")) {
+			chatBox.classList.remove("hidden");
+			overlay.classList.add("opacity-60");
+			chatMessageIn?.classList.add("hidden");
+			chatMessageIn!.textContent = '';
+			sendtextbox.focus();
+			} else {
+				overlay.classList.remove("opacity-60");
+			chatBox.classList.add("hidden");
+			overlay.classList.remove("opacity-60");
+			chatMessageIn?.classList.add("hidden");
+			chatMessageIn!.textContent = '';
+			}
+
+		}
+		else if(keysPressed['t'] === false) {
+			
+		}
+	}, 1000/10);
+};
+
+
+
+
 function initChatSocket() {
 	let socket = getSocket();
-	let blockMessage: boolean;
+	// let blockMessage: boolean;
+	if (
+		!chatBox ||
+		!chatMessageIn ||
+		!bquit ||
+		!buttonMessage ||
+		!buttonPro ||
+		!chatButton ||
+		!chatWindow ||
+		!clearText ||
+		!gameMessage ||
+		!myGames ||
+		!myTTTGames ||
+		!modalmessage ||
+		!noGuest ||
+		!notify ||
+		!overlay ||
+		!profilList ||
+		!sendButton ||
+		!sendtextbox ||
+		!systemWindow
+
+	) return showError("fatal error");
+
 	// Listen for the 'connect' event
 	socket.on("connect", async () => {
 		await waitSocketConnected(socket);
@@ -125,7 +189,7 @@ function initChatSocket() {
 	});
 	chatMessageIn?.classList.add("hidden");
 
-	
+	chatKeyToggle();
 	// Listen for messages from the server "MsgObjectServer"
 	socket.on("MsgObjectServer", (data: { message: ClientMessage }) => {
 		if (socket) {
@@ -165,12 +229,12 @@ function initChatSocket() {
 		if (systemWindow && data.message.destination === "system-info") {
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
-			systemWindow.appendChild(messageElement);
-
+			
 			// keep only last 10
 			while (systemWindow.children.length > MAX_SYSTEM_MESSAGES) {
 				systemWindow.removeChild(systemWindow.firstChild!);
 			}
+			systemWindow.appendChild(messageElement);
 			systemWindow.scrollTop = systemWindow.scrollHeight;
 		}
 	});
@@ -205,9 +269,11 @@ function initChatSocket() {
 		if (blockUserBtn) {
 			let message = "";
 			if (data.userState === "block") {
-				((message = "un-block"), (blockMessage = true));
+				(message = "un-block");
+				// ((message = "un-block"), (blockMessage = true));
 			} else {
-				((message = "block"), (blockMessage = false));
+				// ((message = "block"), (blockMessage = false));
+				(message = "block");
 			}
 			blockUserBtn.textContent = message;
 		}
@@ -464,8 +530,8 @@ chatButton!.addEventListener("click",() => {
 		if (!socket) return;
 		connected(socket);
 		chatMessageIn?.classList.add("hidden");
-		chatMessageIn!.textContent = '';		
-		
+		chatMessageIn!.textContent = '';
+		sendtextbox.focus();			
 	} else {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.remove("opacity-60");
