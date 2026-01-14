@@ -438,10 +438,14 @@ class StateI {
 		) {
 			this.fastify.log.warn(
 				'user trying to connect to a game he\'s not part of: gameId:' +
-				g_id +
-				' userId:' +
-				sock.authUser.id,
-			);
+				g_id + ' userId:' + sock.authUser.id);
+			return JoinRes.no;
+		}
+		if (game.userOnPage[0] === true && game.userOnPage[1] === true)
+		{
+			this.fastify.log.warn(
+				'user trying to connect to a game he\'s already joined: gameId:' +
+				g_id + ' userId:' + sock.authUser.id);
 			return JoinRes.no;
 		}
 		game.userOnPage[game.userLeft === sock.authUser.id ? 0 : 1] = true;
