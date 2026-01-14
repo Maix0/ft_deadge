@@ -19,7 +19,9 @@ export class Tournament {
 	public startTimeout: NodeJS.Timeout | undefined;
 	public games: PongGameId[] = [];
 
-	constructor(public owner: UserId) { }
+	constructor(public owner: UserId) {
+		State.broadcastTourStatus('A new Tournament has been created');
+	}
 
 	public addUser(id: UserId, name: string) {
 		if (this.state !== 'prestart') return;
@@ -35,6 +37,7 @@ export class Tournament {
 		if (this.state !== 'prestart') return;
 		if (this.users.size < 2) {
 			this.state = 'canceled';
+			State.broadcastTourStatus('The tournament has been canceled !');
 			return;
 		}
 		this.state = 'playing';
@@ -54,6 +57,7 @@ export class Tournament {
 		comb.forEach(([u1, u2]) => { result.push([u1, u2]); });
 		this.matchup = result;
 		this.setupNextGame();
+		State.broadcastTourStatus('The tournament Started !');
 	}
 
 	private setupNextGame() {

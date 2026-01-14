@@ -5,16 +5,14 @@ import { incrementCounter } from "./incrementCounter";
 // 	return count;
 // }
 
-export async function openMessagePopup(message: any) {
+export async function openMessagePopup(message: string) {
 
 	const modalmessage = document.getElementById("modal-message") ?? null;
 	if(!message) return
 	const obj =  message;
 	if (modalmessage) {
 		const messageElement = document.createElement("div");
-		messageElement.innerHTML = `
-            			<div  id="profile-about">Game-Info: ${incrementCounter()}:  ${obj.nextGame}</div>
-        			`;
+		messageElement.innerHTML = `<div id="profile-about">${message}</div>`;
 		modalmessage.appendChild(messageElement);
 		modalmessage.scrollTop = modalmessage.scrollHeight;
 	}
