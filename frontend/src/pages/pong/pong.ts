@@ -342,6 +342,7 @@ function pongClient(
 			};
 
 			socket.on("gameUpdate", (state: GameUpdate) => {
+				ready.classList.add("hidden");
 				updateCurrentGame(state);
 				render(state, playBatL, playBatR, ball, playInfo);
 			});
