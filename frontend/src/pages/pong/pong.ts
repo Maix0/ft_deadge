@@ -176,6 +176,31 @@ function gameJoinButtons(socket : CSocket, inTournament : boolean, currentGame :
 		}
 	});
 }
+function resetPureBoard(batLeft: HTMLDivElement, batRight: HTMLDivElement, playerL: HTMLDivElement, playerR: HTMLDivElement, ball : HTMLDivElement, playInfo: HTMLDivElement) {
+	const DEFAULT_POSITIONS: GameUpdate = {
+		gameId: "",
+		ball: { size: 16, x: 800 / 2, y: 450 / 2 },
+		left: {
+			id: "",
+			paddle: { x: 40, y: 185, width: 12, height: 80 },
+			score: 0,
+		},
+		right: {
+			id: "",
+			paddle: { x: 748, y: 185, width: 12, height: 80 },
+			score: 0,
+		},
+		local: false,
+	};
+
+	render(DEFAULT_POSITIONS, batLeft, batRight, ball, playInfo);
+	batLeft.style.backgroundColor = "white";
+	batRight.style.backgroundColor = "white";
+	playerR.style.color = "";
+	playerL.style.color = "";
+	playerR.innerText = "";
+	playerL.innerText = "";
+};
 
 function keys_listen_setup(document : Document, currentGame : currentGameInfo | null, socket : CSocket,
 	playHow : HTMLDivElement, playHow_b : HTMLButtonElement,
@@ -290,70 +315,15 @@ function pongClient(
 				!playHow_b || !playHow
 			)
 				return showError("fatal error");
-
-			// buttons setup
-			gameJoinButtons(socket, inTournament, currentGame, tournament, queue, localGame, ready);
-			playhowButtons(playHow_b, playHow);
-			tourinfoButtons(tourInfo, tourScoreScreen);
-
-			// keys listener setup
-			keys_listen_setup(document, currentGame, socket, playHow, playHow_b, tourScoreScreen, queue);
-
-			// ---
-			// join game
-			// ---
-			if (game_req_join != null) {
-				socket.emit("joinGame", game_req_join, (res: JoinRes) => {
-					switch (res) {
-						case JoinRes.yes:
-							showInfo("JoinRes = yes");
-							quitChat();
-							break;
-						case JoinRes.no:
-							showInfo("JoinRes = no");
-							break;
-						default:
-							showError("JoinRes switch fail:" + res);
-					}
-				});
-				game_req_join = null;
-			}
-			// ---
-			// join game end
-			// ---
-
 			// ---
 			// position logic (client)
 			// ---
-
-			function resetBoard(batLeft: HTMLDivElement, batRight: HTMLDivElement, playerL: HTMLDivElement, playerR: HTMLDivElement, ball : HTMLDivElement, playInfo: HTMLDivElement) {
-				const DEFAULT_POSITIONS: GameUpdate = {
-					gameId: "",
-					ball: { size: 16, x: 800 / 2, y: 450 / 2 },
-					left: {
-						id: "",
-						paddle: { x: 40, y: 185, width: 12, height: 80 },
-						score: 0,
-					},
-					right: {
-						id: "",
-						paddle: { x: 748, y: 185, width: 12, height: 80 },
-						score: 0,
-					},
-					local: false,
-				};
-
-				render(DEFAULT_POSITIONS, batLeft, batRight, ball, playInfo);
-				batLeft.style.backgroundColor = DEFAULT_COLOR;
-				batRight.style.backgroundColor = DEFAULT_COLOR;
-				playerR.style.color = "";
-				playerL.style.color = "";
-				playerR.innerText = "";
-				playerL.innerText = "";
-				currentGame = null;
-			}
 			let render_tour_score_once = false;
 
+			function resetBoard(batLeft: HTMLDivElement, batRight: HTMLDivElement, playerL: HTMLDivElement, playerR: HTMLDivElement, ball : HTMLDivElement, playInfo: HTMLDivElement) {
+				resetPureBoard(batLeft, batRight, playerL, playerR, ball, playInfo);
+				currentGame = null;
+			}
 			const renderTournamentScores = (info: TourInfo) => {
 				let players = info.players.sort((l, r) => r.score - l.score);
 
@@ -511,7 +481,7 @@ function pongClient(
 				else if (e === "unregistered")
 					queue.innerText = QueueState.Iddle;
 				showInfo(`QueueEvent: ${e}`);
-			}); // MAYBE: play a sound? to notify user that smthing happend
+			});
 			// ---
 			// queue evt end
 			// ---
@@ -557,7 +527,31 @@ function pongClient(
 				if (kind === "failure") showError(msg ?? "An error Occured");
 			});
 
+			// ---
 			// init
+			// ---
+
+			gameJoinButtons(socket, inTournament, currentGame, tournament, queue, localGame, ready);
+			playhowButtons(playHow_b, playHow);
+			tourinfoButtons(tourInfo, tourScoreScreen);
+			keys_listen_setup(document, currentGame, socket, playHow, playHow_b, tourScoreScreen, queue);
+
+			if (game_req_join != null) {
+				socket.emit("joinGame", game_req_join, (res: JoinRes) => {
+					switch (res) {
+						case JoinRes.yes:
+							showInfo("JoinRes = yes");
+							quitChat();
+							break;
+						case JoinRes.no:
+							showInfo("JoinRes = no");
+							break;
+						default:
+							showError("JoinRes switch fail:" + res);
+					}
+				});
+				game_req_join = null;
+			}
 			ready.classList.add("hidden");
 			queue.innerText = QueueState.Iddle;
 			ready.innerText = ReadyState.readyUp;
