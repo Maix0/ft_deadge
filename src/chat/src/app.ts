@@ -102,6 +102,20 @@ async function onReady(fastify: FastifyInstance) {
 			socket.emit('welcome', { msg: 'Welcome to the chat! : ' });
 			broadcast(fastify, obj, obj.SenderWindowID);
 			fastify.log.info(`Client connected: ${socket.id}`);
+			const clientInfo = clientChat.get(socket.id);
+			const clientName = clientInfo?.user;
+
+			if (!clientName) return;
+			const connectionMsg: ClientMessage = {
+				command: '',
+				destination: 'system-info',
+				type: 'chat' as const,
+				user: clientName,
+				text: 'is connected au server',
+				timestamp: Date.now(),
+				SenderWindowID: socket.id,
+			};
+			broadcast(fastify, connectionMsg, socket.id);
 		});
 
 		list_SocketListener(fastify, socket);
@@ -111,17 +125,17 @@ async function onReady(fastify: FastifyInstance) {
 			const client = clientChat.get(socket.id) || null;
 			if (userFromFrontend.oldUser !== userFromFrontend.user) {
 				if (client) {
-  					client.user = userFromFrontend.user;
+					client.user = userFromFrontend.user;
 				}
 			}
 		});
 
 		socket.on('logout', () => {
-		  const clientInfo = clientChat.get(socket.id);
-		  const clientName = clientInfo?.user;
+			const clientInfo = clientChat.get(socket.id);
+			const clientName = clientInfo?.user;
 
-		  if (!clientName) return;
-		  	const obj: ClientMessage = {
+			if (!clientName) return;
+			const obj: ClientMessage = {
 				command: '',
 				destination: 'system-info',
 		    	type: 'chat' as const,
@@ -322,7 +336,7 @@ async function onReady(fastify: FastifyInstance) {
 
 		socket.on('client_entered', (data) => {
 
-    		// data may be undefined (when frontend calls emit with no payload)
+			// data may be undefined (when frontend calls emit with no payload)
     		const userNameFromFrontend = data?.userName || null;
     		const userFromFrontend = data?.user || null;
 			let clientName = clientChat.get(socket.id)?.user || null;
@@ -339,7 +353,7 @@ async function onReady(fastify: FastifyInstance) {
 				};
 			}
     		if (clientName !== null) {
-    		    const obj: ClientMessage = {
+				const obj: ClientMessage = {
 					command: '',
 					destination: 'system-info',
     		        type: 'chat',
@@ -355,4 +369,5 @@ async function onReady(fastify: FastifyInstance) {
 		});
 
 	});
+
 }
