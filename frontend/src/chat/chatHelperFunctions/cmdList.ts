@@ -16,7 +16,8 @@ export function cmdList() {
 	addMessage('\'@quit\' - disconnect user from the chat');
 	addMessage('\'@pong\' - displays your pong match results');
 	addMessage('\'@ttt\' - displays your ttt match results');
-	addMessage('\'F1\' - chat box display toggles on / off');
+	addMessage('\'F1\' - chat box display toggles on');
+	addMessage('\'F2\' - chat box display toggles off');
 	addMessage('** *********************************** **');
 	addMessage('*');
 }

@@ -83,12 +83,10 @@ const sendtextbox = document.getElementById(
 ) as HTMLButtonElement;
 const systemWindow = document.getElementById("chat-system-box") as HTMLDivElement;
 
-
-
-
 function chatKeyToggle() {
 	let anti_flicker_control = false;
-	const chat_toggle_key = 'f1';
+	const chat_toggle_key = 'f2';
+	const chat_toggle_key2 = 'f1';
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_toggle_key] === true) {
 			anti_flicker_control = true;
@@ -104,27 +102,25 @@ function chatKeyToggle() {
 	});
 	setInterval( () => {
 		if(keysPressed[chat_toggle_key] === true) {
-			if (!chatBox.classList.contains("hidden") && anti_flicker_control === false) {
 				overlay.classList.remove("opacity-60");
 				chatBox.classList.add("hidden");
 				chatMessageIn?.classList.add("hidden");
 				chatMessageIn!.textContent = '';
-			} else {
-				if (anti_flicker_control && !chatBox.classList.contains("hidden")) return;
+		}
+		if (keysPressed[chat_toggle_key2] === true) {
 				anti_flicker_control = false;
 				chatBox.classList.remove("hidden");
 				overlay.classList.add("opacity-60");
 				chatMessageIn?.classList.add("hidden");
 				chatMessageIn!.textContent = '';
 				sendtextbox.focus();
-			}
+			
 		}
 	}, 1000/10);
 };
 
 function initChatSocket() {
 	let socket = getSocket();
-	// let blockMessage: boolean;
 	if (
 		!chatBox ||
 		!chatMessageIn ||
