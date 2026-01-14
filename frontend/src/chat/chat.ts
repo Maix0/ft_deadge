@@ -33,6 +33,7 @@ import { showError } from "@app/toast";
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
 export let noGuestFlag: boolean = true;
+let keysPressed: Record<string, boolean> = {};
 
 declare module "ft_state" {
 	interface State {
@@ -84,11 +85,10 @@ const systemWindow = document.getElementById("chat-system-box") as HTMLDivElemen
 
 
 
+let anti_flicker_control = false;
 
-const keysPressed: Record<string, boolean> = {};
-async function chatKeyToggle() {
+function chatKeyToggle() {
 	const chat_toggle_key = 'f1';
-	let anti_flicker_control = false;
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_toggle_key] === true) {
 			anti_flicker_control = true;
@@ -98,25 +98,26 @@ async function chatKeyToggle() {
 	});
 	document.addEventListener("keyup", (event) => {
 		keysPressed[event.key.toLowerCase()] = false;
-		if (event.key.toLowerCase() === chat_toggle_key)
+		if (event.key.toLowerCase() === chat_toggle_key) {
 			anti_flicker_control = false;
+		}
 	});
 	setInterval( () => {
 		if(keysPressed[chat_toggle_key] === true) {
 			if (!chatBox.classList.contains("hidden") && anti_flicker_control === false) {
 				overlay.classList.remove("opacity-60");
 				chatBox.classList.add("hidden");
-				overlay.classList.remove("opacity-60");
 				chatMessageIn?.classList.add("hidden");
 				chatMessageIn!.textContent = '';
 			} else {
+				if (anti_flicker_control && !chatBox.classList.contains("hidden")) return;
+				anti_flicker_control = false;
 				chatBox.classList.remove("hidden");
 				overlay.classList.add("opacity-60");
 				chatMessageIn?.classList.add("hidden");
 				chatMessageIn!.textContent = '';
 				sendtextbox.focus();
 			}
-
 		}
 	}, 1000/10);
 };
@@ -513,8 +514,6 @@ myTTTGames?.addEventListener("click", () => {
 	navigateTo("/app/ttt/games");
 	quitChat();
 });
-
-
 
 // Enter key to send message
 sendtextbox.addEventListener("keydown", (event) => {
