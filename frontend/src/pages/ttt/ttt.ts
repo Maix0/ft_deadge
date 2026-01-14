@@ -139,6 +139,18 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
             const updateUI = (boardState: (string | null)[]) => {
                 boardState.forEach((state, idx) => {
                     cells[idx].innerText = state || " ";
+                    if (state === null) {
+                        cells[idx].classList.remove('text-red-800');
+                        cells[idx].classList.add('text-white');
+                    }
+                    if (state === 'X' && curGame?.playerX === user.id) {
+                        cells[idx].classList.add('text-red-800');
+                        cells[idx].classList.remove('text-white');
+                    }
+                    if (state === 'O' && curGame?.playerO === user.id) {
+                        cells[idx].classList.add('text-red-800');
+                        cells[idx].classList.remove('text-white');
+                    }
                 });
             };
 
@@ -169,6 +181,7 @@ async function handleTTT(): Promise<RouteHandlerReturn> {
                 userXString.innerText = "";
                 currentPlayerTimer.innerText = "Waiting for match...";
                 currentPlayerIndicator.innerText = "";
+                updateUI([null, null, null, null, null, null, null, null, null, ])
                 joinQueueBtn.innerText = QueueState.Idle;
             })
 
