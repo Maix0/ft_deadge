@@ -107,7 +107,6 @@ function gameJoinButtons(socket : CSocket, inTournament : boolean, currentGame :
 	tournament : HTMLButtonElement, queue : HTMLButtonElement, localGame : HTMLButtonElement, ready : HTMLButtonElement)
 {
 	tournament.addEventListener("click", () => {
-		showInfo(`Button State: ${tournament.innerText}`);
 		switch (tournament.innerText) {
 			case TourBtnState.AbleToStart:
 				socket.emit("tourStart");
@@ -133,15 +132,18 @@ function gameJoinButtons(socket : CSocket, inTournament : boolean, currentGame :
 			showError("You can't queue up currently !");
 			return;
 		}
-		if (queue.innerText !== QueueState.Iddle) {
-			if (queue.innerText === QueueState.InQueu) {
-				socket.emit("dequeue");
+		switch (queue.innerText) {
+			case (QueueState.Iddle) : 
+				queue.innerText = QueueState.InQueu;
+				socket.emit("enqueue");
+				break ;
+			case (QueueState.InQueu) :
 				queue.innerText = QueueState.Iddle;
-			}
-			return;
+				socket.emit("dequeue");
+				break ;
+			default :
+				showError("Queue event are disabled currently");
 		}
-		queue.innerText = QueueState.InQueu;
-		socket.emit("enqueue");
 	});
 	localGame.addEventListener("click", () => {
 		if (
@@ -157,7 +159,6 @@ function gameJoinButtons(socket : CSocket, inTournament : boolean, currentGame :
 		localGame.innerText = "playing";
 	});
 	ready.addEventListener("click", () => {
-		showInfo("rdy-evt");
 		switch (ready.innerText) {
 			case ReadyState.readyDown:
 				socket.emit("readyUp");
@@ -202,42 +203,32 @@ function resetPureBoard(batLeft: HTMLDivElement, batRight: HTMLDivElement, playe
 	playerL.innerText = "";
 };
 
-function keys_listen_setup(document : Document, currentGame : currentGameInfo | null, socket : CSocket,
+function keys_listen_setup(currentGame : currentGameInfo | null, socket : CSocket,
+	keys : Record<string, boolean>,
 	playHow : HTMLDivElement, playHow_b : HTMLButtonElement,
 	tourScoreScreen : HTMLDivElement, queue : HTMLButtonElement)
 {
-	const keys: Record<string, boolean> = {};
+	const keysP1 = {up:'w', down:'s'};
+	const keysP2 = {up:'p', down:'l'};
 
-	document.addEventListener("keydown", (e) => {
-		keys[e.key.toLowerCase()] = true;
-	});
-	document.addEventListener("keyup", (e) => {
-		keys[e.key.toLowerCase()] = false;
-	});
+	let packet: GameMove = {
+		move: null,
+		moveRight: null,
+	};
 
-	setInterval(() => {
-		const keysP1 = {up:'w', down:'s'};
-		const keysP2 = {up:'p', down:'l'};
-
-		let packet: GameMove = {
-			move: null,
-			moveRight: null,
-		};
-
-		// key sender
-		if (keys["escape"] === true) {
-			playHow.classList.add("hidden");
-			tourScoreScreen.classList.add("hidden");
-			playHow_b.innerText = "?";
-		}
-		if (queue.innerText !== QueueState.InGame || currentGame == null)
-			return;
-		if (keys[keysP1.up] !== keys[keysP1.down])
-			packet.move = keys[keysP1.up] ? "up" : "down";
-		if (currentGame.game.local && keys[keysP2.up] !== keys[keysP2.down])
-			packet.moveRight = keys[keysP2.up] ? "up" : "down";
-		socket.emit("gameMove", packet);
-	}, 1000 / 60);
+	// key sender
+	if (keys["escape"] === true) {
+		playHow.classList.add("hidden");
+		tourScoreScreen.classList.add("hidden");
+		playHow_b.innerText = "?";
+	}
+	if (queue.innerText !== QueueState.InGame || currentGame == null)
+		return;
+	if (keys[keysP1.up] !== keys[keysP1.down])
+		packet.move = keys[keysP1.up] ? "up" : "down";
+	if (currentGame.game.local && keys[keysP2.up] !== keys[keysP2.down])
+		packet.moveRight = keys[keysP2.up] ? "up" : "down";
+	socket.emit("gameMove", packet);
 }
 function render(state: GameUpdate, playBatL : HTMLDivElement, playBatR : HTMLDivElement, ball :HTMLDivElement, playInfo : HTMLDivElement) {
 	playBatL.style.top = `${state.left.paddle.y}px`;
@@ -480,7 +471,6 @@ function pongClient(
 				if (e === "registered") queue.innerText = QueueState.InQueu;
 				else if (e === "unregistered")
 					queue.innerText = QueueState.Iddle;
-				showInfo(`QueueEvent: ${e}`);
 			});
 			// ---
 			// queue evt end
@@ -530,24 +520,32 @@ function pongClient(
 			// ---
 			// init
 			// ---
+			const keys: Record<string, boolean> = {};
+			document.addEventListener("keydown", (e) => {
+				keys[e.key.toLowerCase()] = true;
+			});
+			document.addEventListener("keyup", (e) => {
+				keys[e.key.toLowerCase()] = false;
+			});
+
+			setInterval(() => {keys_listen_setup(currentGame, socket, keys, playHow, playHow_b, tourScoreScreen, queue)}, 1000 / 60);
 
 			gameJoinButtons(socket, inTournament, currentGame, tournament, queue, localGame, ready);
 			playhowButtons(playHow_b, playHow);
 			tourinfoButtons(tourInfo, tourScoreScreen);
-			keys_listen_setup(document, currentGame, socket, playHow, playHow_b, tourScoreScreen, queue);
 
 			if (game_req_join != null) {
 				socket.emit("joinGame", game_req_join, (res: JoinRes) => {
 					switch (res) {
 						case JoinRes.yes:
-							showInfo("JoinRes = yes");
+							showInfo("Joined game with success");
 							quitChat();
 							break;
 						case JoinRes.no:
-							showInfo("JoinRes = no");
+							showInfo("You cannot access this game");
 							break;
 						default:
-							showError("JoinRes switch fail:" + res);
+							showError("Joining game failed" + res);
 					}
 				});
 				game_req_join = null;
