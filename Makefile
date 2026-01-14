@@ -151,5 +151,10 @@ fnginx: nginx-dev/nginx nginx-dev/nginx-selfsigned.crt nginx-dev/nginx-selfsigne
 jwt_secret:
 	sh -c "dd if=/dev/urandom bs=32 count=1 2>/dev/null | base64 | tr -d -- '\n' | tr -- '+/' '-_'; echo"
 
+generateEnv:
+	cp env.example .env
+	sed -i 's/^JWT_SECRET=.*/JWT_SECRET=$(shell sh -c "dd if=/dev/urandom bs=32 count=1 2>/dev/null | base64 | tr -d -- '\n' | tr -- '+/' '-_'; echo")/' .env
+
+
 #	phony
 .PHONY: all clean fclean re header footer npm@install npm@clean npm@fclean npm@build sql tmux logs jwt_secret

@@ -14,5 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Generate valid .enva
+      run: make generateEnv
     - name: Build the Docker image
-      run: make all
+      run: make all CI=y

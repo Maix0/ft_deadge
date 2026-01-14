@@ -4,17 +4,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
-    dbmlSQLite = {
-      url = "github:maix0/DBML_SQLite";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
-    dbmlSQLite,
   }:
     flake-utils.lib.eachDefaultSystem (
       system: let
@@ -44,7 +39,6 @@
           packages = with pkgs; [
             act
             clang
-            dbmlSQLite.packages.${system}.default
             gnumake
             lazydocker
             nodejs_22
@@ -64,7 +58,6 @@
             export PODMAN_COMPOSE_WARNING_LOGS="false";
             export DATABASE_DIR="$(realpath .)/db"
             mkdir -p $DATABASE_DIR
-            export JWT_SECRET="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           '';
         };
       }
