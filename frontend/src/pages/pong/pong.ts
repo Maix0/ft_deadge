@@ -214,6 +214,23 @@ function keys_listen_setup(document : Document, currentGame : currentGameInfo | 
 		socket.emit("gameMove", packet);
 	}, 1000 / 60);
 }
+function render(state: GameUpdate, playBatL : HTMLDivElement, playBatR : HTMLDivElement, ball :HTMLDivElement, playInfo : HTMLDivElement) {
+	playBatL.style.top = `${state.left.paddle.y}px`;
+	playBatL.style.left = `${state.left.paddle.x}px`;
+	playBatL.style.width = `${state.left.paddle.width}px`;
+	playBatL.style.height = `${state.left.paddle.height}px`;
+
+	playBatR.style.top = `${state.right.paddle.y}px`;
+	playBatR.style.left = `${state.right.paddle.x}px`;
+	playBatR.style.width = `${state.right.paddle.width}px`;
+	playBatR.style.height = `${state.right.paddle.height}px`;
+
+	ball.style.transform = `translateX(${state.ball.x - state.ball.size}px) translateY(${state.ball.y - state.ball.size}px)`;
+	ball.style.height = `${state.ball.size * 2}px`;
+	ball.style.width = `${state.ball.size * 2}px`;
+
+	playInfo.innerText = `${state.left.score} | ${state.right.score}`;
+};
 
 function pongClient(
 	_url: string,
@@ -309,7 +326,7 @@ function pongClient(
 			// position logic (client)
 			// ---
 
-			function resetBoard(batLeft: HTMLDivElement, batRight: HTMLDivElement, playerL: HTMLDivElement, playerR: HTMLDivElement) {
+			function resetBoard(batLeft: HTMLDivElement, batRight: HTMLDivElement, playerL: HTMLDivElement, playerR: HTMLDivElement, ball : HTMLDivElement, playInfo: HTMLDivElement) {
 				const DEFAULT_POSITIONS: GameUpdate = {
 					gameId: "",
 					ball: { size: 16, x: 800 / 2, y: 450 / 2 },
@@ -325,7 +342,8 @@ function pongClient(
 					},
 					local: false,
 				};
-				render(DEFAULT_POSITIONS);
+
+				render(DEFAULT_POSITIONS, batLeft, batRight, ball, playInfo);
 				batLeft.style.backgroundColor = DEFAULT_COLOR;
 				batRight.style.backgroundColor = DEFAULT_COLOR;
 				playerR.style.color = "";
@@ -362,36 +380,9 @@ function pongClient(
 				}
 			};
 
-			// TODO: REMOVE THIS
-			// const makePlayer = (n: number) => ({ name: `user${n}`, id: `${n}`, score: n })
-			//
-			// renderTournamentScores({
-			// 	state: "playing",
-			// 	ownerId: "ownerID",
-			// 	remainingMatches: null,
-			// 	players: [...Array.from(Array(10).keys()).map(makePlayer), { id: user.id, name: user.name, score: 99 }],
-			// });
-
-			const render = (state: GameUpdate) => {
-				playBatL.style.top = `${state.left.paddle.y}px`;
-				playBatL.style.left = `${state.left.paddle.x}px`;
-				playBatL.style.width = `${state.left.paddle.width}px`;
-				playBatL.style.height = `${state.left.paddle.height}px`;
-
-				playBatR.style.top = `${state.right.paddle.y}px`;
-				playBatR.style.left = `${state.right.paddle.x}px`;
-				playBatR.style.width = `${state.right.paddle.width}px`;
-				playBatR.style.height = `${state.right.paddle.height}px`;
-
-				ball.style.transform = `translateX(${state.ball.x - state.ball.size}px) translateY(${state.ball.y - state.ball.size}px)`;
-				ball.style.height = `${state.ball.size * 2}px`;
-				ball.style.width = `${state.ball.size * 2}px`;
-
-				playInfo.innerText = `${state.left.score} | ${state.right.score}`;
-			};
 			socket.on("gameUpdate", (state: GameUpdate) => {
 				updateCurrentGame(state);
-				render(state);
+				render(state, playBatL, playBatR, ball, playInfo);
 			});
 
 			socket.on("tourEnding", (ending) => {
@@ -466,7 +457,7 @@ function pongClient(
 			socket.on("newGame", async (state) => {
 				currentGame = null;
 				updateCurrentGame(state);
-				render(state);
+				render(state, playBatL, playBatR, ball, playInfo);
 
 				tourScoreScreen.classList.add("hidden");
 				queue.innerText = QueueState.InGame;
@@ -510,7 +501,7 @@ function pongClient(
 						localGame.innerText = "Local Game";
 					}
 				}
-				resetBoard(playBatL, playBatR, playNameL, playNameR);
+				resetBoard(playBatL, playBatR, playNameL, playNameR, ball, playInfo);
 			});
 			socket.on("updateInformation", (e) => {
 				queueInfo.innerText = `${e.totalUser}👤 ${e.inQueue}⏳ ${e.totalGames}▮•▮`;
@@ -570,7 +561,7 @@ function pongClient(
 			ready.classList.add("hidden");
 			queue.innerText = QueueState.Iddle;
 			ready.innerText = ReadyState.readyUp;
-			resetBoard(playBatL, playBatR, playNameL, playNameR);
+			resetBoard(playBatL, playBatR, playNameL, playNameR, ball, playInfo);
 		},
 	};
 }
