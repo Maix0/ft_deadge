@@ -12,9 +12,10 @@ export async function openMessagePopup(message: string) {
 	const obj =  message;
 	if (modalmessage) {
 		const messageElement = document.createElement("div");
-		messageElement.innerHTML = `<div id="profile-about">${message}</div>`;
+		messageElement.innerHTML = `<div id="profile-about" class="text-lg">${message}</div>`;
 		modalmessage.appendChild(messageElement);
-		modalmessage.scrollTop = modalmessage.scrollHeight;
+		modalmessage.lastElementChild?.scrollIntoView({ block: "end" });
+
 	}
 	const gameMessage = document.getElementById("game-modal") ?? null;
 	if (gameMessage) {
