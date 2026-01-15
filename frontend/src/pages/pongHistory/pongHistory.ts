@@ -20,6 +20,7 @@ async function pongHistory(_url: string, args: RouteHandlerParams): Promise<Rout
 	if (isNullish(user)) {
 		return { html: '<span> You aren\'t logged in </span>', postInsert: () => { showError("You must be logged in !"); navigateTo("/") } };
 	}
+	let targetUserId = args.userid !== 'me' ? args.userid : user.id;
 
 	let userInfoRes = await client.getUser({ user: args.userid });
 	if (userInfoRes.kind !== 'success') {
@@ -43,9 +44,9 @@ async function pongHistory(_url: string, args: RouteHandlerParams): Promise<Rout
 		if (!g.local) {
 			let youwin = false;
 
-			if (g.left.id === user.id && g.outcome === 'winL')
+			if (g.left.id === targetUserId && g.outcome === 'winL')
 				youwin = true;
-			else if (g.right.id === user.id && g.outcome === 'winR')
+			else if (g.right.id === targetUserId && g.outcome === 'winR')
 				youwin = true;
 
 			if (youwin)
