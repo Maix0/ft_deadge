@@ -229,7 +229,7 @@ async function onReady(fastify: FastifyInstance) {
 			const profilInvite: ClientProfil = JSON.parse(data) || '';
 			const linkGame: PongGameId | undefined = await setGameLink(fastify, data);
 			if (!linkGame) return;
-			const link: string = `<a href="/app/pong?game=${linkGame}" style="color: blue; text-decoration: underline; cursor: pointer;">Click me</a>`;
+			const link: string = `<a href="/app/pong?game=${linkGame}" style="color: blue; text-decoration: underline; cursor: pointer;">Click me</a>`;			
 			const inviteHtml: string = 'invites you to a game ' + link;
 
 			if (clientName !== null) {
