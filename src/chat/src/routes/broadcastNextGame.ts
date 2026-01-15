@@ -8,24 +8,6 @@ export const ChatReq = Type.Object({
 
 export type ChatReq = Static<typeof ChatReq>;
 
-// const route: FastifyPluginAsync = async (fastify): Promise<void> => {
-// 	fastify.post<{ Body: ChatReq }>(
-// 		'/api/chat/broadcast',
-// 		{
-// 			schema: {
-// 				body: ChatReq,
-// 				hide: true,
-// 			},
-// 			config: { requireAuth: false },
-// 		},
-// 		async function(req, res) {
-// 			// broadcast(this, { command: '', destination: '', user: 'CMwaLeSever!!', text: req.body.message, SenderWindowID: 'server' });
-// 			void res;
-// 		},
-// 	);
-// };
-// export default route;
-
 const route: FastifyPluginAsync = async (fastify): Promise<void> => {
 	fastify.post<{ Body: ChatReq }>('/broadcastNextGame', {
 		schema: {
