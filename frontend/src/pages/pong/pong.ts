@@ -437,7 +437,6 @@ function pongClient(
 			});
 
 			socket.on("gameEnd", (winner) => {
-				ready.classList.add("hidden");
 				queue.innerHTML = QueueState.Iddle;
 				queue.style.color = "white";
 
