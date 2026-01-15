@@ -87,10 +87,10 @@ const systemWindow = document.getElementById("chat-system-box") as HTMLDivElemen
 function chatKeyToggle() {
 	let anti_flicker_control = false;
 	const chat_hide_key = 'escape';
-	const chat_display_key = 'f1';
-	const pong_display_key = 'f2';
-	const ttt_display_key = 'f4';
-	const home_display_key = 'f8';
+	const chat_display_key = 'f2';
+	const pong_display_key = 'f4';
+	const ttt_display_key = 'f8';
+	const home_display_key = 'f9';
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_hide_key] === true) {
 			anti_flicker_control = true;
