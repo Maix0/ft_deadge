@@ -500,12 +500,8 @@ window.addEventListener("focus", async () => {
 	setTimeout(() => {
 		if (window.__state.chatSock) connected(window.__state.chatSock);
 	}, 16);
-	// if (window.location.pathname === "/app/chat") {
-		// if (window.__state.chatSock?.id) {
-			await windowStateVisable();
-		// }
-		toggle = true;
-	// }
+	await windowStateVisable();
+	toggle = true;
 });
 
 window.addEventListener("blur", () => {
