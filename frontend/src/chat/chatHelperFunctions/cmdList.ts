@@ -18,10 +18,10 @@ export function cmdList() {
 	addMessage('\'@ttt\' - displays your ttt match results');
 	addMessage('** ********** function keys ********** **');
 	addMessage('\'ESC\' - chat box display toggles off');
-	addMessage('\'F1\' - chat box display toggles on');
-	addMessage('\'F2\' - navigates to Pong Box');
-	addMessage('\'F4\' - navigates to TTT Box');
-	addMessage('\'F8\' - navigates to Home Page');
+	addMessage('\'F2\' - chat box display toggles on');
+	addMessage('\'F4\' - navigates to Pong Box');
+	addMessage('\'F8\' - navigates to TTT Box');
+	addMessage('\'F9\' - navigates to Home Page');
 	addMessage('** *********************************** **');
 	addMessage('*');
 }
