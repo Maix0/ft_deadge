@@ -86,10 +86,13 @@ const systemWindow = document.getElementById("chat-system-box") as HTMLDivElemen
 
 function chatKeyToggle() {
 	let anti_flicker_control = false;
-	const chat_toggle_key = 'escape';
-	const chat_toggle_key2 = 'f1';
+	const chat_hide_key = 'escape';
+	const chat_display_key = 'f1';
+	const pong_display_key = 'f2';
+	const ttt_display_key = 'f4';
+	const home_display_key = 'f8';
 	document.addEventListener("keydown", (event) => {
-		if (event.repeat && keysPressed[chat_toggle_key] === true) {
+		if (event.repeat && keysPressed[chat_hide_key] === true) {
 			anti_flicker_control = true;
 			return ;
 		};
@@ -97,12 +100,12 @@ function chatKeyToggle() {
 	});
 	document.addEventListener("keyup", (event) => {
 		keysPressed[event.key.toLowerCase()] = false;
-		if (event.key.toLowerCase() === chat_toggle_key) {
+		if (event.key.toLowerCase() === chat_hide_key) {
 			anti_flicker_control = false;
 		}
 	});
 	setInterval( () => {
-		if(keysPressed[chat_toggle_key] === true) {
+		if(keysPressed[chat_hide_key] === true) {
 				overlay.classList.remove("opacity-60");
 				chatBox.classList.add("hidden");
 				chatMessageIn?.classList.add("hidden");
@@ -110,7 +113,7 @@ function chatKeyToggle() {
 				profilList?.classList.add("hidden");
 				windowStateHidden();
 		}
-		if (keysPressed[chat_toggle_key2] === true) {
+		if (keysPressed[chat_display_key] === true) {
 				anti_flicker_control = false;
 				chatBox.classList.remove("hidden");
 				overlay.classList.add("opacity-60");
@@ -122,6 +125,18 @@ function chatKeyToggle() {
 				sendtextbox.focus();
 				windowStateVisable();
 			
+		}
+		if  (keysPressed[pong_display_key] === true) {
+			quitChat();
+			navigateTo('/app/pong');
+		}
+		if  (keysPressed[ttt_display_key] === true) {
+			quitChat();
+			navigateTo('/app/ttt');
+		}
+		if  (keysPressed[home_display_key] === true) {
+			quitChat();
+			navigateTo('/app/');
 		}
 	}, 1000/10);
 };

@@ -16,8 +16,12 @@ export function cmdList() {
 	addMessage('\'@quit\' - disconnect user from the chat');
 	addMessage('\'@pong\' - displays your pong match results');
 	addMessage('\'@ttt\' - displays your ttt match results');
-	addMessage('\'F1\' - chat box display toggles on');
+	addMessage('** ********** function keys ********** **');
 	addMessage('\'ESC\' - chat box display toggles off');
+	addMessage('\'F1\' - chat box display toggles on');
+	addMessage('\'F2\' - navigates to Pong Box');
+	addMessage('\'F4\' - navigates to TTT Box');
+	addMessage('\'F8\' - navigates to Home Page');
 	addMessage('** *********************************** **');
 	addMessage('*');
 }
