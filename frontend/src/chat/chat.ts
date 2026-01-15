@@ -83,9 +83,10 @@ const sendtextbox = document.getElementById(
 ) as HTMLButtonElement;
 const systemWindow = document.getElementById("chat-system-box") as HTMLDivElement;
 
+
 function chatKeyToggle() {
 	let anti_flicker_control = false;
-	const chat_toggle_key = 'f2';
+	const chat_toggle_key = 'escape';
 	const chat_toggle_key2 = 'f1';
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_toggle_key] === true) {
@@ -106,6 +107,8 @@ function chatKeyToggle() {
 				chatBox.classList.add("hidden");
 				chatMessageIn?.classList.add("hidden");
 				chatMessageIn!.textContent = '';
+				profilList?.classList.add("hidden");
+				windowStateHidden();
 		}
 		if (keysPressed[chat_toggle_key2] === true) {
 				anti_flicker_control = false;
@@ -113,7 +116,11 @@ function chatKeyToggle() {
 				overlay.classList.add("opacity-60");
 				chatMessageIn?.classList.add("hidden");
 				chatMessageIn!.textContent = '';
+				let socket = window.__state.chatSock;
+				if (!socket) return;
+				connected(socket);
 				sendtextbox.focus();
+				windowStateVisable();
 			
 		}
 	}, 1000/10);
@@ -181,7 +188,7 @@ function initChatSocket() {
 		const messageElement = document.createElement("div");
 		messageElement.textContent = `${user}: is connected au server`;
 		systemWindow.appendChild(messageElement);
-		systemWindow.scrollTop = systemWindow.scrollHeight;
+		systemWindow.lastElementChild?.scrollIntoView({ block: "end" });
 	});
 	chatMessageIn?.classList.add("hidden");
 
@@ -231,7 +238,8 @@ function initChatSocket() {
 				systemWindow.removeChild(systemWindow.firstChild!);
 			}
 			systemWindow.appendChild(messageElement);
-			systemWindow.scrollTop = systemWindow.scrollHeight;
+			systemWindow.lastElementChild?.scrollIntoView({ block: "end" });
+
 		}
 	});
 
