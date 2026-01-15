@@ -32,6 +32,7 @@ async function tttHistory(_url: string, args: RouteHandlerParams): Promise<Route
 	if (isNullish(user)) {
 		return { html: '<span> You aren\'t logged in </span>', postInsert: () => { showError("You must be logged in !"); navigateTo("/") } };
 	}
+	let targetUserId = args.userid !== 'me' ? args.userid : user.id;
 
 	let userInfoRes = await client.getUser({ user: args.userid });
 	if (userInfoRes.kind !== 'success') {
@@ -59,9 +60,9 @@ async function tttHistory(_url: string, args: RouteHandlerParams): Promise<Route
 
 			if (g.outcome === 'draw')
 				state = 'draw';
-			else if (g.playerX.id === user.id && g.outcome === 'winX')
+			else if (g.playerX.id === targetUserId && g.outcome === 'winX')
 				state = 'win';
-			else if (g.playerO.id === user.id && g.outcome === 'winO')
+			else if (g.playerO.id === targetUserId && g.outcome === 'winO')
 				state = 'win';
 
 			if (state === 'win')
