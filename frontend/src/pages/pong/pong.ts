@@ -59,12 +59,16 @@ enum TourInfoState {
 	NoTournament = "⚪️",
 }
 
+type gamePlayer = {id: string, name: string | Promise<string>, self: boolean};
+
 type currentGameInfo = {
 	game: GameUpdate;
 	spectating: boolean;
-	playerL: { id: string; name: string; self: boolean };
-	playerR: { id: string; name: string; self: boolean };
+	playerL: gamePlayer;
+	playerR: gamePlayer;
 }
+
+
 
 document.addEventListener("ft:pageChange", (newUrl) => {
 	if (window.__state.pongSock !== undefined) window.__state.pongSock.close();
@@ -222,7 +226,7 @@ function keys_listen_setup(currentGame : currentGameInfo | null, socket : CSocke
 		tourScoreScreen.classList.add("hidden");
 		playHow_b.innerText = "?";
 	}
-	if (queue.innerText !== QueueState.InGame || currentGame == null)
+	if (queue.innerText !== QueueState.InGame || currentGame === null)
 		return;
 	if (keys[keysP1.up] !== keys[keysP1.down])
 		packet.move = keys[keysP1.up] ? "up" : "down";
@@ -246,6 +250,21 @@ function render(state: GameUpdate, playBatL : HTMLDivElement, playBatR : HTMLDiv
 	ball.style.width = `${state.ball.size * 2}px`;
 
 	playInfo.innerText = `${state.left.score} | ${state.right.score}`;
+};
+
+function normalizeUser(
+	id: string,
+	u: Promise<{ id: string; name: string | null }>,
+	def: string,
+): gamePlayer {
+
+	let user = getSelfUser();
+
+	return {
+		id: id,
+		name: u.then( u => u.name ?? def),
+		self: id === user?.id,
+	};
 };
 
 function pongClient(
@@ -341,9 +360,8 @@ function pongClient(
 				}
 			};
 
-			socket.on("gameUpdate", (state: GameUpdate) => {
-				ready.classList.add("hidden");
-				updateCurrentGame(state);
+			socket.on("gameUpdate", async (state: GameUpdate) => {
+				await updateCurrentGame(state);
 				render(state, playBatL, playBatR, ball, playInfo);
 			});
 
@@ -370,17 +388,7 @@ function pongClient(
 			}
 
 			const updateCurrentGame = async (state: GameUpdate) => {
-				const normalizeUser = (
-					u: { id: string; name: string | null },
-					d: string,
-				) => {
-					return {
-						id: u.id,
-						name: u.name ?? d,
-						self: u.id === user.id,
-					};
-				};
-				if (currentGame === null)
+				if (currentGame === null) {
 					currentGame = {
 						spectating: !(
 							state.left.id === user.id ||
@@ -388,15 +396,20 @@ function pongClient(
 						),
 						game: state,
 						playerL: normalizeUser(
-							await getUser(state.left.id),
+							state.left.id,
+							getUser(state.left.id),
 							"left",
 						),
 						playerR: normalizeUser(
-							await getUser(state.right.id),
+							state.right.id,
+							getUser(state.right.id),
 							"right",
 						),
 					};
-				else currentGame.game = state;
+				}
+				else {
+					currentGame.game = state;
+				}
 				if (
 					(currentGame && currentGame?.game.local) ||
 					currentGame?.playerL.self
@@ -412,13 +425,17 @@ function pongClient(
 					playBatR!.style.backgroundColor = SELF_COLOR;
 					playNameR!.style.color = SELF_COLOR;
 				}
-				playNameL!.innerText = currentGame!.playerL.name;
-				playNameR!.innerText = currentGame!.playerR.name;
+				if (currentGame!.playerL.name instanceof Promise)
+					currentGame!.playerL.name.then(n => currentGame!.playerL.name = n)
+				if (currentGame!.playerR.name instanceof Promise)
+					currentGame!.playerR.name.then(n => currentGame!.playerR.name = n)
+				playNameL!.innerText = typeof currentGame!.playerL.name === 'string' ? currentGame!.playerL.name : "left";
+				playNameR!.innerText = typeof currentGame!.playerR.name === 'string' ? currentGame!.playerR.name : "right";
 			};
 
 			socket.on("newGame", async (state) => {
 				currentGame = null;
-				updateCurrentGame(state);
+				await updateCurrentGame(state);
 				render(state, playBatL, playBatR, ball, playInfo);
 
 				tourScoreScreen.classList.add("hidden");
@@ -437,6 +454,7 @@ function pongClient(
 			});
 
 			socket.on("gameEnd", (winner) => {
+				ready.classList.add("hidden");
 				queue.innerHTML = QueueState.Iddle;
 				queue.style.color = "white";
 
