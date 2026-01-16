@@ -50,7 +50,7 @@ services:
       - '9090:8443'
     volumes:
       # if you need to share files with nginx, you do it here.
-      - static-volume:/volumes/static
+      - icons-volume:/volumes/icons
     env_file: .env
     logging:
       driver: gelf
@@ -72,7 +72,7 @@ services:
       - app
     volumes:
       - sqlite-volume:/volumes/database
-      - static-volume:/volumes/static
+      - icons-volume:/volumes/icons
       - ./src/auth/config:/config
     env_file: .env
     logging:
@@ -98,7 +98,32 @@ services:
        - app
      volumes:
        - sqlite-volume:/volumes/database
-       - static-volume:/volumes/static
+     env_file: .env
+     logging:
+       driver: gelf
+       options:
+         gelf-address: "udp://127.0.0.1:12201"
+         tag: "{{.Name}}"
+
+
+  ###############
+  #    ICONS    #
+  ###############
+  icons:
+     build:
+       context: ./src/
+       args:
+         - SERVICE=icons
+       additional_contexts:
+         pnpm_base: "service:pnpm_base"
+         pnpm_deps: "service:pnpm_deps"
+     container_name: app-icons
+     restart: always
+     networks:
+       - app
+     volumes:
+       - sqlite-volume:/volumes/database
+       - icons-volume:/volumes/icons
      env_file: .env
      logging:
        driver: gelf
@@ -124,7 +149,6 @@ services:
     env_file: .env
     volumes:
       - sqlite-volume:/volumes/database
-      - static-volume:/volumes/static
     logging:
       driver: gelf
       options:
@@ -148,7 +172,6 @@ services:
       - app
     volumes:
       - sqlite-volume:/volumes/database
-      - static-volume:/volumes/static
     env_file: .env
     logging:
       driver: gelf
@@ -173,7 +196,6 @@ services:
       - app
     volumes:
       - sqlite-volume:/volumes/database
-      - static-volume:/volumes/static
     env_file: .env
     logging:
       driver: gelf
@@ -358,6 +380,6 @@ services:
 
 volumes:
   sqlite-volume:
-  static-volume:
+  icons-volume:
   grafana-data:
   elastic-data:

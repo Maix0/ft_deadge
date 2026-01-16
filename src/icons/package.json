@@ -1,0 +1,35 @@
+{
+	"type": "module",
+	"private": false,
+	"name": "icons",
+	"version": "1.0.0",
+	"description": "This project was bootstrapped with Fastify-CLI.",
+	"main": "app.ts",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"start": "npm run build && node dist/run.js",
+		"build": "vite build",
+		"build:prod": "vite build --outDir=/dist --minify=true --sourcemap=false",
+		"build:openapi": "VITE_ENTRYPOINT=src/openapi.ts vite build && node dist/openapi.cjs >openapi.json"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@fastify/formbody": "^8.0.2",
+		"@fastify/multipart": "^9.3.0",
+		"fastify": "^5.6.2",
+		"fastify-plugin": "^5.1.0",
+		"file-type": "^21.3.0",
+		"sharp": "^0.34.5",
+		"typebox": "^1.0.69"
+	},
+	"devDependencies": {
+		"@types/node": "^22.19.3",
+		"rollup-plugin-node-externals": "^8.1.2",
+		"vite": "^7.3.0",
+		"vite-tsconfig-paths": "^5.1.4"
+	}
+}

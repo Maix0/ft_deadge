@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 import { Static, Type } from 'typebox';
 import { typeResponse, isNullish, MakeStaticResponse } from '@shared/utils';
+import * as fs from 'node:fs/promises';
 
 export const GuestLoginRes = {
 	'500': typeResponse('failed', [
@@ -91,6 +92,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 						'guestLogin.failed.generic.unknown',
 					);
 				}
+				await fs.cp('/config/default.png', `/volumes/icons/${user.id}`);
 				return res.makeResponse(200, 'success', 'guestLogin.success', {
 					token: this.signJwt('auth', user.id.toString()),
 				});

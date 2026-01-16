@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 import { Static, Type } from 'typebox';
 import { typeResponse, isNullish, MakeStaticResponse } from '@shared/utils';
+import * as fs from 'node:fs/promises';
 
 const USERNAME_CHECK: RegExp = /^[a-zA-Z_0-9]+$/;
 
@@ -61,6 +62,7 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			}
 			const u = await this.db.createUser(name, user_name, password);
 			if (isNullish(u)) { return res.makeResponse(500, 'failed', 'signin.failed.generic'); }
+			await fs.cp('/config/default.png', `/volumes/icons/${u.id}`);
 
 			// every check has been passed, they are now logged in, using this token to say who they are...
 			const userToken = this.signJwt('auth', u.id);

@@ -3,6 +3,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { Static, Type } from 'typebox';
 import { typeResponse, isNullish } from '@shared/utils';
 import * as oauth2 from '../../oauth2';
+import * as fs from 'node:fs/promises';
 
 
 export const WhoAmIRes = Type.Union([
@@ -47,6 +48,9 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 					user_name = `${orig}${Date.now()}`;
 				}
 				u = await this.db.createOauth2User(user_name, provider.display_name, userinfo.unique_id);
+				if (u) {
+					await fs.cp('/config/default.png', `/volumes/icons/${u.id}`);
+				}
 			}
 			if (isNullish(u)) {
 				return res.code(500).send('failed to fetch or create user...');

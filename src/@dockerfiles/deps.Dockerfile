@@ -10,5 +10,6 @@ COPY auth/package.json  /build/auth/package.json
 COPY chat/package.json  /build/chat/package.json
 COPY tic-tac-toe/package.json  /build/tic-tac-toe/package.json
 COPY user/package.json  /build/user/package.json
+COPY icons/package.json  /build/icons/package.json
 
 RUN pnpm install -q --frozen-lockfile;

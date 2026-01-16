@@ -34,7 +34,8 @@ ifeq "$(REDUCED_SET)" "y"
 				tic-tac-toe \
 				nginx       \
 				user        \
-				pong
+				pong        \
+				icons
 endif
 
 all: build
