@@ -284,7 +284,7 @@ class StateI {
 				this.fastify.log.info(`paused game ${gameId} has been canceled`);
 				this.cleanupGame(gameId, g);
 			}
-		}, 1000 * 31);
+		}, 1000 * 60);
 		this.fastify.log.info('new paused game \'' + gameId + '\'');
 		return gameId;
 	}
