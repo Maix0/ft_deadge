@@ -29,6 +29,7 @@ import { windowStateVisable } from "./chatHelperFunctions/windowStateVisable";
 import { cmdList } from "./chatHelperFunctions/cmdList";
 import { actionBtnTTTGames } from "./chatHelperFunctions/actionBtnTTTGames";
 import { showError } from "@app/toast";
+import { actionBtnFriend } from "./chatHelperFunctions/actionBtnFriend";
 
 const MAX_SYSTEM_MESSAGES = 10;
 let inviteMsgFlag: boolean = false;
@@ -256,6 +257,7 @@ function initChatSocket() {
 		actionBtnPopUpBlock(profil, socket);
 		actionBtnPongGames(profil, socket);
 		actionBtnTTTGames(profil, socket);
+		actionBtnFriend(profil, socket);
 	});
 
 	socket.on("blockUser", (blocked: ClientProfil) => {
