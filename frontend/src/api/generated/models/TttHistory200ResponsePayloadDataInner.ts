@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { TttHistory200ResponsePayloadDataInnerPlayerX } from './TttHistory200ResponsePayloadDataInnerPlayerX';
+import type { ListFriend200ResponsePayloadFriendsInner } from './ListFriend200ResponsePayloadFriendsInner';
 import {
-    TttHistory200ResponsePayloadDataInnerPlayerXFromJSON,
-    TttHistory200ResponsePayloadDataInnerPlayerXFromJSONTyped,
-    TttHistory200ResponsePayloadDataInnerPlayerXToJSON,
-    TttHistory200ResponsePayloadDataInnerPlayerXToJSONTyped,
-} from './TttHistory200ResponsePayloadDataInnerPlayerX';
+    ListFriend200ResponsePayloadFriendsInnerFromJSON,
+    ListFriend200ResponsePayloadFriendsInnerFromJSONTyped,
+    ListFriend200ResponsePayloadFriendsInnerToJSON,
+    ListFriend200ResponsePayloadFriendsInnerToJSONTyped,
+} from './ListFriend200ResponsePayloadFriendsInner';
 
 /**
  * 
@@ -35,16 +35,16 @@ export interface TttHistory200ResponsePayloadDataInner {
     gameId: string;
     /**
      * 
-     * @type {TttHistory200ResponsePayloadDataInnerPlayerX}
+     * @type {ListFriend200ResponsePayloadFriendsInner}
      * @memberof TttHistory200ResponsePayloadDataInner
      */
-    playerX: TttHistory200ResponsePayloadDataInnerPlayerX;
+    playerX: ListFriend200ResponsePayloadFriendsInner;
     /**
      * 
-     * @type {TttHistory200ResponsePayloadDataInnerPlayerX}
+     * @type {ListFriend200ResponsePayloadFriendsInner}
      * @memberof TttHistory200ResponsePayloadDataInner
      */
-    playerO: TttHistory200ResponsePayloadDataInnerPlayerX;
+    playerO: ListFriend200ResponsePayloadFriendsInner;
     /**
      * 
      * @type {string}
@@ -95,8 +95,8 @@ export function TttHistory200ResponsePayloadDataInnerFromJSONTyped(json: any, ig
     return {
         
         'gameId': json['gameId'],
-        'playerX': TttHistory200ResponsePayloadDataInnerPlayerXFromJSON(json['playerX']),
-        'playerO': TttHistory200ResponsePayloadDataInnerPlayerXFromJSON(json['playerO']),
+        'playerX': ListFriend200ResponsePayloadFriendsInnerFromJSON(json['playerX']),
+        'playerO': ListFriend200ResponsePayloadFriendsInnerFromJSON(json['playerO']),
         'date': json['date'],
         'outcome': json['outcome'],
     };
@@ -114,8 +114,8 @@ export function TttHistory200ResponsePayloadDataInnerToJSONTyped(value?: TttHist
     return {
         
         'gameId': value['gameId'],
-        'playerX': TttHistory200ResponsePayloadDataInnerPlayerXToJSON(value['playerX']),
-        'playerO': TttHistory200ResponsePayloadDataInnerPlayerXToJSON(value['playerO']),
+        'playerX': ListFriend200ResponsePayloadFriendsInnerToJSON(value['playerX']),
+        'playerO': ListFriend200ResponsePayloadFriendsInnerToJSON(value['playerO']),
         'date': value['date'],
         'outcome': value['outcome'],
     };

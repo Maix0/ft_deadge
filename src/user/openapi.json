@@ -476,6 +476,317 @@
                 }
             }
         },
+        "/api/user/friend/add/{user}": {
+            "put": {
+                "operationId": "addFriend",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "in": "path",
+                        "name": "user",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "addFriend.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "notLoggedIn"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "auth.noCookie",
+                                                "auth.invalidKind",
+                                                "auth.noUser",
+                                                "auth.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "addFriend.failure.unknownUser"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/friend/list": {
+            "get": {
+                "operationId": "listFriend",
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg",
+                                        "payload"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "listFriend.success"
+                                            ]
+                                        },
+                                        "payload": {
+                                            "type": "object",
+                                            "required": [
+                                                "friends"
+                                            ],
+                                            "properties": {
+                                                "friends": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "id",
+                                                            "name"
+                                                        ],
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "kind",
+                                                "msg"
+                                            ],
+                                            "properties": {
+                                                "kind": {
+                                                    "enum": [
+                                                        "notLoggedIn"
+                                                    ]
+                                                },
+                                                "msg": {
+                                                    "enum": [
+                                                        "auth.noCookie",
+                                                        "auth.invalidKind",
+                                                        "auth.noUser",
+                                                        "auth.invalid"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/friend/remove/{user}": {
+            "put": {
+                "operationId": "removeFriend",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "in": "path",
+                        "name": "user",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "removeFriend.success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "notLoggedIn"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "auth.noCookie",
+                                                "auth.invalidKind",
+                                                "auth.noUser",
+                                                "auth.invalid"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Default Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "kind",
+                                        "msg"
+                                    ],
+                                    "properties": {
+                                        "kind": {
+                                            "enum": [
+                                                "failure"
+                                            ]
+                                        },
+                                        "msg": {
+                                            "enum": [
+                                                "removeFriend.failure.unknownUser"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/info/{user}": {
             "get": {
                 "operationId": "getUser",

@@ -15,6 +15,8 @@
 
 import * as runtime from '../runtime';
 import type {
+  AddFriend200Response,
+  AddFriend404Response,
   AllowGuestMessage200Response,
   AllowGuestMessage403Response,
   ChangeDesc200Response,
@@ -46,6 +48,7 @@ import type {
   GuestLogin400Response,
   GuestLogin500Response,
   GuestLoginRequest,
+  ListFriend200Response,
   Login200Response,
   Login202Response,
   Login400Response,
@@ -60,6 +63,8 @@ import type {
   PongHistory200Response,
   PongHistory404Response,
   ProviderList200Response,
+  RemoveFriend200Response,
+  RemoveFriend404Response,
   Signin200Response,
   Signin400Response,
   Signin500Response,
@@ -74,6 +79,10 @@ import type {
   TttHistory404Response,
 } from '../models/index';
 import {
+    AddFriend200ResponseFromJSON,
+    AddFriend200ResponseToJSON,
+    AddFriend404ResponseFromJSON,
+    AddFriend404ResponseToJSON,
     AllowGuestMessage200ResponseFromJSON,
     AllowGuestMessage200ResponseToJSON,
     AllowGuestMessage403ResponseFromJSON,
@@ -136,6 +145,8 @@ import {
     GuestLogin500ResponseToJSON,
     GuestLoginRequestFromJSON,
     GuestLoginRequestToJSON,
+    ListFriend200ResponseFromJSON,
+    ListFriend200ResponseToJSON,
     Login200ResponseFromJSON,
     Login200ResponseToJSON,
     Login202ResponseFromJSON,
@@ -164,6 +175,10 @@ import {
     PongHistory404ResponseToJSON,
     ProviderList200ResponseFromJSON,
     ProviderList200ResponseToJSON,
+    RemoveFriend200ResponseFromJSON,
+    RemoveFriend200ResponseToJSON,
+    RemoveFriend404ResponseFromJSON,
+    RemoveFriend404ResponseToJSON,
     Signin200ResponseFromJSON,
     Signin200ResponseToJSON,
     Signin400ResponseFromJSON,
@@ -189,6 +204,10 @@ import {
     TttHistory404ResponseFromJSON,
     TttHistory404ResponseToJSON,
 } from '../models/index';
+
+export interface AddFriendRequest {
+    user: string;
+}
 
 export interface ChangeDescOperationRequest {
     changeDescRequest: ChangeDescRequest;
@@ -226,6 +245,10 @@ export interface PongHistoryRequest {
     user: string;
 }
 
+export interface RemoveFriendRequest {
+    user: string;
+}
+
 export interface SigninRequest {
     loginRequest: LoginRequest;
 }
@@ -242,6 +265,60 @@ export interface TttHistoryRequest {
  * 
  */
 export class OpenapiOtherApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async addFriendRaw(requestParameters: AddFriendRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddFriend200Response | ChangePassword401Response | AddFriend404Response>> {
+        if (requestParameters['user'] == null) {
+            throw new runtime.RequiredError(
+                'user',
+                'Required parameter "user" was null or undefined when calling addFriend().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/user/friend/add/{user}`;
+        urlPath = urlPath.replace(`{${"user"}}`, encodeURIComponent(String(requestParameters['user'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => AddFriend200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 401) {
+            // Object response for status 401
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword401ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 404) {
+            // Object response for status 404
+            return new runtime.JSONApiResponse(response, (jsonValue) => AddFriend404ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 401, 404`);
+    }
+
+    /**
+     */
+    async addFriend(requestParameters: AddFriendRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddFriend200Response | ChangePassword401Response | AddFriend404Response> {
+        const response = await this.addFriendRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      */
@@ -768,6 +845,48 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
 
     /**
      */
+    async listFriendRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListFriend200Response | StatusOtp401Response>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/user/friend/list`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => ListFriend200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 401) {
+            // Object response for status 401
+            return new runtime.JSONApiResponse(response, (jsonValue) => StatusOtp401ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 401`);
+    }
+
+    /**
+     */
+    async listFriend(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListFriend200Response | StatusOtp401Response> {
+        const response = await this.listFriendRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async loginRaw(requestParameters: LoginOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Login200Response | Login202Response | Login400Response>> {
         if (requestParameters['loginRequest'] == null) {
             throw new runtime.RequiredError(
@@ -1013,6 +1132,60 @@ export class OpenapiOtherApi extends runtime.BaseAPI {
      */
     async providerList(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProviderList200Response> {
         const response = await this.providerListRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async removeFriendRaw(requestParameters: RemoveFriendRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RemoveFriend200Response | ChangePassword401Response | RemoveFriend404Response>> {
+        if (requestParameters['user'] == null) {
+            throw new runtime.RequiredError(
+                'user',
+                'Required parameter "user" was null or undefined when calling removeFriend().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/user/friend/remove/{user}`;
+        urlPath = urlPath.replace(`{${"user"}}`, encodeURIComponent(String(requestParameters['user'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        // CHANGED: Handle all status codes defined in the OpenAPI spec, not just 2xx responses
+        // This allows typed access to error responses (4xx, 5xx) and other status codes.
+        // The code routes responses based on the actual HTTP status code and returns
+        // appropriately typed ApiResponse wrappers for each status code.
+        if (response.status === 200) {
+            // Object response for status 200
+            return new runtime.JSONApiResponse(response, (jsonValue) => RemoveFriend200ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 401) {
+            // Object response for status 401
+            return new runtime.JSONApiResponse(response, (jsonValue) => ChangePassword401ResponseFromJSON(jsonValue));
+        }
+        if (response.status === 404) {
+            // Object response for status 404
+            return new runtime.JSONApiResponse(response, (jsonValue) => RemoveFriend404ResponseFromJSON(jsonValue));
+        }
+        // CHANGED: Throw error if status code is not handled by any of the defined responses
+        // This ensures all code paths return a value and provides clear error messages for unexpected status codes
+        // Only throw if responses were defined but none matched the actual status code
+        throw new runtime.ResponseError(response, `Unexpected status code: ${response.status}. Expected one of: 200, 401, 404`);
+    }
+
+    /**
+     */
+    async removeFriend(requestParameters: RemoveFriendRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RemoveFriend200Response | ChangePassword401Response | RemoveFriend404Response> {
+        const response = await this.removeFriendRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
