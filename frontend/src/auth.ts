@@ -1,7 +1,7 @@
 import { showError } from "@app/toast";
 import client from "@app/api";
 import cookie from "js-cookie";
-import { ensureWindowState, isNullish } from "@app/utils";
+import { ensureWindowState, isNullish, updateFriendsList } from "@app/utils";
 import { handleRoute, navigateTo } from "./routing";
 
 cookie.remove("pkce");
@@ -105,10 +105,11 @@ if (!window.__state._headerProfile) {
 
 window.__state._reloadOnAuthChange ??= false;
 if (!window.__state._reloadOnAuthChange) {
-	document.addEventListener("ft:userChange", () => {
+	document.addEventListener("ft:userChange", async () => {
 		// if the last forced auth change is less than 1000 sec old -> we do nothing
 		if (Date.now() - (window.__state.lastAuthChange ?? Date.now()) < 1000)
 			return;
+		await updateFriendsList();
 		handleRoute();
 	});
 	window.__state._reloadOnAuthChange = true;

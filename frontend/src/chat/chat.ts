@@ -39,6 +39,7 @@ let keysPressed: Record<string, boolean> = {};
 declare module "ft_state" {
 	interface State {
 		chatSock?: Socket;
+		friendList: { id: string; name: string }[];
 	}
 }
 
@@ -82,18 +83,20 @@ const sendButton = document.getElementById("b-send") as HTMLButtonElement;
 const sendtextbox = document.getElementById(
 	"t-chat-window",
 ) as HTMLButtonElement;
-const systemWindow = document.getElementById("chat-system-box") as HTMLDivElement;
+const systemWindow = document.getElementById(
+	"chat-system-box",
+) as HTMLDivElement;
 
 function chatKeyToggle() {
 	let anti_flicker_control = false;
-	const chat_hide_key = 'escape';
-	const chat_display_key = 'f2';
-	const home_display_key = 'f8';
+	const chat_hide_key = "escape";
+	const chat_display_key = "f2";
+	const home_display_key = "f8";
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_hide_key] === true) {
 			anti_flicker_control = true;
-			return ;
-		};
+			return;
+		}
 		keysPressed[event.key.toLowerCase()] = true;
 	});
 	document.addEventListener("keyup", (event) => {
@@ -102,34 +105,33 @@ function chatKeyToggle() {
 			anti_flicker_control = false;
 		}
 	});
-	setInterval( () => {
-		if(keysPressed[chat_hide_key] === true) {
-				overlay.classList.remove("opacity-60");
-				chatBox.classList.add("hidden");
-				chatMessageIn?.classList.add("hidden");
-				chatMessageIn!.textContent = '';
-				profilList?.classList.add("hidden");
-				windowStateHidden();
+	setInterval(() => {
+		if (keysPressed[chat_hide_key] === true) {
+			overlay.classList.remove("opacity-60");
+			chatBox.classList.add("hidden");
+			chatMessageIn?.classList.add("hidden");
+			chatMessageIn!.textContent = "";
+			profilList?.classList.add("hidden");
+			windowStateHidden();
 		}
 		if (keysPressed[chat_display_key] === true) {
-				anti_flicker_control = false;
-				chatBox.classList.remove("hidden");
-				overlay.classList.add("opacity-60");
-				chatMessageIn?.classList.add("hidden");
-				chatMessageIn!.textContent = '';
-				let socket = window.__state.chatSock;
-				if (!socket) return;
-				connected(socket);
-				sendtextbox.focus();
-				windowStateVisable();
-			
+			anti_flicker_control = false;
+			chatBox.classList.remove("hidden");
+			overlay.classList.add("opacity-60");
+			chatMessageIn?.classList.add("hidden");
+			chatMessageIn!.textContent = "";
+			let socket = window.__state.chatSock;
+			if (!socket) return;
+			connected(socket);
+			sendtextbox.focus();
+			windowStateVisable();
 		}
-		if  (keysPressed[home_display_key] === true) {
-			navigateTo('/app/');
+		if (keysPressed[home_display_key] === true) {
+			navigateTo("/app/");
 			quitChat();
 		}
-	}, 1000/10);
-};
+	}, 1000 / 10);
+}
 
 function initChatSocket() {
 	let socket = getSocket();
@@ -152,9 +154,10 @@ function initChatSocket() {
 		!profilList ||
 		!sendButton ||
 		!sendtextbox ||
-		!systemWindow 
-	) return showError("fatal error");
-	
+		!systemWindow
+	)
+		return showError("fatal error");
+
 	// Listen for the 'connect' event
 	socket.on("connect", async () => {
 		await waitSocketConnected(socket);
@@ -202,10 +205,10 @@ function initChatSocket() {
 		if (socket) {
 			connected(socket);
 		}
-		
+
 		if (chatWindow && data.message.destination === "") {
 			chatMessageIn?.classList.remove("hidden");
-			chatMessageIn!.textContent = '🔵';
+			chatMessageIn!.textContent = "🔵";
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
@@ -214,7 +217,7 @@ function initChatSocket() {
 
 		if (chatWindow && data.message.destination === "privateMsg") {
 			chatMessageIn?.classList.remove("hidden");
-			chatMessageIn!.textContent = '🔴';
+			chatMessageIn!.textContent = "🔴";
 			const messageElement = document.createElement("div-private");
 			messageElement.textContent = `🔒${data.message.user}: ${data.message.text}`;
 			chatWindow.appendChild(messageElement);
@@ -223,7 +226,7 @@ function initChatSocket() {
 
 		if (chatWindow && data.message.destination === "inviteMsg") {
 			chatMessageIn?.classList.remove("hidden");
-			chatMessageIn!.textContent = '🟢';
+			chatMessageIn!.textContent = "🟢";
 			const messageElement = document.createElement("div-private");
 			const chatWindow = document.getElementById(
 				"t-chatbox",
@@ -236,14 +239,13 @@ function initChatSocket() {
 		if (systemWindow && data.message.destination === "system-info") {
 			const messageElement = document.createElement("div");
 			messageElement.textContent = `${data.message.user}: ${data.message.text}`;
-			
+
 			// keep only last 10
 			while (systemWindow.children.length > MAX_SYSTEM_MESSAGES) {
 				systemWindow.removeChild(systemWindow.firstChild!);
 			}
 			systemWindow.appendChild(messageElement);
 			systemWindow.lastElementChild?.scrollIntoView({ block: "end" });
-
 		}
 	});
 
@@ -278,9 +280,9 @@ function initChatSocket() {
 		if (blockUserBtn) {
 			let message = "";
 			if (data.userState === "block") {
-				(message = "un-block");
+				message = "un-block";
 			} else {
-				(message = "block");
+				message = "block";
 			}
 			blockUserBtn.textContent = message;
 		}
@@ -294,17 +296,15 @@ function initChatSocket() {
 		const htmlBaliseRegex = /<a\b[^>]*>[\s\S]*?<\/a>/;
 		const htmlBaliseMatch = message.match(htmlBaliseRegex);
 
-		if (htmlBaliseMatch)
-			addInviteMessage(message);
-		else 
-			addMessage(message);
+		if (htmlBaliseMatch) addInviteMessage(message);
+		else addMessage(message);
 	});
 
 	//receives broadcast of the next GAME
 	socket.on("nextGame", (message: string) => {
 		openMessagePopup(message);
 	});
-	
+
 	//receives broadcast of the next GAME
 	socket.on("tourStatus", (message: string) => {
 		openMessagePopup(message);
@@ -391,20 +391,20 @@ sendButton?.addEventListener("click", () => {
 					}
 					break;
 
-				case "@pong": 
+				case "@pong":
 					if (msgCommand[1] === "") {
 						navigateTo("/app/pong/games");
 						quitChat();
-					} 
+					}
 					break;
 
-				case "@ttt": 
+				case "@ttt":
 					if (msgCommand[1] === "") {
 						navigateTo("/app/ttt/games");
 						quitChat();
-					} 
+					}
 					break;
-			
+
 				case "@guest":
 					if (!userId) {
 						return;
@@ -505,7 +505,6 @@ clearText?.addEventListener("click", () => {
 
 bquit?.addEventListener("click", () => {
 	quitChat();
-	
 });
 
 myGames?.addEventListener("click", () => {
@@ -527,7 +526,7 @@ sendtextbox.addEventListener("keydown", (event) => {
 	}
 });
 
-chatButton!.addEventListener("click",() => {
+chatButton!.addEventListener("click", () => {
 	if (chatBox.classList.contains("hidden")) {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.add("opacity-60");
@@ -536,14 +535,14 @@ chatButton!.addEventListener("click",() => {
 		if (!socket) return;
 		connected(socket);
 		chatMessageIn?.classList.add("hidden");
-		chatMessageIn!.textContent = '';
-		sendtextbox.focus();			
+		chatMessageIn!.textContent = "";
+		sendtextbox.focus();
 	} else {
 		chatBox.classList.toggle("hidden");
 		overlay.classList.remove("opacity-60");
 		windowStateHidden();
 		chatMessageIn?.classList.add("hidden");
-		chatMessageIn!.textContent = '';		
+		chatMessageIn!.textContent = "";
 	}
 });
 
