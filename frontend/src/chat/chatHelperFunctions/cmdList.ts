@@ -19,9 +19,7 @@ export function cmdList() {
 	addMessage('** ********** function keys ********** **');
 	addMessage('\'ESC\' - chat box display toggles off');
 	addMessage('\'F2\' - chat box display toggles on');
-	addMessage('\'F4\' - navigates to Pong Box');
-	addMessage('\'F8\' - navigates to TTT Box');
-	addMessage('\'F9\' - navigates to Home Page');
+	addMessage('\'F8\' - navigates to Home Page');
 	addMessage('** *********************************** **');
 	addMessage('*');
 }

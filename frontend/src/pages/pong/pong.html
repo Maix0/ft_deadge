@@ -4,66 +4,68 @@
 			<div class="flex flex-col gap-2">
 				<button id="QueueBtn" class="fit-all dflt-btn-style gray-color rounded-elem blue-hover">Queue
 					Up</button>
-				<button id="LocalBtn" class="fit-all dflt-btn-style gray-color rounded-elem blue-hover">Local
-					Game</button>
-				<button id="TourBtn" class="fit-all dflt-btn-style gray-color rounded-elem blue-hover">
-					<span class="mx-2">Create Tournament</span>
-				</button>
-				<!-- tournament hdl -->
-			</div>
-			<div class="flex flex-col gap-2">
-				<h1 class="page-title">Pong Box</h1>
-				<br />
-			</div>
-			<div class="flex flex-col gap-2 items-end">
-				<span id="queue-info" class="fit-all rounded-elem gray-color text-white">?👤 ?⏳ ?▮•▮</span>
-				<!-- total | in queue | games-->
-				<button id="tour-info" class="blue-hover pong-btn-style fit-all rounded-elem gray-color text-white">⚪️ ?👤 ?▮•▮</button>
-				<!-- [Owner|Registered|NotRegisterd|nonExistant] | Player | games -->
-				<!-- 👑 ✅ ❌ ⚪️ -->
-				<button id="play-info" class="circle-8 pong-btn-style gray-color blue-hover">?</button>
-				<!-- how to play? pong-how-to-play rounded-elem rounded-full blue-hover-->
-			</div>
-		</div>
-		<!-- Horizontal Message Box -->
-		<div id="score-box" class="grid grid-cols-3 items-center">
-			<h4 id="player-left" class="text-5xl"></h4>
-			<h1 id="score-board" class="justify-self-center text-p10 font-bold text-gray-800">0:0</h1>
-			<h4 id="player-right" class="text-5xl"></h4>
-		</div>
-		<!-- Pong Box -->
-		<div class="flex justify-center mt-2">
-			<div id="pongspace" class="flex flex-col">
-				<div id="pongbox" class="pongbox-style base-box">
-					<div id="pong-end-screen" class="white-color rounded-elem focus-elem hidden">you won</div>
-					<div id="protips-box" class="white-color rounded-elem focus-elem text-2xl hidden">
-						up:
-						<kbd class="pong-protips-key">W</kbd>
-						down:
-						<kbd class="pong-protips-key">S</kbd>
-						<br />
-						You are <span class="text-red-500">red</span>.
-						<br />
-						Your goal is to bounce the ball back to the adversary.
-						<br />
-						<span class="text-gray-400">local games keys for the left paddle:
-							<br />
-							up:
-							<kbd class="disp-key">P</kbd>
-							down:
-							<kbd class="disp-key">L</kbd>
-						</span>
+					<button id="LocalBtn" class="fit-all dflt-btn-style gray-color rounded-elem blue-hover">Local
+						Game</button>
+						<button id="TourBtn" class="fit-all dflt-btn-style gray-color rounded-elem blue-hover">
+							<span class="mx-2">Create Tournament</span>
+						</button>
+						<!-- tournament hdl -->
 					</div>
-					<div id="tourscore-box" class="white-color rounded-elem focus-elem text-2xl hidden">We havent seen any tournament yet !</div>
-					<button id="readyup-btn" class="justify-center white-color focus-elem rounded-elem">ready!</button>
-					<div class="pong-field">
-						<div id="batleft" class="pong-bat pong-batleft top-0"></div>
-						<div class="pong-center-line"></div>
-						<div id="batright" class="pong-bat pong-batright top-0"></div>
-						<div id="ball" class="rounded-full border-4 bg-white border-gray-400"></div>
+					<div class="flex flex-col gap-2">
+						<h1 class="page-title">Pong Box</h1>
+						<br />
+					</div>
+					<div class="flex flex-col gap-2 items-end">
+						<span id="queue-info" class="fit-all rounded-elem gray-color text-white">?👤 ?⏳ ?▮•▮</span>
+						<!-- total | in queue | games-->
+						<button id="tour-info" class="blue-hover pong-btn-style fit-all rounded-elem gray-color text-white">⚪️ ?👤 ?▮•▮</button>
+						<!-- [Owner|Registered|NotRegisterd|nonExistant] | Player | games -->
+						<!-- 👑 ✅ ❌ ⚪️ -->
+						<button id="play-info" class="circle-8 pong-btn-style gray-color blue-hover">?</button>
+						<!-- how to play? pong-how-to-play rounded-elem rounded-full blue-hover-->
+					</div>
+				</div>
+				<!-- Horizontal Message Box -->
+				<div id="score-box" class="grid grid-cols-3 items-center">
+					<h4 id="player-left" class="text-5xl"></h4>
+					<h1 id="score-board" class="justify-self-center text-p10 font-bold text-gray-800">0:0</h1>
+					<h4 id="player-right" class="text-5xl"></h4>
+				</div>
+				<!-- Pong Box -->
+				<div class="flex justify-center mt-2">
+					<div id="pongspace" class="flex flex-col">
+						<div id="pongbox" class="pongbox-style base-box">
+							<div id="pong-end-screen" class="white-color rounded-elem focus-elem hidden">you won</div>
+							<div id="protips-box" class="white-color rounded-elem focus-elem text-2xl hidden">
+								up:
+								<kbd class="pong-protips-key">W</kbd>
+								down:
+								<kbd class="pong-protips-key">S</kbd>
+								<br />
+								You are <span class="text-red-500">red</span>.
+								<br />
+								Your goal is to bounce the ball back to the adversary.
+								<br />
+								<span class="text-gray-400">local games keys for the left paddle:
+									<br />
+									up:
+									<kbd class="disp-key">P</kbd>
+									down:
+									<kbd class="disp-key">L</kbd>
+								</span>
+							</div>
+							<div id="tourscore-box" class="white-color rounded-elem focus-elem text-2xl hidden">We havent seen any tournament yet !</div>
+							<button id="readyup-btn" class="justify-center white-color focus-elem rounded-elem">ready!</button>
+							<div class="pong-field">
+								<div id="batleft" class="pong-bat pong-batleft top-0"></div>
+								<div class="pong-center-line"></div>
+								<div id="batright" class="pong-bat pong-batright top-0"></div>
+								<div id="ball" class="rounded-full border-4 bg-white border-gray-400"></div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	</div>
+</div>

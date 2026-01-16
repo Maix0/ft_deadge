@@ -83,14 +83,11 @@ const sendtextbox = document.getElementById(
 ) as HTMLButtonElement;
 const systemWindow = document.getElementById("chat-system-box") as HTMLDivElement;
 
-
 function chatKeyToggle() {
 	let anti_flicker_control = false;
 	const chat_hide_key = 'escape';
 	const chat_display_key = 'f2';
-	const pong_display_key = 'f4';
-	const ttt_display_key = 'f8';
-	const home_display_key = 'f9';
+	const home_display_key = 'f8';
 	document.addEventListener("keydown", (event) => {
 		if (event.repeat && keysPressed[chat_hide_key] === true) {
 			anti_flicker_control = true;
@@ -126,17 +123,9 @@ function chatKeyToggle() {
 				windowStateVisable();
 			
 		}
-		if  (keysPressed[pong_display_key] === true) {
-			quitChat();
-			navigateTo('/app/pong');
-		}
-		if  (keysPressed[ttt_display_key] === true) {
-			quitChat();
-			navigateTo('/app/ttt');
-		}
 		if  (keysPressed[home_display_key] === true) {
-			quitChat();
 			navigateTo('/app/');
+			quitChat();
 		}
 	}, 1000/10);
 };
@@ -162,8 +151,7 @@ function initChatSocket() {
 		!profilList ||
 		!sendButton ||
 		!sendtextbox ||
-		!systemWindow
-		
+		!systemWindow 
 	) return showError("fatal error");
 	
 	// Listen for the 'connect' event
@@ -289,9 +277,7 @@ function initChatSocket() {
 			let message = "";
 			if (data.userState === "block") {
 				(message = "un-block");
-				// ((message = "un-block"), (blockMessage = true));
 			} else {
-				// ((message = "block"), (blockMessage = false));
 				(message = "block");
 			}
 			blockUserBtn.textContent = message;
