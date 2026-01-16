@@ -1,5 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AddFriend200Response';
+export * from './AddFriend404Response';
 export * from './AllowGuestMessage200Response';
 export * from './AllowGuestMessage403Response';
 export * from './ChangeDesc200Response';
@@ -37,6 +39,9 @@ export * from './GuestLogin200ResponsePayload';
 export * from './GuestLogin400Response';
 export * from './GuestLogin500Response';
 export * from './GuestLoginRequest';
+export * from './ListFriend200Response';
+export * from './ListFriend200ResponsePayload';
+export * from './ListFriend200ResponsePayloadFriendsInner';
 export * from './Login200Response';
 export * from './Login202Response';
 export * from './Login202ResponsePayload';
@@ -59,6 +64,8 @@ export * from './ProviderList200Response';
 export * from './ProviderList200ResponsePayload';
 export * from './ProviderList200ResponsePayloadListInner';
 export * from './ProviderList200ResponsePayloadListInnerColors';
+export * from './RemoveFriend200Response';
+export * from './RemoveFriend404Response';
 export * from './Signin200Response';
 export * from './Signin200ResponsePayload';
 export * from './Signin400Response';
@@ -81,5 +88,4 @@ export * from './TournamentList404Response';
 export * from './TttHistory200Response';
 export * from './TttHistory200ResponsePayload';
 export * from './TttHistory200ResponsePayloadDataInner';
-export * from './TttHistory200ResponsePayloadDataInnerPlayerX';
 export * from './TttHistory404Response';

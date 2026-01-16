@@ -6,18 +6,17 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'node:fs/promises';
 
-
 export const IconSetRes = {
 	'200': typeResponse('success', 'iconset.success'),
-	'400': typeResponse('success', ['iconset.failure.invalidFile', 'iconset.failure.noFile']),
+	'400': typeResponse('success', [
+		'iconset.failure.invalidFile',
+		'iconset.failure.noFile',
+	]),
 };
 
 export type IconSetRes = MakeStaticResponse<typeof IconSetRes>;
 
-const validMimeTypes = new Set([
-	'image/jpeg',
-	'image/png',
-]);
+const validMimeTypes = new Set(['image/jpeg', 'image/png']);
 
 async function resizeAndSaveImage(
 	imageBuffer: Buffer,
@@ -42,20 +41,42 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 	await fastify.register(multipart);
 	fastify.post(
 		'/api/icons/set',
-		{ schema: { response: IconSetRes, operationId: 'setIcons' }, config: { requireAuth: true } },
+		{
+			schema: {
+				response: IconSetRes,
+				hide: true,
+			},
+			config: { requireAuth: true },
+		},
 		async function(req, res) {
 			// req.authUser is always set, since this is gated
 			const userid = req.authUser!.id;
 			const file = await req.file();
 			if (!file) {
-				return res.makeResponse(400, 'failure', 'iconset.failure.noFile');
+				return res.makeResponse(
+					400,
+					'failure',
+					'iconset.failure.noFile',
+				);
 			}
 			if (!validMimeTypes.has(file.mimetype)) {
-				return res.makeResponse(400, 'failure', 'iconset.failure.invalidFile');
+				return res.makeResponse(
+					400,
+					'failure',
+					'iconset.failure.invalidFile',
+				);
 			}
 			const buf = await file.toBuffer();
-			if (!validMimeTypes.has((await fileTypeFromBuffer(buf))?.mime ?? 'unknown')) {
-				return res.makeResponse(400, 'failure', 'iconset.failure.invalidFile');
+			if (
+				!validMimeTypes.has(
+					(await fileTypeFromBuffer(buf))?.mime ?? 'unknown',
+				)
+			) {
+				return res.makeResponse(
+					400,
+					'failure',
+					'iconset.failure.invalidFile',
+				);
 			}
 			try {
 				resizeAndSaveImage(buf, userid);
@@ -63,7 +84,11 @@ const route: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 			}
 			catch (e: unknown) {
 				this.log.warn(e);
-				return res.makeResponse(400, 'failure', 'iconset.failure.invalidFile');
+				return res.makeResponse(
+					400,
+					'failure',
+					'iconset.failure.invalidFile',
+				);
 			}
 		},
 	);

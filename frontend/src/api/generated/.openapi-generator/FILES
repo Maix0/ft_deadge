@@ -1,6 +1,8 @@
 apis/OpenapiOtherApi.ts
 apis/index.ts
 index.ts
+models/AddFriend200Response.ts
+models/AddFriend404Response.ts
 models/AllowGuestMessage200Response.ts
 models/AllowGuestMessage403Response.ts
 models/ChangeDesc200Response.ts
@@ -38,6 +40,9 @@ models/GuestLogin200ResponsePayload.ts
 models/GuestLogin400Response.ts
 models/GuestLogin500Response.ts
 models/GuestLoginRequest.ts
+models/ListFriend200Response.ts
+models/ListFriend200ResponsePayload.ts
+models/ListFriend200ResponsePayloadFriendsInner.ts
 models/Login200Response.ts
 models/Login202Response.ts
 models/Login202ResponsePayload.ts
@@ -60,6 +65,8 @@ models/ProviderList200Response.ts
 models/ProviderList200ResponsePayload.ts
 models/ProviderList200ResponsePayloadListInner.ts
 models/ProviderList200ResponsePayloadListInnerColors.ts
+models/RemoveFriend200Response.ts
+models/RemoveFriend404Response.ts
 models/Signin200Response.ts
 models/Signin200ResponsePayload.ts
 models/Signin400Response.ts
@@ -82,7 +89,6 @@ models/TournamentList404Response.ts
 models/TttHistory200Response.ts
 models/TttHistory200ResponsePayload.ts
 models/TttHistory200ResponsePayloadDataInner.ts
-models/TttHistory200ResponsePayloadDataInnerPlayerX.ts
 models/TttHistory404Response.ts
 models/index.ts
 runtime.ts

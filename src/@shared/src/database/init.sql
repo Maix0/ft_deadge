@@ -27,6 +27,15 @@ CREATE TABLE IF NOT EXISTS blocked (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_user_pair ON blocked (user, blocked);
 
+CREATE TABLE IF NOT EXISTS friends (
+  id INTEGER PRIMARY KEY NOT NULL,
+  user TEXT NOT NULL,
+  friend TEXT NOT NULL,
+  FOREIGN KEY (user) REFERENCES user (id) FOREIGN KEY (friend) REFERENCES user (id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_friends_user_pair ON friends (user, friend);
+
 ----------------
 --  TICTACTOE --
 ----------------

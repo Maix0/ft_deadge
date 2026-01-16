@@ -4,17 +4,19 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { Database as DbImpl } from './mixin/_base';
 import { IUserDb, UserImpl } from './mixin/user';
 import { IBlockedDb, BlockedImpl } from './mixin/blocked';
+import { IFriendsDb, FriendsImpl } from './mixin/friends';
 import { ITicTacToeDb, TicTacToeImpl } from './mixin/tictactoe';
 import { IPongDb, PongImpl } from './mixin/pong';
 import { ITournamentDb, TournamentImpl } from './mixin/tournament';
 
 Object.assign(DbImpl.prototype, UserImpl);
 Object.assign(DbImpl.prototype, BlockedImpl);
+Object.assign(DbImpl.prototype, FriendsImpl);
 Object.assign(DbImpl.prototype, TicTacToeImpl);
 Object.assign(DbImpl.prototype, PongImpl);
 Object.assign(DbImpl.prototype, TournamentImpl);
 
-export interface Database extends DbImpl, IUserDb, IBlockedDb, ITicTacToeDb, IPongDb, ITournamentDb { }
+export interface Database extends DbImpl, IUserDb, IBlockedDb, ITicTacToeDb, IPongDb, ITournamentDb, IFriendsDb { }
 
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
