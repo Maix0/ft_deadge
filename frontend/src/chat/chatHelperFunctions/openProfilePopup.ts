@@ -9,7 +9,8 @@ export async function openProfilePopup(profil: ClientProfil) {
     			<div-profil-name id="profilName" class="text-xl font-bold text-blue-500"> Profile of ${profil.user} </div>
     			<div-login-name id="loginName"> Login status: <span class="recessed">${profil.loginName ?? 'Guest'}</span> </div> 
     			</br>
-    			<div-login-name id="loginName"> Login ID: <span class="recessed">${profil.userID ?? ''}</span> </div> 
+    			<div-login-name id="loginName"> Login ID: <span class="recessed">${profil.userID ?? ''}</span> </div>
+				<img src="/icons/${profil.userID}" class="w-30 h-30 absoluet absolute top-26 right-10" > </img> 
     			</br>
     			<button id="popup-b-invite" class="btn-style popup-b-invite">U Game ?</button>
     			<button id="popup-b-block" class="btn-style popup-b-block">Block User</button>
