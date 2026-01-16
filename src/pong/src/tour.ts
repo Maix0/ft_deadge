@@ -70,6 +70,7 @@ export class Tournament {
 			const [u1, u2] = matchup;
 			const gameId = newUUID() as PongGameId;
 			const game = State.initGame(null, gameId, u1, u2);
+			State.broadcastTourStatus(`A Tournament game between ${this.users.get(u1)?.name ?? 'the left player'} and ${this.users.get(u2)?.name ?? 'the right player'} will start ASAP`);
 			if (game) {
 				game.onEnd = () => this.gameEnd();
 			}

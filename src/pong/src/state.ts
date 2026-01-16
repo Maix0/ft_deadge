@@ -279,6 +279,12 @@ class StateI {
 		const gameId = newUUID() as unknown as GameId;
 
 		this.games.set(gameId, g);
+		setTimeout(() => {
+			if (!g.ready_checks[0] && !g.ready_checks[1]) {
+				this.fastify.log.info(`paused game ${gameId} has been canceled`);
+				this.cleanupGame(gameId, g);
+			}
+		}, 1000 * 31);
 		this.fastify.log.info('new paused game \'' + gameId + '\'');
 		return gameId;
 	}
@@ -573,7 +579,7 @@ class StateI {
 			game.local,
 		);
 		this.fastify.log.info('SetGameOutcome !');
-		if (!game.local) {
+		if (!game.local && game.ready_checks[0] && game.ready_checks[1]) {
 			const payload = { nextGame: chat_text };
 			try {
 				const resp = await fetch('http://app-chat/broadcastNextGame', {
