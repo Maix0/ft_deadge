@@ -31,6 +31,19 @@
 				</div>
 			</div>
 		</div>
+		<div id="iconBox" class="mb-1 grid grid-cols-[auto_1fr] gap-2 hidden">
+			<div id="viewIconBox" class="h-[128px] w-[128px] p-2 border-gray-700 border-2 rounded-lg">
+				<img/>
+			</div>
+			<div id="updateIconBox">
+				<form id="updateIconForm" class="flex flex-col justify-evenly h-full">
+					<input type="file" name="upload" accept="image/png, image/jpeg" class="text-black border-black border-2 rounded-lg px-4 w-[230px]"></input>
+					<span class="text-black font-base">Select Image</span>
+					<button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"> Update </button>
+				</form>
+			</div>
+		</div>
+
 		<!-- Display Name -->
 		<div id="displayNameWrapper" class="py-2">
 			<label class="block font-medium mb-1 text-gray-700">Display Name</label>
@@ -52,8 +65,7 @@
 			<label class="block font-medium mb-1 text-gray-700">Description</label>
 			<input id="descBox" type="text" placeholder="Description..." name="Description"
 				class="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-			<button id="descButton"
-				class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Update</button>
+			<button id="descButton" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Update</button>
 		</div>
 		<!-- TOTP -->
 		<div class="border rounded p-4" id="totpWrapper" hidden>

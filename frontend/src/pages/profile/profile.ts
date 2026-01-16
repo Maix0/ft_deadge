@@ -40,6 +40,45 @@ function removeBgColor(...elem: HTMLElement[]) {
 	}
 }
 
+async function setup_profile_image(container: HTMLDivElement, url: string) {
+	let imgNode = container.querySelector<HTMLImageElement>("img");
+	let formNode = container.querySelector<HTMLFormElement>("form");
+	if (!imgNode || !formNode) return;
+	imgNode.src = url;
+	container.classList.remove("hidden");
+	formNode.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		let form = e.target;
+		if (!form) return;
+		let data = new FormData(form as HTMLFormElement);
+		let req = await fetch("/api/icons/set", {
+			body: data,
+			method: "POST",
+		});
+		if (req.status === 200 || req.status === 400) {
+			let json = await req.json();
+			if (!("kind" in json) || !("msg" in json))
+				return showError("Unknown Error");
+			if (typeof json.kind !== "string" || typeof json.msg !== "string")
+				return showError("Unknown Error");
+			const pjson: { kind: string; msg: string } = json;
+			if (pjson.kind === "success") {
+				showSuccess("Updated image !");
+				return handleRoute();
+			} else {
+				console.log(`Failed to upload image: ${pjson.msg}`);
+				showError("Failed to change image");
+			}
+		} if (req.status === 413)
+		{
+			showError("Image too big");
+		}
+		else {
+			showError("Unknown Error");
+		}
+	});
+}
+
 async function route(url: string, _args: { [k: string]: string }) {
 	setTitle("Edit Profile");
 	return {
@@ -99,8 +138,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 
 			let descWrapper =
 				app.querySelector<HTMLDivElement>("#descWrapper")!;
-			let descBox =
-				app.querySelector<HTMLInputElement>("#descBox")!;
+			let descBox = app.querySelector<HTMLInputElement>("#descBox")!;
 			let descButton =
 				app.querySelector<HTMLButtonElement>("#descButton")!;
 
@@ -126,6 +164,8 @@ async function route(url: string, _args: { [k: string]: string }) {
 			let totpWrapper =
 				app.querySelector<HTMLDivElement>("#totpWrapper")!;
 
+			let imgBox = app.querySelector<HTMLDivElement>("#iconBox")!;
+
 			descBox.value = user.desc;
 
 			if (user.guest) {
@@ -138,10 +178,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 					descButton,
 				);
 
-				descButton.classList.add(
-					"bg-gray-700",
-					"hover:bg-gray-700",
-				);
+				descButton.classList.add("bg-gray-700", "hover:bg-gray-700");
 				descButton.disabled = true;
 				descBox.disabled = true;
 
@@ -174,6 +211,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 				passwordWrapper.hidden = false;
 
 				accountTypeBox.innerText = "Normal";
+				setup_profile_image(imgBox, `/icons/${user.id}`);
 			} else if (
 				!isNullish(user.selfInfo?.providerId) &&
 				!isNullish(user.selfInfo?.providerUser)
@@ -195,6 +233,7 @@ async function route(url: string, _args: { [k: string]: string }) {
 				totpWrapper.hidden = true;
 
 				accountTypeBox.innerText = "Provider";
+				setup_profile_image(imgBox, `/icons/${user.id}`);
 			}
 
 			// ---- Update UI ----
@@ -269,12 +308,13 @@ async function route(url: string, _args: { [k: string]: string }) {
 				}
 			};
 			descButton.onclick = async () => {
-				let req = await client.changeDesc({ changeDescRequest: { desc: descBox.value } });
+				let req = await client.changeDesc({
+					changeDescRequest: { desc: descBox.value },
+				});
 				if (req.kind === "success") {
 					showSuccess("Successfully changed description");
 					handleRoute();
-				}
-				else {
+				} else {
 					showError(`Failed to update`);
 				}
 			};
