@@ -6,7 +6,7 @@ export async function openProfilePopup(profil: ClientProfil) {
 		modalname.innerHTML = 
         `
     		<div class="profile-info">
-    			<div-profil-name id="profilName" class="text-xl font-bold text-blue-500"> Profile of ${profil.user} </div> 
+    			<div-profil-name id="profilName" class="text-xl font-bold text-blue-500"> Profile of ${profil.user} </div>
     			<div-login-name id="loginName"> Login status: <span class="recessed">${profil.loginName ?? 'Guest'}</span> </div> 
     			</br>
     			<div-login-name id="loginName"> Login ID: <span class="recessed">${profil.userID ?? ''}</span> </div> 
@@ -16,7 +16,7 @@ export async function openProfilePopup(profil: ClientProfil) {
 				<div id="profile-about" class="text-2xl">About: <span class="recessed">${profil.text}</span> </div>
 				<button id="popup-b-hGame" class="btn-style-games popup-b-game">View Pong Games</button>
 				<button id="popup-b-hTGame" class="btn-style-games popup-b-TTTgame">View TTT Games</button>
-
+				<button id="btn-friend" class="btn-style popup-b-friend">friend</button>
     		</div>
     	`;
 	const profilList = document.getElementById("profile-modal") ?? null;

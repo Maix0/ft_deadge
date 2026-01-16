@@ -291,6 +291,13 @@ div-private {
   right-12
 }
 
+.popup-b-friend {
+  @apply
+  absolute 
+  bottom-32 
+  left-12
+}
+
 .popup-b-game {
   @apply
   absolute 
